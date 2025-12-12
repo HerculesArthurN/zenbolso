@@ -7,16 +7,34 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+.pnpm-store
+
+# Build Output
 dist
 dist-ssr
 *.local
 
+# Environment Variables (CRÍTICO DE SEGURANÇA)
+# Ignora todos os arquivos de configuração reais
+.env
+.env.*
+# Mas permite subir o arquivo de exemplo (template)
+!.env.example
+
+# Testing
+coverage
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+# Descomente a linha abaixo se quiser compartilhar configurações de auto-format com a equipe
+# !.vscode/settings.json 
+
 .idea
 .DS_Store
+Thumbs.db
 *.suo
 *.ntvs*
 *.njsproj

@@ -1,19 +1,18 @@
 import React, { useState, useMemo } from 'react';
 import { useData } from '../context/DataContext';
-import { useTransactionsQuery, useCategoriesQuery, useAccountsQuery, useFinanceMutations } from '../hooks/useFinanceData';
+import { useCategoriesQuery, useAccountsQuery } from '../hooks/useFinanceData';
+import { useTransactions } from '../hooks/queries/useTransactions'; // New Hook
+import { useTransactionMutations } from '../hooks/queries/useTransactionMutations'; // New Hook
 import { TransactionList } from '../components/transactions/TransactionList';
 import { TransactionFilters, FilterState } from '../components/transactions/TransactionFilters';
 import { SummaryChart } from '../components/dashboard/SummaryChart';
 import { COLORS } from '../constants';
 import { ImportModal } from '../components/transactions/ImportModal';
 import { Wand2 } from 'lucide-react';
-import { postTransaction, removeTransaction } from '../services/api';
 import { useToast } from '../context/ToastContext';
 
 export const TransactionsPage: React.FC = () => {
   const { openTransactionModal } = useData();
-  const { refreshTransactions } = useFinanceMutations();
-  const { data: transactions = [], isLoading } = useTransactionsQuery();
   const { data: categories = [] } = useCategoriesQuery();
   const { data: accounts = [] } = useAccountsQuery();
   
@@ -37,27 +36,19 @@ export const TransactionsPage: React.FC = () => {
     };
   });
 
-  // Filter Logic
-  const filteredTransactions = useMemo(() => {
-    return transactions.filter(t => {
-      if (filters.startDate && t.date < filters.startDate) return false;
-      if (filters.endDate && t.date > filters.endDate) return false;
-      if (filters.type !== 'all' && t.type !== filters.type) return false;
-      if (filters.category !== 'all' && t.category !== filters.category) return false;
-      if (filters.tags && filters.tags.length > 0) {
-        if (!t.tags || t.tags.length === 0) return false;
-        const hasMatchingTag = filters.tags.some(tag => t.tags?.includes(tag));
-        if (!hasMatchingTag) return false;
-      }
-      if (filters.searchQuery) {
-        const query = filters.searchQuery.toLowerCase();
-        const matchesCategory = t.category.toLowerCase().includes(query);
-        const matchesDescription = t.description?.toLowerCase().includes(query) || false;
-        if (!matchesCategory && !matchesDescription) return false;
-      }
-      return true;
-    });
-  }, [transactions, filters]);
+  // NEW: Fetching Data using the specific Hook with filters passed down
+  // This enables DB-level filtering for date ranges
+  const { data: filteredTransactions = [], isLoading } = useTransactions({
+      startDate: filters.startDate,
+      endDate: filters.endDate,
+      type: filters.type === 'all' ? undefined : filters.type,
+      category: filters.category === 'all' ? undefined : filters.category,
+      tags: filters.tags,
+      searchQuery: filters.searchQuery
+  });
+
+  // NEW: Mutations Hook
+  const { deleteTransaction, addTransaction } = useTransactionMutations();
 
   const dynamicCategories = useMemo(() => {
     const totals: Record<string, number> = {};
@@ -81,40 +72,42 @@ export const TransactionsPage: React.FC = () => {
 
   const uniqueTags = useMemo(() => {
     const tags = new Set<string>();
-    transactions.forEach(t => t.tags?.forEach(tag => tags.add(tag)));
+    // We can't access "all" tags easily without fetching all, 
+    // so we derive tags from the currently visible set + local cache logic if needed.
+    // For now, deriving from visible set is acceptable or we could fetch all tags separately.
+    filteredTransactions.forEach(t => t.tags?.forEach(tag => tags.add(tag)));
     return Array.from(tags).sort();
-  }, [transactions]);
+  }, [filteredTransactions]);
 
   const handleDeleteTransaction = async (id: string) => {
-    const transactionToDelete = transactions.find(t => t.id === id);
+    const transactionToDelete = filteredTransactions.find(t => t.id === id);
     if (!transactionToDelete) return;
 
     try {
-        await removeTransaction(id);
-        await refreshTransactions();
+        await deleteTransaction.mutateAsync(id);
+        
         addToast('Transação removida.', 'success', 5000, {
             label: 'Desfazer',
             onClick: async () => {
-                await postTransaction(transactionToDelete);
-                await refreshTransactions();
+                await addTransaction.mutateAsync(transactionToDelete);
                 addToast('Transação restaurada.', 'info');
             }
         });
     } catch (error) {
-        addToast('Erro ao remover.', 'error');
+        // Error handling inside hook
     }
   };
 
   const handleImport = async (importedTxs: any[]) => {
       try {
-          for (const tx of importedTxs) {
-              await postTransaction(tx);
-          }
+          // Process sequentially to maintain order or use bulkAdd in repo
+          const promises = importedTxs.map(tx => addTransaction.mutateAsync(tx));
+          await Promise.all(promises);
+          
           addToast(`${importedTxs.length} transações importadas!`, 'success');
-          await refreshTransactions();
           setIsImportOpen(false);
       } catch (e) {
-          addToast('Erro na importação', 'error');
+          addToast('Erro parcial na importação', 'error');
       }
   };
 
