@@ -1,5 +1,5 @@
 import { Category, Account, TransactionType } from '../types';
-import { detectCategoryFromKeywords } from './categorizer';
+import Fuse from 'fuse.js';
 
 export interface ParsedTransaction {
   value?: number;
@@ -8,11 +8,19 @@ export interface ParsedTransaction {
   type?: TransactionType;
   date?: string;
   description?: string;
+  isRecurring?: boolean;
+  recurrenceFrequency?: 'weekly' | 'monthly' | 'yearly';
 }
 
-// Security: Sanitizador básico para remover tags HTML potenciais
+// Palavras-chave para recorrência
+const RECURRENCE_KEYWORDS = {
+  monthly: ['mensal', 'mensalmente', 'todo mês', 'toda mes', 'repetir mês'],
+  weekly: ['semanal', 'semanalmente', 'toda semana', 'toda segunda', 'toda sexta'],
+  yearly: ['anual', 'anualmente', 'todo ano']
+};
+
 const sanitizeInput = (str: string): string => {
-  return str.replace(/[<>]/g, '');
+  return str.replace(/[<>]/g, '').trim();
 };
 
 export const parseSmartInput = (
@@ -21,28 +29,46 @@ export const parseSmartInput = (
   accounts: Account[]
 ): ParsedTransaction => {
   const result: ParsedTransaction = {};
-  // Security: Sanitiza o input imediatamente antes de qualquer processamento
   let textToProcess = sanitizeInput(input);
 
-  // 1. Extract Value (Currency)
-  // Matches: 50.50, 50,00, R$ 50, 50
-  const valueRegex = /R?\$?\s?(\d+([.,]\d{1,2})?)/;
+  // 1. Extração de Valor (Regex)
+  // Suporta: R$ 50,00 | 50.00 | 50,90 | 50
+  const valueRegex = /(?:R\$|€|\$)?\s?(\d{1,3}(?:\.\d{3})*(?:,\d{1,2})?|\d+(?:\.\d{1,2})?)\b/;
   const valueMatch = textToProcess.match(valueRegex);
 
   if (valueMatch) {
-    const rawValue = valueMatch[1].replace(',', '.');
+    let rawValue = valueMatch[1];
+    
+    // Normalização brasileira: troca vírgula por ponto se necessário
+    if (rawValue.includes(',') && !rawValue.includes('.')) {
+       rawValue = rawValue.replace(',', '.');
+    } else if (rawValue.includes('.') && rawValue.includes(',')) {
+       // Formato 1.000,00 -> remove ponto, troca virgula por ponto
+       rawValue = rawValue.replace(/\./g, '').replace(',', '.');
+    }
+
     const value = parseFloat(rawValue);
     if (!isNaN(value)) {
       result.value = value;
-      // Remove value from text to avoid false positives in description
+      // Remove o valor do texto para não interferir na descrição
       textToProcess = textToProcess.replace(valueMatch[0], '').trim();
     }
   }
 
-  // 2. Extract Date Keywords
+  // 2. Detecção de Recorrência
   const lowerText = textToProcess.toLowerCase();
-  const today = new Date();
   
+  for (const [freq, keywords] of Object.entries(RECURRENCE_KEYWORDS)) {
+    if (keywords.some(k => lowerText.includes(k))) {
+      result.isRecurring = true;
+      result.recurrenceFrequency = freq as 'weekly' | 'monthly' | 'yearly';
+      // Não removemos do texto pois pode fazer parte da "história" da descrição
+      break; 
+    }
+  }
+
+  // 3. Detecção de Data (Palavras-chave simples)
+  const today = new Date();
   if (lowerText.includes('ontem')) {
     const d = new Date(today);
     d.setDate(d.getDate() - 1);
@@ -58,57 +84,63 @@ export const parseSmartInput = (
     textToProcess = textToProcess.replace(/hoje/i, '');
   }
 
-  // 3. Match Accounts (Explicit Name Match)
-  // We sort by length descending to match "Nubank Platinum" before "Nubank"
-  const sortedAccounts = [...accounts].sort((a, b) => b.name.length - a.name.length);
-  for (const acc of sortedAccounts) {
-    const accName = acc.name.toLowerCase();
-    const regex = new RegExp(`\\b${accName}\\b`, 'i');
-    if (regex.test(textToProcess)) {
-      result.accountId = acc.id;
-      textToProcess = textToProcess.replace(regex, '');
-      break; 
-    }
-  }
-
-  // 4. Match Categories (Explicit Name Match)
-  const sortedCategories = [...categories].sort((a, b) => b.name.length - a.name.length);
-  for (const cat of sortedCategories) {
-    const catName = cat.name.toLowerCase();
-    const regex = new RegExp(`\\b${catName}\\b`, 'i');
+  // 4. Fuzzy Match para Contas
+  if (accounts.length > 0) {
+    const accountFuse = new Fuse(accounts, {
+      keys: ['name'],
+      threshold: 0.4, // Tolerância média
+      includeScore: true
+    });
     
-    if (regex.test(textToProcess)) {
-      result.category = cat.name;
-      result.type = cat.type; 
-      textToProcess = textToProcess.replace(regex, '');
-      break;
+    // Divide o texto em palavras para tentar match em tokens específicos
+    // Isso evita falso positivo em frases longas, mas aqui faremos busca na string completa
+    // para casar nomes compostos de conta (ex: "Nubank PJ")
+    const accResult = accountFuse.search(textToProcess);
+    
+    if (accResult.length > 0) {
+      // Pega o melhor match
+      const bestMatch = accResult[0].item;
+      result.accountId = bestMatch.id;
+      
+      // Tenta remover o nome da conta do texto
+      const regexName = new RegExp(`\\b${bestMatch.name}\\b`, 'i');
+      textToProcess = textToProcess.replace(regexName, '');
     }
   }
 
-  // 5. Cleanup Description
-  let description = textToProcess.replace(/\s+/g, ' ').trim();
-  description = description.replace(/^(no|na|em|de|do|da|para)\s+/i, '');
-  
+  // 5. Fuzzy Match para Categorias
+  if (categories.length > 0) {
+    const categoryFuse = new Fuse(categories, {
+      keys: ['name'],
+      threshold: 0.3, // Mais estrito para categoria
+      includeScore: true
+    });
+
+    const catResult = categoryFuse.search(textToProcess);
+
+    if (catResult.length > 0) {
+      const bestMatch = catResult[0].item;
+      result.category = bestMatch.name;
+      result.type = bestMatch.type;
+      
+      const regexName = new RegExp(`\\b${bestMatch.name}\\b`, 'i');
+      textToProcess = textToProcess.replace(regexName, '');
+    }
+  }
+
+  // 6. Limpeza Final da Descrição
+  // Remove preposições soltas e espaços extras
+  let description = textToProcess
+    .replace(/\s+/g, ' ')
+    .replace(/^(no|na|em|de|do|da|para|com|via)\s+/i, '')
+    .trim();
+
+  // Capitalize
   if (description) {
     result.description = description.charAt(0).toUpperCase() + description.slice(1);
-    
-    // 6. Intelligent Category Guess (Keyword Match)
-    // If no explicit category was found, try to guess based on the remaining description
-    if (!result.category) {
-        const guessedCategory = detectCategoryFromKeywords(result.description);
-        if (guessedCategory !== 'Outros') {
-            result.category = guessedCategory;
-            // Try to find the type of this guessed category from available categories list
-            const matchedCat = categories.find(c => c.name === guessedCategory);
-            if (matchedCat) {
-                result.type = matchedCat.type;
-            } else {
-                // Default fallback if category name exists in keywords but not in user's list
-                // We default to expense as most keywords are expenses
-                result.type = 'expense';
-            }
-        }
-    }
+  } else {
+    // Se sobrou vazio, mas temos categoria, usa a categoria como descrição
+    result.description = result.category || 'Nova Transação';
   }
 
   return result;

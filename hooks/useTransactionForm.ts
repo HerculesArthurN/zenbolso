@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useMemo, FormEvent } from 'react';
+import React, { useState, useEffect, useMemo, FormEvent, useCallback } from 'react';
 import { Transaction, TransactionType } from '../types';
 import { useToast } from '../context/ToastContext';
 import { useAccountsQuery, useCategoriesQuery, useFinanceMutations } from './useFinanceData';
-import { parseSmartInput } from '../services/smartParser';
+import { parseSmartInput, ParsedTransaction } from '../services/smartParser';
 import { processInstallments, createRecurringTransaction } from '../services/transaction.business';
 import { AppError } from '../utils/AppError';
 import { getErrorMessage } from '../utils/errorMapper';
@@ -20,7 +20,7 @@ export const useTransactionForm = ({ onSave, onCancel, history, initialData }: U
   const { addToast } = useToast();
   const { refreshTransactions } = useFinanceMutations();
   
-  // Data Fetching (React Query)
+  // Data Fetching
   const { data: accounts = [] } = useAccountsQuery();
   const { data: availableCategories = [] } = useCategoriesQuery();
 
@@ -34,18 +34,21 @@ export const useTransactionForm = ({ onSave, onCancel, history, initialData }: U
   const [tags, setTags] = useState('');
   const [accountId, setAccountId] = useState('');
   
-  // UX State
+  // Smart Input & Parsing State
   const [smartInput, setSmartInput] = useState('');
   const [isParsing, setIsParsing] = useState(false);
+  const [parsedPreview, setParsedPreview] = useState<ParsedTransaction | null>(null);
+
+  // UI State
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [suggestedCategory, setSuggestedCategory] = useState<string | null>(null);
 
-  // Recurrence & Installments State
+  // Recurrence & Installments
   const [repeatMode, setRepeatMode] = useState<'none' | 'recurring' | 'installments'>('none');
   const [frequency, setFrequency] = useState<'weekly' | 'monthly' | 'yearly'>('monthly');
   const [installments, setInstallments] = useState(2);
 
-  // Initialize Data
+  // Initialization
   useEffect(() => {
     if (initialData) {
       setType(initialData.type);
@@ -79,24 +82,35 @@ export const useTransactionForm = ({ onSave, onCancel, history, initialData }: U
     }
   };
 
-  // Smart Input Logic
-  const handleSmartInput = () => {
-    if (!smartInput.trim()) return;
+  // --- Smart Parsing Logic com Debounce ---
+  useEffect(() => {
+    if (!smartInput.trim() || initialData) return;
+
     setIsParsing(true);
-    
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       const parsed = parseSmartInput(smartInput, availableCategories, accounts);
+      setParsedPreview(parsed);
+      
+      // Auto-fill form fields if confidence is high (or just fill whatever matches)
       if (parsed.value) updateValue(parsed.value);
       if (parsed.type) setType(parsed.type);
       if (parsed.category) setCategory(parsed.category);
       if (parsed.accountId) setAccountId(parsed.accountId);
       if (parsed.date) setDate(parsed.date);
       if (parsed.description) setDescription(parsed.description);
-      setIsParsing(false);
-    }, 400);
-  };
+      
+      if (parsed.isRecurring && parsed.recurrenceFrequency) {
+        setRepeatMode('recurring');
+        setFrequency(parsed.recurrenceFrequency);
+      }
 
-  // Category Suggestion Logic (Fuse.js)
+      setIsParsing(false);
+    }, 500); // 500ms Debounce
+
+    return () => clearTimeout(timer);
+  }, [smartInput, availableCategories, accounts, initialData]);
+
+  // Category Suggestion (Fuse.js on History)
   const fuse = useMemo(() => new Fuse(history, { keys: ['description'], threshold: 0.4 }), [history]);
 
   useEffect(() => {
@@ -120,7 +134,6 @@ export const useTransactionForm = ({ onSave, onCancel, history, initialData }: U
     }
   };
 
-  // Submit Handler
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
@@ -144,13 +157,13 @@ export const useTransactionForm = ({ onSave, onCancel, history, initialData }: U
         await createRecurringTransaction({
           type, value: valueRaw, category, description, tags: tagsArray, date, frequency
         });
-        await refreshTransactions(); // Atualiza a UI imediatamente
+        await refreshTransactions();
         addToast('Recorrência configurada!', 'success');
         onCancel();
         return;
       }
 
-      // Case 3: Standard Transaction
+      // Case 3: Standard
       const newTransaction: Transaction = {
         id: initialData?.id || uuidv4(),
         type,
@@ -168,7 +181,6 @@ export const useTransactionForm = ({ onSave, onCancel, history, initialData }: U
     }
   };
 
-  // Computed Properties for UI
   const currentCategories = useMemo(() => {
     return availableCategories
       .filter(c => c.type === type)
@@ -176,7 +188,6 @@ export const useTransactionForm = ({ onSave, onCancel, history, initialData }: U
   }, [availableCategories, type]);
 
   return {
-    // State
     type, setType,
     valueRaw, valueDisplay, handleCurrencyChange,
     category, setCategory,
@@ -184,18 +195,14 @@ export const useTransactionForm = ({ onSave, onCancel, history, initialData }: U
     date, setDate,
     tags, setTags,
     accountId, setAccountId,
-    smartInput, setSmartInput, handleSmartInput, isParsing,
+    smartInput, setSmartInput, isParsing, parsedPreview,
     showAdvanced, setShowAdvanced,
     repeatMode, setRepeatMode,
     frequency, setFrequency,
     installments, setInstallments,
     suggestedCategory, applySuggestion,
-    
-    // Data
     accounts,
     currentCategories,
-    
-    // Actions
     handleSubmit
   };
 };

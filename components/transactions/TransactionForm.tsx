@@ -1,9 +1,10 @@
 import React from 'react';
 import { Transaction } from '../../types';
 import { Button } from '../ui/Button';
-import { ChevronDown, ChevronUp, Plus, Minus, Sparkles, Repeat, Wallet, Wand2, CreditCard } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Minus, Sparkles, Repeat, Wallet, CreditCard } from 'lucide-react';
 import { useTransactionForm } from '../../hooks/useTransactionForm';
 import { CategoryIcon } from '../ui/CategoryIcon';
+import { SmartInput } from './SmartInput';
 
 interface TransactionFormProps {
   onSave: (t: Transaction) => void; 
@@ -23,7 +24,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = (props) => {
     date, setDate,
     tags, setTags,
     accountId, setAccountId,
-    smartInput, setSmartInput, handleSmartInput, isParsing,
+    smartInput, setSmartInput, isParsing, parsedPreview,
     showAdvanced, setShowAdvanced,
     repeatMode, setRepeatMode,
     frequency, setFrequency,
@@ -34,49 +35,20 @@ export const TransactionForm: React.FC<TransactionFormProps> = (props) => {
     handleSubmit
   } = useTransactionForm(props);
 
-  const handleSmartInputKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleSmartInput();
-    }
-  };
-
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       
       {!initialData && (
-        <div className="relative group">
-            <div className={`absolute inset-0 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-2xl blur opacity-20 group-hover:opacity-30 transition-opacity ${isParsing ? 'animate-pulse' : ''}`}></div>
-            <div className="relative bg-white dark:bg-gray-800 rounded-2xl p-1 shadow-sm border border-emerald-100 dark:border-emerald-900/30">
-            <div className="flex items-center gap-2 px-3 py-1">
-                <Wand2 size={18} className="text-emerald-500" />
-                <input 
-                type="text"
+        <>
+            <SmartInput 
                 value={smartInput}
-                onChange={(e) => setSmartInput(e.target.value)}
-                onKeyDown={handleSmartInputKeyDown}
-                onBlur={handleSmartInput}
-                placeholder="Ex: Almoço 35,90 padaria ontem..."
-                className="w-full py-2 bg-transparent border-none focus:ring-0 text-sm placeholder-gray-400 text-gray-800 dark:text-gray-200"
-                />
-                {smartInput && (
-                <button 
-                    type="button" 
-                    onClick={handleSmartInput}
-                    className="p-1.5 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded-lg hover:bg-emerald-200 dark:hover:bg-emerald-800 transition-colors"
-                >
-                    <Sparkles size={14} />
-                </button>
-                )}
-            </div>
-            </div>
-            <p className="text-[10px] text-gray-400 mt-1.5 px-1">
-            IA: Digite texto livre e pressione Enter para preencher.
-            </p>
-        </div>
+                onChange={setSmartInput}
+                isParsing={isParsing}
+                parsedData={parsedPreview}
+            />
+            <div className="h-px bg-gray-100 dark:bg-gray-800 w-full" />
+        </>
       )}
-
-      {!initialData && <div className="h-px bg-gray-100 dark:bg-gray-800 w-full" />}
 
       {/* Type Toggle */}
       <div className="flex p-1 bg-gray-100 dark:bg-gray-800 rounded-xl">
