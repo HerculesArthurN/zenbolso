@@ -117,7 +117,7 @@ export const SummaryChart: React.FC<SummaryChartProps> = ({ data }) => {
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
-              activeIndex={activeIndex}
+              {...{ activeIndex } as any}
               activeShape={renderActiveShape}
               data={processedData}
               cx="50%"

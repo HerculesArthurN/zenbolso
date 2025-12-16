@@ -1,123 +1,131 @@
-import React, { useMemo } from 'react';
-import { ResponsiveContainer, Treemap, Tooltip } from 'recharts';
+import React, { useState, useMemo } from 'react';
+import { PieChart, Pie, Sector, ResponsiveContainer, Cell } from 'recharts';
 import { Transaction } from '../../types';
-import { groupExpensesByCategory, formatCurrency } from '../../utils/chartHelpers';
-import { LayoutGrid } from 'lucide-react';
+import { groupExpensesByCategory, formatCurrency } from '../../services/domain/statistics.service';
+import { PieChart as PieIcon } from 'lucide-react';
 
-interface ExpensesTreemapProps {
+interface ExpensesDonutProps {
   transactions: Transaction[];
 }
 
-const CustomContent = (props: any) => {
-  const { x, y, width, height, index, payload, name, value } = props;
-
-  // Lógica de visualização: só mostra texto se o bloco for grande o suficiente
-  const showText = width > 50 && height > 35;
-  const showValue = width > 70 && height > 55;
-  const fontSize = Math.min(width / 7, 13);
-
+const renderActiveShape = (props: any) => {
+  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
+  
   return (
     <g>
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        style={{
-          fill: payload.color || '#64748B',
-          stroke: 'transparent',
-        }}
-        rx={10}
-        ry={10}
-        className="opacity-90 hover:opacity-100 transition-opacity duration-300 cursor-default"
+      {/* Setor Expandido */}
+      <Sector
+        cx={cx}
+        cy={cy}
+        innerRadius={innerRadius}
+        outerRadius={outerRadius + 8} // Expand
+        startAngle={startAngle}
+        endAngle={endAngle}
+        fill={fill}
+        className="transition-all duration-300 drop-shadow-lg"
       />
-      {showText && (
-        <text
-          x={x + width / 2}
-          y={y + height / 2 - (showValue ? 7 : 0)}
-          textAnchor="middle"
-          fill="#fff"
-          fontSize={fontSize}
-          fontWeight={600}
-          className="pointer-events-none drop-shadow-sm"
-        >
-          {name}
-        </text>
-      )}
-      {showText && showValue && (
-        <text
-          x={x + width / 2}
-          y={y + height / 2 + 9}
-          textAnchor="middle"
-          fill="rgba(255,255,255,0.9)"
-          fontSize={fontSize * 0.85}
-          className="pointer-events-none"
-        >
-          {formatCurrency(value, true)}
-        </text>
-      )}
+      {/* Halo Interno */}
+      <Sector
+        cx={cx}
+        cy={cy}
+        startAngle={startAngle}
+        endAngle={endAngle}
+        innerRadius={innerRadius - 6}
+        outerRadius={innerRadius - 3}
+        fill={fill}
+        fillOpacity={0.4}
+      />
     </g>
   );
 };
 
-const CustomTooltip = ({ active, payload }: any) => {
-  if (active && payload && payload.length) {
-    const data = payload[0].payload;
+export const ExpensesDonut: React.FC<ExpensesDonutProps> = ({ transactions }) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  
+  const data = useMemo(() => groupExpensesByCategory(transactions), [transactions]);
+  const totalValue = useMemo(() => data.reduce((acc, cur) => acc + cur.value, 0), [data]);
+
+  const onPieEnter = (_: any, index: number) => {
+    setActiveIndex(index);
+  };
+
+  const activeItem = data[activeIndex] || data[0];
+  const centerLabel = activeItem ? activeItem.name : 'Total';
+  const centerValue = activeItem ? activeItem.value : totalValue;
+  const centerPercent = activeItem ? activeItem.percentage : 100;
+
+  if (data.length === 0) {
     return (
-      <div className="bg-white dark:bg-slate-800 p-3 rounded-xl shadow-xl border border-slate-100 dark:border-slate-700 z-50">
-        <p className="font-bold text-slate-900 dark:text-white mb-1">{data.name}</p>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          {formatCurrency(data.value)}
-        </p>
-        <p className="text-xs text-primary mt-1 font-medium">
-          {data.percentage.toFixed(1)}% do total
-        </p>
+      <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-slate-400 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800">
+        <PieIcon size={48} className="opacity-20 mb-2" />
+        <p className="text-sm">Sem despesas registradas</p>
       </div>
     );
   }
-  return null;
-};
-
-export const ExpensesTreemap: React.FC<ExpensesTreemapProps> = ({ transactions }) => {
-  const data = useMemo(() => {
-    const categories = groupExpensesByCategory(transactions);
-    // O Recharts Treemap exige um nó raiz único com children
-    return [{
-      name: 'Despesas',
-      children: categories
-    }];
-  }, [transactions]);
-
-  if (!transactions.some(t => t.type === 'expense')) {
-    return null;
-  }
 
   return (
-    <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col h-[400px]">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-          <LayoutGrid size={20} className="text-secondary" />
-          Mapa de Gastos
-        </h3>
-        <span className="text-[10px] text-slate-400 bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded-lg">
-          Área = Valor
-        </span>
+    <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col h-full">
+      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+        <PieIcon size={20} className="text-primary" />
+        Distribuição
+      </h3>
+
+      <div className="relative flex-1 min-h-[250px]">
+        {/* Informações Centrais */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10 select-none">
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1 max-w-[100px] truncate text-center">
+            {centerLabel}
+          </p>
+          <p className="text-2xl font-bold text-slate-900 dark:text-white">
+            {formatCurrency(centerValue, true)}
+          </p>
+          {activeItem && (
+             <span className="mt-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-500 dark:text-slate-400">
+               {centerPercent.toFixed(1)}%
+             </span>
+          )}
+        </div>
+
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              {...{ activeIndex } as any}
+              activeShape={renderActiveShape}
+              data={data as any[]}
+              cx="50%"
+              cy="50%"
+              innerRadius={60}
+              outerRadius={80}
+              paddingAngle={3}
+              dataKey="value"
+              onMouseEnter={onPieEnter}
+              stroke="none"
+              animationDuration={800}
+            >
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
       </div>
 
-      <div className="flex-1 w-full rounded-2xl overflow-hidden">
-        <ResponsiveContainer width="100%" height="100%">
-          <Treemap
-            data={data}
-            dataKey="value"
-            stroke="#fff"
-            fill="#8884d8"
-            content={<CustomContent />}
-            animationDuration={800}
-            aspectRatio={4/3}
+      {/* Legenda Compacta */}
+      <div className="mt-4 flex flex-wrap gap-2 justify-center max-h-24 overflow-y-auto custom-scrollbar">
+        {data.slice(0, 5).map((entry, index) => (
+          <div 
+            key={entry.name}
+            className={`flex items-center gap-1.5 px-2 py-1 rounded-lg cursor-pointer transition-colors border text-xs ${
+              activeIndex === index 
+                ? 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700' 
+                : 'border-transparent hover:bg-slate-50 dark:hover:bg-slate-800/50'
+            }`}
+            onMouseEnter={() => setActiveIndex(index)}
           >
-            <Tooltip content={<CustomTooltip />} cursor={false} />
-          </Treemap>
-        </ResponsiveContainer>
+            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+            <span className="text-slate-600 dark:text-slate-300 font-medium">{entry.name}</span>
+          </div>
+        ))}
       </div>
     </div>
   );

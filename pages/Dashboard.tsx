@@ -1,6 +1,6 @@
 import React from 'react';
-import { useData } from '../context/DataContext';
-import { useSummaryQuery, useInsights, useBadges, useTransactionsQuery, useAccountsQuery, useFinanceMutations } from '../hooks/useFinanceData';
+import { useSummaryQuery, useInsights, useBadges, useAccountsQuery, useFinanceMutations } from '../hooks/useFinanceData';
+import { useTransactions } from '../hooks/queries/useTransactions'; // Novo Hook
 import { Skeleton } from '../components/ui/Skeleton';
 import { BalanceCard } from '../components/dashboard/BalanceCard';
 import { InsightsWidget } from '../components/dashboard/InsightsWidget';
@@ -8,28 +8,29 @@ import { BenchmarkWidget } from '../components/dashboard/BenchmarkWidget';
 import { AchievementsWidget } from '../components/dashboard/AchievementsWidget';
 import { AccountsWidget } from '../components/dashboard/AccountsWidget';
 import { OnboardingWizard } from '../components/onboarding/OnboardingWizard';
+import { ExpensesDonut } from '../components/charts/ExpensesDonut';
+import { ExpensesTreemap } from '../components/charts/ExpensesTreemap';
 
 export const Dashboard: React.FC = () => {
   const { refreshAll } = useFinanceMutations();
   
   const { data: summary, isLoading: loadingSummary } = useSummaryQuery();
-  const { data: transactions = [] } = useTransactionsQuery();
+  // Usando o novo hook com filtros para o mês atual, se desejado, ou todos
+  const { data: transactions = [] } = useTransactions(); 
   const { data: accounts = [] } = useAccountsQuery();
   const insights = useInsights();
   const badges = useBadges();
   
   const [isOnboardingOpen, setIsOnboardingOpen] = React.useState(false);
 
-  const loading = loadingSummary;
-
   React.useEffect(() => {
     const hasData = transactions.length > 0 || accounts.length > 1;
     const hasSeenOnboarding = localStorage.getItem('onboarding_completed');
     
-    if (!loading && !hasData && !hasSeenOnboarding) {
+    if (!loadingSummary && !hasData && !hasSeenOnboarding) {
         setIsOnboardingOpen(true);
     }
-  }, [loading, transactions, accounts]);
+  }, [loadingSummary, transactions, accounts]);
 
   const handleOnboardingComplete = () => {
     localStorage.setItem('onboarding_completed', 'true');
@@ -37,7 +38,7 @@ export const Dashboard: React.FC = () => {
     refreshAll();
   };
 
-  if (loading || !summary) {
+  if (loadingSummary || !summary) {
     return (
       <div className="space-y-6">
         <Skeleton variant="rounded" className="h-48 w-full rounded-3xl" />
@@ -61,6 +62,16 @@ export const Dashboard: React.FC = () => {
           income={summary.totalIncome} 
           expense={summary.totalExpense} 
       />
+      
+      {/* Seção de Gráficos e Análise */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="h-[400px]">
+            <ExpensesDonut transactions={transactions} />
+          </div>
+          <div className="h-[400px]">
+            <ExpensesTreemap transactions={transactions} />
+          </div>
+      </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {insights.length > 0 && <InsightsWidget insights={insights} />}

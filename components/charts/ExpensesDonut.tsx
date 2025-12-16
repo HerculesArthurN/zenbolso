@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { PieChart, Pie, Sector, ResponsiveContainer, Cell } from 'recharts';
 import { Transaction } from '../../types';
-import { groupExpensesByCategory, formatCurrency } from '../../utils/chartHelpers';
+import { groupExpensesByCategory, formatCurrency } from '../../services/domain/statistics.service';
 import { PieChart as PieIcon } from 'lucide-react';
 
 interface ExpensesDonutProps {
@@ -13,27 +13,27 @@ const renderActiveShape = (props: any) => {
   
   return (
     <g>
-      {/* Setor Principal Expandido */}
+      {/* Setor Expandido */}
       <Sector
         cx={cx}
         cy={cy}
         innerRadius={innerRadius}
-        outerRadius={outerRadius + 6}
+        outerRadius={outerRadius + 8} // Expand
         startAngle={startAngle}
         endAngle={endAngle}
         fill={fill}
-        className="transition-all duration-300 drop-shadow-md"
+        className="transition-all duration-300 drop-shadow-lg"
       />
-      {/* Anel Interno Decorativo */}
+      {/* Halo Interno */}
       <Sector
         cx={cx}
         cy={cy}
         startAngle={startAngle}
         endAngle={endAngle}
         innerRadius={innerRadius - 6}
-        outerRadius={innerRadius - 4}
+        outerRadius={innerRadius - 3}
         fill={fill}
-        fillOpacity={0.6}
+        fillOpacity={0.4}
       />
     </g>
   );
@@ -49,7 +49,6 @@ export const ExpensesDonut: React.FC<ExpensesDonutProps> = ({ transactions }) =>
     setActiveIndex(index);
   };
 
-  // Determinar o que exibir no centro
   const activeItem = data[activeIndex] || data[0];
   const centerLabel = activeItem ? activeItem.name : 'Total';
   const centerValue = activeItem ? activeItem.value : totalValue;
@@ -57,43 +56,47 @@ export const ExpensesDonut: React.FC<ExpensesDonutProps> = ({ transactions }) =>
 
   if (data.length === 0) {
     return (
-      <div className="h-[350px] flex flex-col items-center justify-center text-slate-400 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800">
+      <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-slate-400 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800">
         <PieIcon size={48} className="opacity-20 mb-2" />
-        <p className="text-sm">Sem despesas para exibir</p>
+        <p className="text-sm">Sem despesas registradas</p>
       </div>
     );
   }
 
   return (
     <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col h-full">
-      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
         <PieIcon size={20} className="text-primary" />
         Distribuição
       </h3>
 
       <div className="relative flex-1 min-h-[250px]">
-        {/* Overlay Central */}
+        {/* Informações Centrais */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10 select-none">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-0.5">{centerLabel}</p>
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1 max-w-[100px] truncate text-center">
+            {centerLabel}
+          </p>
           <p className="text-2xl font-bold text-slate-900 dark:text-white">
             {formatCurrency(centerValue, true)}
           </p>
-          <p className="text-xs font-medium text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full mt-1">
-            {centerPercent.toFixed(1)}%
-          </p>
+          {activeItem && (
+             <span className="mt-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-500 dark:text-slate-400">
+               {centerPercent.toFixed(1)}%
+             </span>
+          )}
         </div>
 
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
-              activeIndex={activeIndex}
+              {...{ activeIndex } as any}
               activeShape={renderActiveShape}
-              data={data}
+              data={data as any[]}
               cx="50%"
               cy="50%"
-              innerRadius={70}
-              outerRadius={90}
-              paddingAngle={4}
+              innerRadius={60}
+              outerRadius={80}
+              paddingAngle={3}
               dataKey="value"
               onMouseEnter={onPieEnter}
               stroke="none"
@@ -107,21 +110,20 @@ export const ExpensesDonut: React.FC<ExpensesDonutProps> = ({ transactions }) =>
         </ResponsiveContainer>
       </div>
 
-      {/* Legenda Customizada */}
-      <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 max-h-24 overflow-y-auto custom-scrollbar">
-        {data.map((entry, index) => (
+      {/* Legenda Compacta */}
+      <div className="mt-4 flex flex-wrap gap-2 justify-center max-h-24 overflow-y-auto custom-scrollbar">
+        {data.slice(0, 5).map((entry, index) => (
           <div 
             key={entry.name}
-            className={`flex items-center justify-between text-xs p-2 rounded-lg cursor-pointer transition-colors ${
-              activeIndex === index ? 'bg-slate-50 dark:bg-slate-800 ring-1 ring-slate-200 dark:ring-slate-700' : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'
+            className={`flex items-center gap-1.5 px-2 py-1 rounded-lg cursor-pointer transition-colors border text-xs ${
+              activeIndex === index 
+                ? 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700' 
+                : 'border-transparent hover:bg-slate-50 dark:hover:bg-slate-800/50'
             }`}
             onMouseEnter={() => setActiveIndex(index)}
           >
-            <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
-              <span className="text-slate-600 dark:text-slate-300 font-medium truncate max-w-[80px]">{entry.name}</span>
-            </div>
-            <span className="text-slate-900 dark:text-white font-semibold">{Math.round(entry.percentage)}%</span>
+            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+            <span className="text-slate-600 dark:text-slate-300 font-medium">{entry.name}</span>
           </div>
         ))}
       </div>
