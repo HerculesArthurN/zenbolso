@@ -1,7 +1,8 @@
 import { Transaction, TransactionType, RecurringConfig } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { generateRRule } from './recurrence';
-import { postTransaction, postRecurringConfig } from './api';
+import { postRecurringConfig } from './api';
+import { TransactionRepository } from './repositories/transaction.repository';
 
 /**
  * Gera e salva as parcelas de uma transação.
@@ -13,7 +14,7 @@ export const processInstallments = async (
     const installmentValue = baseTransaction.value / installments;
     const baseDate = new Date(baseTransaction.date);
     const tags = [...(baseTransaction.tags || []), 'parcelado'];
-    
+
     // 1. Criar a primeira parcela (retornada para a UI)
     const firstTx: Transaction = {
         ...baseTransaction,
@@ -24,14 +25,14 @@ export const processInstallments = async (
     };
 
     // Salvar primeira parcela (necessário para a UI atualizar imediatamente)
-    await postTransaction(firstTx);
+    await TransactionRepository.add(firstTx);
 
     // 2. Gerar e salvar as parcelas subsequentes em background
     const promises = [];
     for (let i = 1; i < installments; i++) {
         const nextDate = new Date(baseDate);
         nextDate.setMonth(nextDate.getMonth() + i);
-        
+
         const tx: Transaction = {
             ...baseTransaction,
             id: uuidv4(),
@@ -40,9 +41,9 @@ export const processInstallments = async (
             description: `${baseTransaction.description || 'Compra Parcelada'} (${i + 1}/${installments})`,
             tags
         };
-        promises.push(postTransaction(tx));
+        promises.push(TransactionRepository.add(tx));
     }
-    
+
     await Promise.all(promises);
     return firstTx;
 };
@@ -65,7 +66,7 @@ export const createRecurringTransaction = async (
     // Ajuste de fuso horário simples para garantir a data correta na regra
     const localDate = new Date(startDate.getUTCFullYear(), startDate.getUTCMonth(), startDate.getUTCDate());
     const rruleString = generateRRule(data.frequency, localDate);
-    
+
     // 1. Criar e salvar a Primeira Transação IMEDIATAMENTE (para aparecer na lista)
     const firstTransaction: Transaction = {
         id: uuidv4(),
@@ -76,7 +77,7 @@ export const createRecurringTransaction = async (
         tags: data.tags,
         date: data.date
     };
-    await postTransaction(firstTransaction);
+    await TransactionRepository.add(firstTransaction);
 
     // 2. Salvar a Configuração da Recorrência
     const config: RecurringConfig = {
@@ -92,6 +93,6 @@ export const createRecurringTransaction = async (
         nextDueDate: '', // Será calculado pelo job de recorrência na próxima execução
         active: true
     };
-    
+
     await postRecurringConfig(config);
 };

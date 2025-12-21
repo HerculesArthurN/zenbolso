@@ -7,15 +7,14 @@ import { CategoryIcon } from '../ui/CategoryIcon';
 import { SmartInput } from './SmartInput';
 
 interface TransactionFormProps {
-  onSave: (t: Transaction) => void; 
+  onSave: (t: Transaction) => void;
   onCancel: () => void;
-  history: Transaction[];
   initialData?: Transaction | null;
 }
 
 export const TransactionForm: React.FC<TransactionFormProps> = (props) => {
   const { initialData, onCancel } = props;
-  
+
   const {
     type, setType,
     valueRaw, valueDisplay, handleCurrencyChange,
@@ -37,16 +36,16 @@ export const TransactionForm: React.FC<TransactionFormProps> = (props) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      
+
       {!initialData && (
         <>
-            <SmartInput 
-                value={smartInput}
-                onChange={setSmartInput}
-                isParsing={isParsing}
-                parsedData={parsedPreview}
-            />
-            <div className="h-px bg-gray-100 dark:bg-gray-800 w-full" />
+          <SmartInput
+            value={smartInput}
+            onChange={setSmartInput}
+            isParsing={isParsing}
+            parsedData={parsedPreview}
+          />
+          <div className="h-px bg-gray-100 dark:bg-gray-800 w-full" />
         </>
       )}
 
@@ -55,22 +54,20 @@ export const TransactionForm: React.FC<TransactionFormProps> = (props) => {
         <button
           type="button"
           onClick={() => { setType('expense'); setCategory(''); }}
-          className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2 ${
-            type === 'expense' 
-              ? 'bg-white dark:bg-gray-700 text-rose-600 shadow-sm' 
-              : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
-          }`}
+          className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2 ${type === 'expense'
+            ? 'bg-white dark:bg-gray-700 text-rose-600 shadow-sm'
+            : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+            }`}
         >
           <Minus size={16} /> Despesa
         </button>
         <button
           type="button"
           onClick={() => { setType('income'); setCategory(''); }}
-          className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2 ${
-            type === 'income' 
-              ? 'bg-white dark:bg-gray-700 text-emerald-600 shadow-sm' 
-              : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
-          }`}
+          className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2 ${type === 'income'
+            ? 'bg-white dark:bg-gray-700 text-emerald-600 shadow-sm'
+            : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+            }`}
         >
           <Plus size={16} /> Receita
         </button>
@@ -79,7 +76,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = (props) => {
       {/* Main Input: Value (Masked) */}
       <div>
         <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
-            {repeatMode === 'installments' ? 'Valor Total' : 'Valor'}
+          {repeatMode === 'installments' ? 'Valor Total' : 'Valor'}
         </label>
         <div className="relative">
           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">R$</span>
@@ -93,66 +90,65 @@ export const TransactionForm: React.FC<TransactionFormProps> = (props) => {
           />
         </div>
         {repeatMode === 'installments' && valueRaw > 0 && (
-            <p className="text-right text-xs text-gray-500 mt-1">
-                {installments}x de R$ {(valueRaw / installments).toFixed(2)}
-            </p>
+          <p className="text-right text-xs text-gray-500 mt-1">
+            {installments}x de R$ {(valueRaw / installments).toFixed(2)}
+          </p>
         )}
       </div>
 
       {/* Description Field */}
       <div className="animate-in fade-in slide-in-from-top-2 duration-200">
         <label className="block text-xs font-medium text-gray-500 mb-1 flex justify-between">
-            <span>Descrição (Opcional)</span>
-            {suggestedCategory && suggestedCategory !== category && (
-                <span 
-                    onClick={applySuggestion}
-                    className="text-emerald-500 flex items-center gap-1 cursor-pointer hover:underline text-[10px]"
-                >
-                    <Sparkles size={10} />
-                    Sugerir: {suggestedCategory}
-                </span>
-            )}
+          <span>Descrição (Opcional)</span>
+          {suggestedCategory && suggestedCategory !== category && (
+            <span
+              onClick={applySuggestion}
+              className="text-emerald-500 flex items-center gap-1 cursor-pointer hover:underline text-[10px]"
+            >
+              <Sparkles size={10} />
+              Sugerir: {suggestedCategory}
+            </span>
+          )}
         </label>
         <input
-            type="text"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder={type === 'expense' ? "Ex: Uber, Mercado, Netflix..." : "Ex: Salário, Projeto..."}
-            className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border-none rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-primary placeholder-gray-400"
+          type="text"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder={type === 'expense' ? "Ex: Uber, Mercado, Netflix..." : "Ex: Salário, Projeto..."}
+          className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border-none rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-primary placeholder-gray-400"
         />
       </div>
 
       {/* Account Selection */}
       <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-3">
-          <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 flex items-center gap-1">
-              <Wallet size={12} /> Conta
-          </label>
-          {accounts.length === 0 ? (
-             <p className="text-xs text-rose-500">Nenhuma conta encontrada. Crie uma em Configurações.</p>
-          ) : (
-            <div className="flex gap-2 overflow-x-auto no-scrollbar">
-                {accounts.map(acc => (
-                    <button
-                        key={acc.id}
-                        type="button"
-                        onClick={() => setAccountId(acc.id)}
-                        className={`flex-shrink-0 px-3 py-2 text-sm rounded-lg border transition-all ${
-                            accountId === acc.id 
-                            ? 'border-primary bg-primary/10 text-primary font-medium' 
-                            : 'border-gray-200 dark:border-gray-700 text-gray-500'
-                        }`}
-                    >
-                        {acc.name}
-                    </button>
-                ))}
-            </div>
-          )}
+        <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 flex items-center gap-1">
+          <Wallet size={12} /> Conta
+        </label>
+        {accounts.length === 0 ? (
+          <p className="text-xs text-rose-500">Nenhuma conta encontrada. Crie uma em Configurações.</p>
+        ) : (
+          <div className="flex gap-2 overflow-x-auto no-scrollbar">
+            {accounts.map(acc => (
+              <button
+                key={acc.id}
+                type="button"
+                onClick={() => setAccountId(acc.id)}
+                className={`flex-shrink-0 px-3 py-2 text-sm rounded-lg border transition-all ${accountId === acc.id
+                  ? 'border-primary bg-primary/10 text-primary font-medium'
+                  : 'border-gray-200 dark:border-gray-700 text-gray-500'
+                  }`}
+              >
+                {acc.name}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Category Selection */}
       <div>
         <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
-            Categoria {category && <span className="text-primary font-normal">- {category}</span>}
+          Categoria {category && <span className="text-primary font-normal">- {category}</span>}
         </label>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-40 overflow-y-auto custom-scrollbar">
           {currentCategories.map((cat) => (
@@ -160,17 +156,16 @@ export const TransactionForm: React.FC<TransactionFormProps> = (props) => {
               key={cat.id}
               type="button"
               onClick={() => setCategory(cat.name)}
-              className={`px-3 py-2 text-sm rounded-xl border transition-all relative overflow-hidden text-left truncate flex items-center gap-2 ${
-                category === cat.name
-                  ? 'border-primary bg-primary/10 text-primary font-medium ring-1 ring-primary'
-                  : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
-              }`}
+              className={`px-3 py-2 text-sm rounded-xl border transition-all relative overflow-hidden text-left truncate flex items-center gap-2 ${category === cat.name
+                ? 'border-primary bg-primary/10 text-primary font-medium ring-1 ring-primary'
+                : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                }`}
               title={cat.name}
             >
               <CategoryIcon iconName={cat.icon} color={cat.color || '#64748B'} size={18} />
               <span className="truncate">{cat.name}</span>
               {suggestedCategory === cat.name && category !== cat.name && (
-                  <span className="absolute top-0 right-0 w-2 h-2 bg-emerald-400 rounded-full m-1 animate-pulse" title="Sugestão IA" />
+                <span className="absolute top-0 right-0 w-2 h-2 bg-emerald-400 rounded-full m-1 animate-pulse" title="Sugestão IA" />
               )}
             </button>
           ))}
@@ -180,56 +175,56 @@ export const TransactionForm: React.FC<TransactionFormProps> = (props) => {
       {/* Repetition Options */}
       {!initialData && (
         <div className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-xl border border-gray-100 dark:border-gray-800">
-            <div className="flex items-center gap-2 mb-2 overflow-x-auto no-scrollbar">
-                 <button
-                    type="button"
-                    onClick={() => setRepeatMode('none')}
-                    className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors border ${repeatMode === 'none' ? 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 shadow-sm' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
-                 >
-                     Única
-                 </button>
-                 <button
-                    type="button"
-                    onClick={() => setRepeatMode('recurring')}
-                    className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors border flex items-center gap-1 ${repeatMode === 'recurring' ? 'bg-white dark:bg-gray-700 border-primary text-primary shadow-sm' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
-                 >
-                     <Repeat size={12} /> Recorrente
-                 </button>
-                 {type === 'expense' && (
-                     <button
-                        type="button"
-                        onClick={() => setRepeatMode('installments')}
-                        className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors border flex items-center gap-1 ${repeatMode === 'installments' ? 'bg-white dark:bg-gray-700 border-purple-500 text-purple-600 shadow-sm' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
-                     >
-                         <CreditCard size={12} /> Parcelado
-                     </button>
-                 )}
-            </div>
-            
-            {repeatMode === 'recurring' && (
-                <div className="animate-in slide-in-from-top-2 duration-200 pt-2 border-t border-gray-200 dark:border-gray-700">
-                    <select
-                        value={frequency}
-                        onChange={(e) => setFrequency(e.target.value as any)}
-                        className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary"
-                    >
-                        <option value="weekly">Semanalmente</option>
-                        <option value="monthly">Mensalmente</option>
-                        <option value="yearly">Anualmente</option>
-                    </select>
-                </div>
+          <div className="flex items-center gap-2 mb-2 overflow-x-auto no-scrollbar">
+            <button
+              type="button"
+              onClick={() => setRepeatMode('none')}
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors border ${repeatMode === 'none' ? 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 shadow-sm' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+            >
+              Única
+            </button>
+            <button
+              type="button"
+              onClick={() => setRepeatMode('recurring')}
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors border flex items-center gap-1 ${repeatMode === 'recurring' ? 'bg-white dark:bg-gray-700 border-primary text-primary shadow-sm' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+            >
+              <Repeat size={12} /> Recorrente
+            </button>
+            {type === 'expense' && (
+              <button
+                type="button"
+                onClick={() => setRepeatMode('installments')}
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors border flex items-center gap-1 ${repeatMode === 'installments' ? 'bg-white dark:bg-gray-700 border-purple-500 text-purple-600 shadow-sm' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+              >
+                <CreditCard size={12} /> Parcelado
+              </button>
             )}
+          </div>
 
-            {repeatMode === 'installments' && (
-                <div className="animate-in slide-in-from-top-2 duration-200 pt-2 border-t border-gray-200 dark:border-gray-700 flex items-center gap-3">
-                    <label className="text-sm text-gray-600 dark:text-gray-400">Parcelas:</label>
-                    <div className="flex items-center gap-2">
-                         <button type="button" onClick={() => setInstallments(Math.max(2, installments - 1))} className="p-1 bg-white dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600"><Minus size={14}/></button>
-                         <span className="text-sm font-bold w-6 text-center">{installments}x</span>
-                         <button type="button" onClick={() => setInstallments(Math.min(24, installments + 1))} className="p-1 bg-white dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600"><Plus size={14}/></button>
-                    </div>
-                </div>
-            )}
+          {repeatMode === 'recurring' && (
+            <div className="animate-in slide-in-from-top-2 duration-200 pt-2 border-t border-gray-200 dark:border-gray-700">
+              <select
+                value={frequency}
+                onChange={(e) => setFrequency(e.target.value as 'weekly' | 'monthly' | 'yearly')}
+                className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="weekly">Semanalmente</option>
+                <option value="monthly">Mensalmente</option>
+                <option value="yearly">Anualmente</option>
+              </select>
+            </div>
+          )}
+
+          {repeatMode === 'installments' && (
+            <div className="animate-in slide-in-from-top-2 duration-200 pt-2 border-t border-gray-200 dark:border-gray-700 flex items-center gap-3">
+              <label className="text-sm text-gray-600 dark:text-gray-400">Parcelas:</label>
+              <div className="flex items-center gap-2">
+                <button type="button" onClick={() => setInstallments(Math.max(2, installments - 1))} className="p-1 bg-white dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600"><Minus size={14} /></button>
+                <span className="text-sm font-bold w-6 text-center">{installments}x</span>
+                <button type="button" onClick={() => setInstallments(Math.min(24, installments + 1))} className="p-1 bg-white dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600"><Plus size={14} /></button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -255,7 +250,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = (props) => {
                 className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border-none rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-primary"
               />
             </div>
-            
+
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">Tags (Separadas por vírgula)</label>
               <input

@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useMemo, FormEvent, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, FormEvent } from 'react';
 import { Transaction, TransactionType } from '../types';
 import { useToast } from '../context/ToastContext';
-import { useAccountsQuery, useCategoriesQuery, useFinanceMutations } from './useFinanceData';
+import { useAccountsQuery, useCategoriesQuery, useFinanceMutations, useTransactionsQuery } from './useFinanceData';
 import { parseSmartInput, ParsedTransaction } from '../services/smartParser';
 import { processInstallments, createRecurringTransaction } from '../services/transaction.business';
 import { AppError } from '../utils/AppError';
@@ -12,17 +12,18 @@ import Fuse from 'fuse.js';
 interface UseTransactionFormProps {
   onSave: (t: Transaction) => void;
   onCancel: () => void;
-  history: Transaction[];
+  // history removed
   initialData?: Transaction | null;
 }
 
-export const useTransactionForm = ({ onSave, onCancel, history, initialData }: UseTransactionFormProps) => {
+export const useTransactionForm = ({ onSave, onCancel, initialData }: UseTransactionFormProps) => {
   const { addToast } = useToast();
   const { refreshTransactions } = useFinanceMutations();
-  
+
   // Data Fetching
   const { data: accounts = [] } = useAccountsQuery();
   const { data: availableCategories = [] } = useCategoriesQuery();
+  const { data: history = [] } = useTransactionsQuery();
 
   // Form State
   const [type, setType] = useState<TransactionType>('expense');
@@ -33,7 +34,7 @@ export const useTransactionForm = ({ onSave, onCancel, history, initialData }: U
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [tags, setTags] = useState('');
   const [accountId, setAccountId] = useState('');
-  
+
   // Smart Input & Parsing State
   const [smartInput, setSmartInput] = useState('');
   const [isParsing, setIsParsing] = useState(false);
@@ -72,7 +73,7 @@ export const useTransactionForm = ({ onSave, onCancel, history, initialData }: U
   const handleCurrencyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value.replace(/\D/g, '');
     const numberValue = parseInt(val) / 100;
-    
+
     if (isNaN(numberValue)) {
       setValueRaw(0);
       setValueDisplay('');
@@ -90,7 +91,7 @@ export const useTransactionForm = ({ onSave, onCancel, history, initialData }: U
     const timer = setTimeout(() => {
       const parsed = parseSmartInput(smartInput, availableCategories, accounts);
       setParsedPreview(parsed);
-      
+
       // Auto-fill form fields if confidence is high (or just fill whatever matches)
       if (parsed.value) updateValue(parsed.value);
       if (parsed.type) setType(parsed.type);
@@ -98,7 +99,7 @@ export const useTransactionForm = ({ onSave, onCancel, history, initialData }: U
       if (parsed.accountId) setAccountId(parsed.accountId);
       if (parsed.date) setDate(parsed.date);
       if (parsed.description) setDescription(parsed.description);
-      
+
       if (parsed.isRecurring && parsed.recurrenceFrequency) {
         setRepeatMode('recurring');
         setFrequency(parsed.recurrenceFrequency);

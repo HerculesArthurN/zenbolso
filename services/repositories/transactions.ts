@@ -1,7 +1,7 @@
 
 import { db } from '../db';
 import { Transaction } from '../../types';
-import { ValidationError, ServiceError } from '../errors';
+import { ValidationError } from '../errors';
 import { handleDBError } from '../repositoryUtils';
 
 export const getTransactions = async (): Promise<Transaction[]> => {

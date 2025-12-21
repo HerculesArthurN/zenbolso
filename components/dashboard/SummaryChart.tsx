@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Sector } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Sector } from 'recharts';
 import { CategorySummary } from '../../types';
-import { PieChart as PieIcon, Circle } from 'lucide-react';
+import { PieChart as PieIcon } from 'lucide-react';
 
 interface SummaryChartProps {
   data: CategorySummary[];
@@ -99,19 +99,19 @@ export const SummaryChart: React.FC<SummaryChartProps> = ({ data }) => {
     <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm h-full flex flex-col">
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-            <PieIcon size={20} className="text-emerald-500" />
-            Distribuição
+          <PieIcon size={20} className="text-emerald-500" />
+          Distribuição
         </h3>
       </div>
 
       <div className="relative flex-1 min-h-[250px]">
         {/* Center Information Overlay */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10">
-            <span className="text-2xl mb-1 filter drop-shadow-sm">{centerIcon}</span>
-            <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">{centerLabel}</p>
-            <p className="text-xl font-bold text-gray-900 dark:text-white">
-                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', notation: 'compact' }).format(centerValue)}
-            </p>
+          <span className="text-2xl mb-1 filter drop-shadow-sm">{centerIcon}</span>
+          <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">{centerLabel}</p>
+          <p className="text-xl font-bold text-gray-900 dark:text-white">
+            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', notation: 'compact' }).format(centerValue)}
+          </p>
         </div>
 
         <ResponsiveContainer width="100%" height="100%">
@@ -131,10 +131,10 @@ export const SummaryChart: React.FC<SummaryChartProps> = ({ data }) => {
               stroke="none"
             >
               {processedData.map((entry, index) => (
-                <Cell 
-                    key={`cell-${index}`} 
-                    fill={entry.color} 
-                    className="outline-none"
+                <Cell
+                  key={`cell-${index}`}
+                  fill={entry.color}
+                  className="outline-none"
                 />
               ))}
             </Pie>
@@ -144,22 +144,22 @@ export const SummaryChart: React.FC<SummaryChartProps> = ({ data }) => {
 
       {/* Custom Legend */}
       <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
-          {processedData.slice(0, 6).map((item, idx) => (
-              <div 
-                key={idx} 
-                className={`flex items-center justify-between p-2 rounded-lg transition-colors ${activeIndex === idx ? 'bg-gray-50 dark:bg-gray-800 ring-1 ring-gray-200 dark:ring-gray-700' : ''}`}
-                onMouseEnter={() => setActiveIndex(idx)}
-                onMouseLeave={() => setActiveIndex(-1)}
-              >
-                  <div className="flex items-center gap-2 overflow-hidden">
-                      <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
-                      <span className="truncate text-gray-600 dark:text-gray-300">{item.category}</span>
-                  </div>
-                  <span className="font-semibold text-gray-900 dark:text-white ml-2">
-                      {Math.round(item.percentage)}%
-                  </span>
-              </div>
-          ))}
+        {processedData.slice(0, 6).map((item, idx) => (
+          <div
+            key={idx}
+            className={`flex items-center justify-between p-2 rounded-lg transition-colors ${activeIndex === idx ? 'bg-gray-50 dark:bg-gray-800 ring-1 ring-gray-200 dark:ring-gray-700' : ''}`}
+            onMouseEnter={() => setActiveIndex(idx)}
+            onMouseLeave={() => setActiveIndex(-1)}
+          >
+            <div className="flex items-center gap-2 overflow-hidden">
+              <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
+              <span className="truncate text-gray-600 dark:text-gray-300">{item.category}</span>
+            </div>
+            <span className="font-semibold text-gray-900 dark:text-white ml-2">
+              {Math.round(item.percentage)}%
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );

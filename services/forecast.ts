@@ -1,5 +1,5 @@
 import { RRule } from 'rrule';
-import { RecurringConfig, TransactionType } from '../types';
+import { RecurringConfig } from '../types';
 
 export interface DailyForecast {
   date: string;
@@ -16,7 +16,7 @@ export const calculateForecast = (
 ): DailyForecast[] => {
   const forecast: DailyForecast[] = [];
   const now = new Date();
-  
+
   // Normalize "today" to start of day for comparison
   const startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const endDate = new Date(startDate);
@@ -63,7 +63,7 @@ export const calculateForecast = (
     const dayLabel = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
 
     const change = dailyChanges[dateStr] || { income: 0, expense: 0 };
-    
+
     // Update running balance (Simulating future state)
     runningBalance += change.income - change.expense;
 

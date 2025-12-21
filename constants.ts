@@ -1,8 +1,7 @@
-import { TransactionType } from './types';
 
 export const CATEGORIES = {
   income: ['Salário', 'Freelance', 'Investimentos', 'Outros'],
-  expense: ['Moradia', 'Alimentação', 'Transporte', 'Lazer', 'Saúde', 'Educação', 'Assinaturas', 'Outros'],
+  expense: ['Moradia', 'Alimentação', 'Saúde', 'Educação', 'Assinaturas', 'Outros'],
 };
 
 export const CATEGORY_ICONS: Record<string, string> = {
@@ -35,4 +34,6 @@ export const COLORS = [
   '#A78BFA', // Violet
 ];
 
+
 export const STORAGE_KEY = 'pocket_manager_data_v1';
+export const SETUP_KEY = '@finance-app:setup-completed';

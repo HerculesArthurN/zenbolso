@@ -1,11 +1,12 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { 
-  getTransactions, 
-  getDashboardSummary, 
-  getAccounts, 
-  getCategories, 
-  getForecastData, 
+import { Transaction } from '../types';
+import {
+  getTransactions,
+  getDashboardSummary,
+  getAccounts,
+  getCategories,
+  getForecastData,
   getAnnualSummary,
   getRecurringConfigs,
   getSettings
@@ -26,7 +27,7 @@ export const QUERY_KEYS = {
 };
 
 export const useTransactionsQuery = () => {
-  return useQuery({
+  return useQuery<Transaction[]>({
     queryKey: QUERY_KEYS.transactions,
     queryFn: getTransactions,
   });
@@ -75,32 +76,32 @@ export const useAnnualSummaryQuery = (year: number) => {
 };
 
 export const useRecurringConfigsQuery = () => {
-    return useQuery({
-        queryKey: QUERY_KEYS.recurring,
-        queryFn: getRecurringConfigs
-    })
+  return useQuery({
+    queryKey: QUERY_KEYS.recurring,
+    queryFn: getRecurringConfigs
+  })
 }
 
 // --- Hooks Derivados (Domain Logic) ---
 
 export const useInsights = () => {
-    const { data: transactions = [] } = useTransactionsQuery();
-    const { data: summary } = useSummaryQuery();
-    
-    return useMemo(() => {
-        if (!summary) return [];
-        return generateInsights(transactions, summary);
-    }, [transactions, summary]);
+  const { data: transactions = [] } = useTransactionsQuery();
+  const { data: summary } = useSummaryQuery();
+
+  return useMemo(() => {
+    if (!summary) return [];
+    return generateInsights(transactions, summary);
+  }, [transactions, summary]);
 };
 
 export const useBadges = () => {
-    const { data: transactions = [] } = useTransactionsQuery();
-    const { data: summary } = useSummaryQuery();
-    
-    return useMemo(() => {
-        if (!summary) return [];
-        return calculateBadges(transactions, summary);
-    }, [transactions, summary]);
+  const { data: transactions = [] } = useTransactionsQuery();
+  const { data: summary } = useSummaryQuery();
+
+  return useMemo(() => {
+    if (!summary) return [];
+    return calculateBadges(transactions, summary);
+  }, [transactions, summary]);
 };
 
 // --- Mutações ---

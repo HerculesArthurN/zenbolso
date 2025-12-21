@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { TransactionRepository } from '../../services/repositories/transaction.repository';
-import { Transaction } from '../../types';
+
 
 export interface TransactionFilters {
   startDate?: string;

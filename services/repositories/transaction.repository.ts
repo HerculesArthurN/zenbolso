@@ -38,6 +38,17 @@ export const TransactionRepository = {
   },
 
   /**
+   * Salva uma transação que já possui ID (útil para lógica de negócios que gera IDs).
+   */
+  add: async (transaction: Transaction): Promise<void> => {
+    try {
+      await db.transactions.add(transaction);
+    } catch (error) {
+      throw handleDBError(error, 'DB_WRITE_ERROR');
+    }
+  },
+
+  /**
    * Atualiza uma transação existente.
    */
   update: async (transaction: Transaction): Promise<void> => {
