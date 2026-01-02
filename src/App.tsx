@@ -1,7 +1,7 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom';
-import { DataProvider } from '../context/DataContext';
-import { AppLayout } from '../components/layout/AppLayout';
+import { DataProvider } from './contexts/DataContext';
+import { AppLayout } from './components/layout/AppLayout';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
 
@@ -58,16 +58,19 @@ const AppRoutes: React.FC = () => {
 };
 
 import { ThemeProvider } from './contexts/ThemeContext';
+import { ToastProvider } from './contexts/ToastContext';
 
 const App: React.FC = () => {
     return (
         <AuthProvider>
             <ThemeProvider>
-                <DataProvider>
-                    <BrowserRouter>
-                        <AppRoutes />
-                    </BrowserRouter>
-                </DataProvider>
+                <ToastProvider>
+                    <DataProvider>
+                        <BrowserRouter>
+                            <AppRoutes />
+                        </BrowserRouter>
+                    </DataProvider>
+                </ToastProvider>
             </ThemeProvider>
         </AuthProvider>
     );

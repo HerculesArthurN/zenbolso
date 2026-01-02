@@ -5,7 +5,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { accountService } from '../services/accountService';
 import { categoryService } from '../services/categoryService';
 import { useProfileSettings } from '../hooks/useProfileSettings';
-import { useToast } from '../../context/ToastContext';
+import { useToast } from '../contexts/ToastContext';
 import { Account, Category } from '../types';
 import {
     ArrowLeft,

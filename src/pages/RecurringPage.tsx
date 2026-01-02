@@ -5,7 +5,7 @@ import { useCategories } from '../hooks/useCategories';
 import { RecurringTransaction } from '../types';
 import { Calendar, Trash2, Plus, Loader2, DollarSign, ToggleLeft, ToggleRight, CreditCard, AlertCircle } from 'lucide-react';
 import { Modal } from '../../components/ui/Modal';
-import { useToast } from '../../context/ToastContext';
+import { useToast } from '../contexts/ToastContext';
 
 export const RecurringPage: React.FC = () => {
     const { accounts, loading: loadingAccounts } = useDashboardData();

@@ -8,10 +8,10 @@ import { Transaction } from '../types';
 import { Link } from 'react-router-dom';
 
 import { recurringService } from '../services/recurringService';
-import { useToast } from '../../context/ToastContext';
+import { useToast } from '../contexts/ToastContext';
 
 import { OnboardingWizard } from '../components/onboarding/OnboardingWizard';
-import { useData } from '../../context/DataContext';
+import { useData } from '../contexts/DataContext';
 import { ZenInsightsCard } from '../components/dashboard/ZenInsightsCard';
 
 export const Dashboard: React.FC = () => {

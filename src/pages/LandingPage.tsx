@@ -7,7 +7,7 @@ import { ArrowRight, Sparkles, ShieldCheck, Zap } from 'lucide-react';
 export const LandingPage: React.FC = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
-    const [hasVisited, setHasVisited] = useState(!!localStorage.getItem('zenbolso_intro_seen'));
+    const [hasVisited] = useState(!!localStorage.getItem('zenbolso_intro_seen'));
 
     useEffect(() => {
         if (user || hasVisited) {

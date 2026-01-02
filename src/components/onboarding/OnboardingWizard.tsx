@@ -3,7 +3,7 @@ import { accountService } from '../../services/accountService';
 import { Modal } from '../../../components/ui/Modal';
 import { BrandLogo } from '../ui/BrandLogo';
 import { Sparkles, Wallet, ArrowRight, CheckCircle2, Wand2 } from 'lucide-react';
-import { useToast } from '../../../context/ToastContext';
+import { useToast } from '../../contexts/ToastContext';
 
 interface OnboardingWizardProps {
     onFinish: () => void;

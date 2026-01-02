@@ -6,7 +6,11 @@ interface AuthContextType {
     user: User | null;
     session: Session | null;
     loading: boolean;
+    isLoading: boolean; // Alias for loading
+    isAuthenticated: boolean;
+    token: string | null;
     signInWithOtp: (email: string) => Promise<{ error: any }>;
+    login: () => void; // Placeholder for backward compatibility
     signOut: () => Promise<void>;
 }
 
@@ -54,7 +58,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     return (
-        <AuthContext.Provider value={{ user, session, loading, signInWithOtp, signOut }}>
+        <AuthContext.Provider value={{
+            user,
+            session,
+            loading,
+            isLoading: loading, // Alias
+            isAuthenticated: !!user,
+            token: session?.access_token ?? null,
+            signInWithOtp,
+            login: () => console.warn('login() is deprecated, use signInWithOtp()'), // Placeholder
+            signOut
+        }}>
             {children}
         </AuthContext.Provider>
     );
