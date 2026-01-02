@@ -1,13 +1,17 @@
 import React from 'react';
 import { SettingsModal } from '../components/settings/SettingsModal';
 import { useData } from '../context/DataContext';
-import { useAuth } from '../context/AuthContext'; // Import Auth
+import { useAuth } from '../src/contexts/AuthContext';
 import { Moon, Sun, Cloud, CloudOff, LogOut, Loader2 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 
+import { useNavigate } from 'react-router-dom';
+
 export const SettingsPage: React.FC = () => {
   const { refreshData } = useData();
-  const { login, logout, isAuthenticated, user, isLoading, syncStatus } = useAuth();
+  const { signOut, user, loading } = useAuth();
+  const navigate = useNavigate();
+  const isAuthenticated = !!user;
 
   // Theme Toggle Logic
   const [darkMode, setDarkMode] = React.useState(() => {
@@ -51,14 +55,14 @@ export const SettingsPage: React.FC = () => {
           </div>
           <div>
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">Backup & Sincronização</h2>
-            <p className="text-sm text-slate-500">Mantenha seus dados seguros no Google Drive.</p>
+            <p className="text-sm text-slate-500">Mantenha seus dados seguros na nuvem.</p>
           </div>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-between bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-3 mb-4 sm:mb-0">
             {isAuthenticated ? (
-              <img src={user?.picture} alt="Avatar" className="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-700" />
+              <img src={user?.user_metadata?.avatar_url || user?.user_metadata?.picture} alt="Avatar" className="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-700" />
             ) : (
               <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-400">
                 <CloudOff size={20} />
@@ -66,27 +70,26 @@ export const SettingsPage: React.FC = () => {
             )}
             <div>
               <p className="text-sm font-medium text-slate-900 dark:text-white">
-                {isAuthenticated ? `Conectado como ${user?.name}` : 'Backup Desativado'}
+                {isAuthenticated ? `Conectado como ${user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email}` : 'Backup Desativado'}
               </p>
               <p className="text-xs text-slate-500">
-                {isAuthenticated ? 'Seus dados estão sendo sincronizados.' : 'Conecte-se para evitar perda de dados.'}
-                {syncStatus === 'syncing' && <span className="ml-2 text-blue-500 animate-pulse">Sincronizando...</span>}
+                {isAuthenticated ? 'Sincronização com Supabase ativa.' : 'Conecte-se para evitar perda de dados.'}
               </p>
             </div>
           </div>
 
           <Button
-            onClick={isAuthenticated ? logout : login}
+            onClick={isAuthenticated ? signOut : () => navigate('/login')}
             variant={isAuthenticated ? 'secondary' : 'primary'}
-            disabled={isLoading}
+            disabled={loading}
             className="w-full sm:w-auto"
           >
-            {isLoading ? (
+            {loading ? (
               <><Loader2 className="animate-spin mr-2" size={16} /> Processando...</>
             ) : isAuthenticated ? (
               <><LogOut className="mr-2" size={16} /> Desconectar</>
             ) : (
-              <><Cloud className="mr-2" size={16} /> Conectar Drive</>
+              <><Cloud className="mr-2" size={16} /> Conectar</>
             )}
           </Button>
         </div>

@@ -9,7 +9,7 @@ export const ThemeToggle: React.FC = () => {
         <button
             onClick={toggleTheme}
             className="p-3 bg-background dark:bg-surface-dark text-text-muted dark:text-text-muted-dark rounded-xl hover:bg-border-color dark:hover:bg-border-color-dark transition-all active:scale-95 flex items-center justify-center shadow-sm border border-border-color dark:border-border-color-dark"
-            aria-label="Alternar tema"
+            aria-label={theme === 'dark' ? "Ativar modo claro" : "Ativar modo escuro"}
         >
             {theme === 'light' ? (
                 <Moon size={20} className="text-secondary" />

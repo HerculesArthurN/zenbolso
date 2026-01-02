@@ -14,6 +14,7 @@ class PocketManagerDB extends Dexie {
     accounts!: Table<Account, string>;
     categories!: Table<Category, string>;
     recurringConfigs!: Table<RecurringConfig, string>;
+    recurring_transactions!: Table<any, string>;
     settings!: Table<AppSettings & { id: string }, string>;
     goals!: Table<Goal, string>;
 
@@ -21,11 +22,12 @@ class PocketManagerDB extends Dexie {
         super('PocketManagerDB');
 
         // Define Schema
-        (this as any).version(2).stores({
+        (this as any).version(3).stores({
             transactions: 'id, date, type, category, accountId',
             accounts: 'id',
             categories: 'id, type, name',
             recurringConfigs: 'id, active',
+            recurring_transactions: 'id, active, day_of_month',
             settings: 'id',
             goals: 'id'
         });
