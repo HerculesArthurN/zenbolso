@@ -1,0 +1,67 @@
+<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Body -->
+    <rect
+        x="28"
+        y="18"
+        width="44"
+        height="64"
+        rx="22"
+        stroke="#0D9488"
+        stroke-width="6"
+    />
+
+    <!-- Ears -->
+    <circle
+        cx="32"
+        cy="22"
+        r="8"
+        stroke="#0D9488"
+        stroke-width="5"
+        fill="white"
+    />
+    <circle
+        cx="68"
+        cy="22"
+        r="8"
+        stroke="#0D9488"
+        stroke-width="5"
+        fill="white"
+    />
+
+    <!-- Eyes -->
+    <circle cx="43" cy="38" r="2.5" fill="#111827" />
+    <circle cx="57" cy="38" r="2.5" fill="#111827" />
+
+    <!-- Snout -->
+    <circle
+        cx="50"
+        cy="48"
+        r="6"
+        stroke="#0D9488"
+        stroke-width="3"
+        stroke-opacity="0.5"
+    />
+    <circle cx="48" cy="48" r="1.5" fill="#0D9488" />
+    <circle cx="52" cy="48" r="1.5" fill="#0D9488" />
+
+    <!-- Coin -->
+    <circle
+        cx="50"
+        cy="64"
+        r="15"
+        fill="#FBBF24"
+    />
+    <circle
+        cx="50"
+        cy="64"
+        r="15"
+        stroke="#D97706"
+        stroke-width="3"
+    />
+    <path
+        d="M50 58V70M50 58C48 58 46.5 59.5 46.5 61C46.5 64 53.5 64 53.5 67C53.5 68.5 52 70 50 70M50 71"
+        stroke="#92400E"
+        stroke-width="2.5"
+        stroke-linecap="round"
+    />
+</svg>

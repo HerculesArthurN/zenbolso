@@ -15,84 +15,74 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({ className = "h-8 w-8", var
             xmlns="http://www.w3.org/2000/svg"
             className={className}
         >
-            {/* Outline / Pig Body & Head */}
-            <path
-                d="M50 20C38 20 30 28 30 40C30 45 32 48 35 50C32 55 30 65 30 75C30 80 35 85 50 85C65 85 70 80 70 75C70 65 68 55 65 50C68 48 70 45 70 40C70 28 62 20 50 20Z"
+            {/* Body - Vertical Oval/Pill shape */}
+            <rect
+                x="28"
+                y="18"
+                width="44"
+                height="64"
+                rx="22"
                 stroke="currentColor"
-                strokeWidth="4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+                strokeWidth="6"
                 className={isColor ? "text-teal-600 dark:text-teal-400" : ""}
             />
 
             {/* Ears */}
-            <path
-                d="M32 25C25 25 22 35 25 40"
+            <circle
+                cx="32"
+                cy="22"
+                r="8"
                 stroke="currentColor"
-                strokeWidth="4"
-                strokeLinecap="round"
+                strokeWidth="5"
+                fill="none"
                 className={isColor ? "text-teal-600 dark:text-teal-400" : ""}
             />
-            <path
-                d="M68 25C75 25 78 35 75 40"
+            <circle
+                cx="68"
+                cy="22"
+                r="8"
                 stroke="currentColor"
-                strokeWidth="4"
-                strokeLinecap="round"
+                strokeWidth="5"
+                fill="none"
                 className={isColor ? "text-teal-600 dark:text-teal-400" : ""}
             />
 
-            {/* Pig Snout */}
-            <rect
-                x="44"
-                y="38"
-                width="12"
-                height="8"
-                rx="4"
+            {/* Eyes */}
+            <circle cx="43" cy="38" r="2.5" fill="currentColor" className={isColor ? "text-slate-900 dark:text-slate-100" : ""} />
+            <circle cx="57" cy="38" r="2.5" fill="currentColor" className={isColor ? "text-slate-900 dark:text-slate-100" : ""} />
+
+            {/* Snout */}
+            <circle
+                cx="50"
+                cy="48"
+                r="6"
                 stroke="currentColor"
                 strokeWidth="3"
                 className={isColor ? "text-teal-500/50" : ""}
             />
+            <circle cx="48" cy="48" r="1.5" fill="currentColor" className={isColor ? "text-teal-600" : ""} />
+            <circle cx="52" cy="48" r="1.5" fill="currentColor" className={isColor ? "text-teal-600" : ""} />
 
-            {/* Eyes - Closed/Meditating */}
-            <path d="M40 33Q42 32 44 33" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            <path d="M56 33Q58 32 60 33" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-
-            {/* Arms - Meditating / Seated */}
-            <path
-                d="M35 55C25 60 25 75 35 80"
-                stroke="currentColor"
-                strokeWidth="4"
-                strokeLinecap="round"
-                className={isColor ? "text-teal-600 dark:text-teal-400" : ""}
-            />
-            <path
-                d="M65 55C75 60 75 75 65 80"
-                stroke="currentColor"
-                strokeWidth="4"
-                strokeLinecap="round"
-                className={isColor ? "text-teal-600 dark:text-teal-400" : ""}
-            />
-
-            {/* The Coin */}
+            {/* The Huge Golden Coin */}
             <circle
                 cx="50"
-                cy="68"
-                r="10"
+                cy="64"
+                r="15"
                 fill="currentColor"
                 className={isColor ? "text-amber-400" : "opacity-20"}
             />
             <circle
                 cx="50"
-                cy="68"
-                r="10"
+                cy="64"
+                r="15"
                 stroke="currentColor"
                 strokeWidth="3"
                 className={isColor ? "text-amber-600" : ""}
             />
             <path
-                d="M50 63V73M50 63C48 63 47 64 47 65C47 67 53 67 53 69C53 71 51 72 50 72M50 73"
+                d="M50 58V70M50 58C48 58 46.5 59.5 46.5 61C46.5 64 53.5 64 53.5 67C53.5 68.5 52 70 50 70M50 71"
                 stroke="currentColor"
-                strokeWidth="2"
+                strokeWidth="2.5"
                 strokeLinecap="round"
                 className={isColor ? "text-amber-700" : ""}
             />

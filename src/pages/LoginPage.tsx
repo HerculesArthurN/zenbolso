@@ -55,16 +55,17 @@ export const LoginPage: React.FC = () => {
 
                 <div className="text-center mb-8 pt-4">
                     <div className="mb-6 relative">
-                        <div className="w-24 h-24 bg-slate-50 dark:bg-slate-800 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
-                            <BrandLogo className="w-16 h-16" variant="color" />
+                        <div className="w-28 h-28 bg-slate-50 dark:bg-slate-800 rounded-[32px] flex items-center justify-center mx-auto shadow-inner border border-slate-100 dark:border-slate-800">
+                            <BrandLogo className="w-20 h-20" variant="color" />
                         </div>
-                        <div className="absolute -bottom-2 -right-2 bg-white dark:bg-slate-900 p-1.5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800">
-                            <Mail size={16} className="text-indigo-600" />
+                        <div className="absolute -bottom-2 -right-2 bg-white dark:bg-slate-900 p-2 rounded-xl shadow-lg border border-slate-100 dark:border-slate-800 animate-bounce">
+                            <Mail size={20} className="text-teal-600" />
                         </div>
                     </div>
 
-                    <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white mb-2 tracking-tight">
-                        Zen<span className="text-teal-600 italic">Bolso</span>
+                    <h1 className="text-3xl md:text-4xl font-black italic tracking-tighter mb-2">
+                        <span className="text-slate-900 dark:text-white">ZEN</span>
+                        <span className="text-teal-600">BOLSO</span>
                     </h1>
                     <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm">
                         Economize com calma. Entre no seu cofre digital.
