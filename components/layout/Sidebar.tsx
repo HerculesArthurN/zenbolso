@@ -5,8 +5,10 @@ import { ThemeToggle } from '../../src/components/layout/ThemeToggle';
 import { useData } from '../../context/DataContext';
 import { useSummaryQuery } from '../../hooks/useFinanceData';
 import { BrandLogo } from '../../src/components/ui/BrandLogo';
+import { useTranslation } from 'react-i18next';
 
 export const Sidebar: React.FC = () => {
+  const { t } = useTranslation();
   const { openTransactionModal } = useData();
   const { data: summary } = useSummaryQuery();
   const location = useLocation();
@@ -36,7 +38,7 @@ export const Sidebar: React.FC = () => {
       {/* Quick Summary Widget */}
       <div className="px-6 py-6">
         <div className="bg-background dark:bg-surface-dark/50 rounded-xl p-4 border border-border-color dark:border-border-color-dark">
-          <p className="text-xs text-text-muted uppercase font-bold mb-1">Saldo Atual</p>
+          <p className="text-xs text-text-muted uppercase font-bold mb-1">{t('sidebar.current_balance')}</p>
           <p className={`text-xl font-black ${!summary || summary.netBalance >= 0 ? 'text-text-main dark:text-text-main-dark' : 'text-danger'}`}>
             {summary ? formatCurrency(summary.netBalance) : '...'}
           </p>
@@ -46,29 +48,29 @@ export const Sidebar: React.FC = () => {
           onClick={() => openTransactionModal()}
           className="w-full mt-4 flex items-center justify-center gap-2 bg-primary dark:bg-primary-dark text-primary-fg dark:text-primary-fg-dark py-3 rounded-xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all"
         >
-          <Plus size={18} /> Nova Transação
+          <Plus size={18} /> {t('sidebar.new_transaction')}
         </button>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 px-4 space-y-1">
         <Link to="/" className={getLinkClass('/')}>
-          <LayoutDashboard size={20} /> Início
+          <LayoutDashboard size={20} /> {t('sidebar.home')}
         </Link>
         <Link to="/transactions" className={getLinkClass('/transactions')}>
-          <List size={20} /> Extrato
+          <List size={20} /> {t('sidebar.extract')}
         </Link>
         <Link to="/planning" className={getLinkClass('/planning')}>
-          <Target size={20} /> Planejamento
+          <Target size={20} /> {t('sidebar.planning')}
         </Link>
         <Link to="/recurring" className={getLinkClass('/recurring')}>
-          <RefreshCcw size={20} /> Recorrências
+          <RefreshCcw size={20} /> {t('sidebar.recurring')}
         </Link>
         <Link to="/reports" className={getLinkClass('/reports')}>
-          <PieChart size={20} /> Relatórios
+          <PieChart size={20} /> {t('sidebar.reports')}
         </Link>
         <Link to="/settings" className={getLinkClass('/settings')}>
-          <Settings size={20} /> Configurações
+          <Settings size={20} /> {t('sidebar.settings')}
         </Link>
       </nav>
 

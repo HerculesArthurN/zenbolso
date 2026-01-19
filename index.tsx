@@ -4,6 +4,7 @@ import App from './src/App';
 import { ToastProvider } from './context/ToastContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './index.css';
+import './src/lib/i18n';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

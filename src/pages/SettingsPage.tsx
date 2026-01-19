@@ -6,6 +6,7 @@ import { accountService } from '../services/accountService';
 import { categoryService } from '../services/categoryService';
 import { useProfileSettings } from '../hooks/useProfileSettings';
 import { useToast } from '../contexts/ToastContext';
+import { useTranslation } from 'react-i18next';
 import { Account, Category } from '../types';
 import {
     ArrowLeft,
@@ -35,12 +36,12 @@ export const SettingsPage: React.FC = () => {
     const { theme, toggleTheme } = useTheme();
     const { profile, updateProfile, isLoading: loadingProfile } = useProfileSettings();
 
+    const { t, i18n } = useTranslation();
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
 
     // Local form states
     const [localProfile, setLocalProfile] = useState(profile);
-    const [language, setLanguage] = useState('pt-BR');
     const [newCatName, setNewCatName] = useState('');
     const [isSavingProfile, setIsSavingProfile] = useState(false);
     const [isAddingAccount, setIsAddingAccount] = useState(false);
@@ -170,7 +171,7 @@ export const SettingsPage: React.FC = () => {
                     <ArrowLeft size={20} />
                 </button>
                 <div>
-                    <h1 className="text-3xl font-black text-text-main dark:text-white tracking-tight">Configurações</h1>
+                    <h1 className="text-3xl font-black text-text-main dark:text-white tracking-tight">{t('settings')}</h1>
                     <p className="text-text-muted dark:text-slate-400">Hub central do seu ZenBolso.</p>
                 </div>
             </header>
@@ -186,12 +187,12 @@ export const SettingsPage: React.FC = () => {
                             <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-xl">
                                 <User size={20} />
                             </div>
-                            <h2 className="text-xl font-black text-text-main dark:text-white">Perfil & Simulador</h2>
+                            <h2 className="text-xl font-black text-text-main dark:text-white">{t('profile.title')}</h2>
                         </div>
 
                         <div className="space-y-4">
                             <div className="flex flex-col gap-2">
-                                <label htmlFor="income" className="text-xs font-black text-text-muted uppercase tracking-widest ml-1">Renda Mensal Líquida</label>
+                                <label htmlFor="income" className="text-xs font-black text-text-muted uppercase tracking-widest ml-1">{t('profile.income_label')}</label>
                                 <div className="relative">
                                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted font-bold">R$</span>
                                     <input
@@ -207,7 +208,7 @@ export const SettingsPage: React.FC = () => {
                             </div>
 
                             <div className="flex flex-col gap-2">
-                                <label htmlFor="hours" className="text-xs font-black text-text-muted uppercase tracking-widest ml-1">Horas Trabalhadas/Mês</label>
+                                <label htmlFor="hours" className="text-xs font-black text-text-muted uppercase tracking-widest ml-1">{t('profile.hours_label')}</label>
                                 <div className="relative">
                                     <Briefcase size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
                                     <input
@@ -223,7 +224,7 @@ export const SettingsPage: React.FC = () => {
                             </div>
 
                             <div className="flex flex-col gap-2">
-                                <label htmlFor="budget" className="text-xs font-black text-text-muted uppercase tracking-widest ml-1">Teto de Gastos</label>
+                                <label htmlFor="budget" className="text-xs font-black text-text-muted uppercase tracking-widest ml-1">{t('profile.budget_label')}</label>
                                 <div className="relative">
                                     <Target size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
                                     <input
@@ -244,7 +245,7 @@ export const SettingsPage: React.FC = () => {
                                 className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 transition-all active:scale-95"
                             >
                                 {isSavingProfile ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}
-                                {isSavingProfile ? 'Salvando...' : 'Salvar Perfil'}
+                                {isSavingProfile ? t('profile.saving') : t('profile.save_btn')}
                             </button>
                         </div>
                     </section>
@@ -255,7 +256,7 @@ export const SettingsPage: React.FC = () => {
                             <div className="p-2 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-xl">
                                 <Sun size={20} />
                             </div>
-                            <h2 className="text-xl font-black text-text-main dark:text-white">Aparência & Sistema</h2>
+                            <h2 className="text-xl font-black text-text-main dark:text-white">{t('appearance.title')}</h2>
                         </div>
 
                         <div className="space-y-4">
@@ -273,17 +274,23 @@ export const SettingsPage: React.FC = () => {
                             </div>
 
                             <div className="flex flex-col gap-2">
-                                <label className="text-xs font-black text-text-muted uppercase tracking-widest ml-1">Idioma</label>
+                                <label className="text-xs font-black text-text-muted uppercase tracking-widest ml-1">{t('appearance.language_label')}</label>
                                 <div className="relative">
                                     <Globe size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
                                     <select
-                                        value={language}
-                                        onChange={e => setLanguage(e.target.value)}
+                                        value={i18n.language}
+                                        onChange={e => i18n.changeLanguage(e.target.value)}
                                         className="w-full pl-12 pr-4 py-4 bg-background dark:bg-slate-900 border-2 border-transparent focus:border-indigo-500 rounded-2xl outline-none font-bold text-text-main dark:text-white appearance-none transition-all"
                                         aria-label="Selecionar idioma"
                                     >
-                                        <option value="pt-BR">Português (BR)</option>
-                                        <option value="en-US">English (US)</option>
+                                        <option value="pt-BR">🇧🇷 Português (BR)</option>
+                                        <option value="en-US">🇺🇸 English</option>
+                                        <option value="es-ES">🇪🇸 Español</option>
+                                        <option value="zh-CN">🇨🇳 Chinese</option>
+                                        <option value="ja-JP">🇯🇵 Japanese</option>
+                                        <option value="ko-KR">🇰🇷 Korean</option>
+                                        <option value="fr-FR">🇫🇷 Français</option>
+                                        <option value="de-DE">🇩🇪 Deutsch</option>
                                     </select>
                                 </div>
                             </div>
@@ -305,7 +312,7 @@ export const SettingsPage: React.FC = () => {
                                 <div className="p-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-xl">
                                     <Wallet size={20} />
                                 </div>
-                                <h2 className="text-xl font-black text-text-main dark:text-white">Gerenciamento</h2>
+                                <h2 className="text-xl font-black text-text-main dark:text-white">{t('manage.title')}</h2>
                             </div>
                         </div>
 
@@ -313,14 +320,14 @@ export const SettingsPage: React.FC = () => {
                             {/* Accounts */}
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between px-1">
-                                    <h3 className="text-xs font-black text-text-muted uppercase tracking-widest">Contas</h3>
+                                    <h3 className="text-xs font-black text-text-muted uppercase tracking-widest">{t('manage.accounts')}</h3>
                                     <button
                                         onClick={handleAddAccount}
                                         disabled={isAddingAccount}
                                         className="text-indigo-600 hover:text-indigo-700 disabled:opacity-50 font-bold text-xs flex items-center gap-1"
                                     >
                                         {isAddingAccount ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
-                                        {isAddingAccount ? 'Criando...' : 'Nova'}
+                                        {isAddingAccount ? t('manage.creating') : t('manage.new_btn')}
                                     </button>
                                 </div>
                                 <div className="space-y-2">
@@ -345,14 +352,14 @@ export const SettingsPage: React.FC = () => {
                             {/* Categories */}
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between px-1">
-                                    <h3 className="text-xs font-black text-text-muted uppercase tracking-widest">Categorias</h3>
+                                    <h3 className="text-xs font-black text-text-muted uppercase tracking-widest">{t('manage.categories')}</h3>
                                 </div>
                                 <div className="flex gap-2">
                                     <input
                                         type="text"
                                         value={newCatName}
                                         onChange={e => setNewCatName(e.target.value)}
-                                        placeholder="Nova categoria..."
+                                        placeholder={t('manage.category_placeholder')}
                                         className="flex-1 px-4 py-2 bg-background dark:bg-slate-900 border-2 border-transparent focus:border-indigo-500 rounded-xl outline-none text-xs font-bold"
                                     />
                                     <button
@@ -387,7 +394,7 @@ export const SettingsPage: React.FC = () => {
                             <div className="p-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-xl">
                                 <ShieldCheck size={20} />
                             </div>
-                            <h2 className="text-xl font-black text-text-main dark:text-white">Conta & Sincronização</h2>
+                            <h2 className="text-xl font-black text-text-main dark:text-white">{t('auth.title')}</h2>
                         </div>
 
                         <div className="space-y-4">
@@ -396,7 +403,7 @@ export const SettingsPage: React.FC = () => {
                                     <div className="flex items-center gap-3">
                                         <CheckCircle2 size={24} className="text-emerald-600" />
                                         <div>
-                                            <p className="font-black text-emerald-900 dark:text-emerald-400 text-sm">Conectado na Nuvem</p>
+                                            <p className="font-black text-emerald-900 dark:text-emerald-400 text-sm">{t('auth.connected')}</p>
                                             <p className="text-[10px] text-emerald-700 dark:text-emerald-500 font-bold uppercase">{user.email}</p>
                                         </div>
                                     </div>
@@ -404,7 +411,7 @@ export const SettingsPage: React.FC = () => {
                                         onClick={signOut}
                                         className="w-full py-3 bg-white dark:bg-slate-900 text-rose-500 border border-rose-100 dark:border-rose-900/30 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-rose-50 transition-all"
                                     >
-                                        <LogOut size={14} /> Sair da Conta
+                                        <LogOut size={14} /> {t('auth.logout_btn')}
                                     </button>
                                 </div>
                             ) : (
@@ -412,16 +419,16 @@ export const SettingsPage: React.FC = () => {
                                     <div className="flex items-center gap-3">
                                         <AlertTriangle size={24} className="text-amber-600" />
                                         <div>
-                                            <p className="font-black text-amber-900 dark:text-amber-400 text-sm">Modo Visitante</p>
-                                            <p className="text-[10px] text-amber-700 dark:text-amber-500 font-bold uppercase">Backup na nuvem desativado</p>
+                                            <p className="font-black text-amber-900 dark:text-amber-400 text-sm">{t('auth.guest_mode')}</p>
+                                            <p className="text-[10px] text-amber-700 dark:text-amber-500 font-bold uppercase">{t('auth.guest_warning')}</p>
                                         </div>
                                     </div>
-                                    <p className="text-[11px] text-amber-800 dark:text-amber-600 leading-relaxed font-medium">Seus dados estão salvos apenas neste navegador. Faça login para sincronizar e proteger suas informações.</p>
+                                    <p className="text-[11px] text-amber-800 dark:text-amber-600 leading-relaxed font-medium">{t('auth.guest_description')}</p>
                                     <button
                                         onClick={() => navigate('/login')}
                                         className="w-full py-4 bg-amber-600 hover:bg-amber-700 text-white rounded-2xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all active:scale-95"
                                     >
-                                        <LogIn size={18} /> Criar Conta / Login
+                                        <LogIn size={18} /> {t('auth.login_btn')}
                                     </button>
                                 </div>
                             )}

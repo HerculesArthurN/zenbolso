@@ -1,6 +1,8 @@
 import React from 'react';
 import { Wallet, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 import { Account, Transaction } from '../../types';
+import { useTranslation } from 'react-i18next';
+import { useLocaleFormat } from '../../hooks/useLocaleFormat';
 
 interface SummaryOverviewProps {
     accounts: Account[];
@@ -9,9 +11,8 @@ interface SummaryOverviewProps {
 }
 
 export const SummaryOverview: React.FC<SummaryOverviewProps> = ({ accounts, transactions, loading }) => {
-    const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-    };
+    const { t } = useTranslation();
+    const { formatCurrency } = useLocaleFormat();
 
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
@@ -53,7 +54,7 @@ export const SummaryOverview: React.FC<SummaryOverviewProps> = ({ accounts, tran
                     <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl">
                         <Wallet size={20} />
                     </div>
-                    <span className="text-sm font-medium text-slate-500">Saldo Geral</span>
+                    <span className="text-sm font-medium text-slate-500">{t('summary.total_balance')}</span>
                 </div>
                 <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
                     {formatCurrency(totalBalance)}
@@ -66,7 +67,7 @@ export const SummaryOverview: React.FC<SummaryOverviewProps> = ({ accounts, tran
                     <div className="p-2 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl">
                         <ArrowUpCircle size={20} />
                     </div>
-                    <span className="text-sm font-medium text-slate-500">Entradas (Mês)</span>
+                    <span className="text-sm font-medium text-slate-500">{t('summary.month_income')}</span>
                 </div>
                 <h3 className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                     {formatCurrency(monthIncome)}
@@ -79,7 +80,7 @@ export const SummaryOverview: React.FC<SummaryOverviewProps> = ({ accounts, tran
                     <div className="p-2 bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 rounded-xl">
                         <ArrowDownCircle size={20} />
                     </div>
-                    <span className="text-sm font-medium text-slate-500">Saídas (Mês)</span>
+                    <span className="text-sm font-medium text-slate-500">{t('summary.month_expense')}</span>
                 </div>
                 <h3 className="text-2xl font-bold text-rose-600 dark:text-rose-400">
                     {formatCurrency(monthExpense)}

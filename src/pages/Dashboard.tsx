@@ -6,6 +6,8 @@ import { NewTransactionModal } from '../components/transactions/NewTransactionMo
 import { RefreshCw, Plus, Settings } from 'lucide-react';
 import { Transaction } from '../types';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useLocaleFormat } from '../hooks/useLocaleFormat';
 
 import { recurringService } from '../services/recurringService';
 import { useToast } from '../contexts/ToastContext';
@@ -15,6 +17,8 @@ import { useData } from '../contexts/DataContext';
 import { ZenInsightsCard } from '../components/dashboard/ZenInsightsCard';
 
 export const Dashboard: React.FC = () => {
+    const { t } = useTranslation();
+    const { formatCurrency } = useLocaleFormat();
     const { accounts, transactions, loading, refresh } = useDashboardData();
     const { addToast } = useToast();
     const {
@@ -44,7 +48,7 @@ export const Dashboard: React.FC = () => {
             try {
                 const count = await recurringService.processDueTransactions();
                 if (count > 0) {
-                    addToast(`${count} transações recorrentes lançadas automaticamente.`, 'success', 5000);
+                    addToast(t('dashboard.recurring_processed', { count }), 'success', 5000);
                     refresh();
                 }
             } catch (err) {
@@ -53,7 +57,7 @@ export const Dashboard: React.FC = () => {
         };
 
         processRecurring();
-    }, [addToast, refresh]);
+    }, [addToast, refresh, t]);
 
     const handleOpenCreate = () => {
         openTransactionModal();
@@ -73,17 +77,17 @@ export const Dashboard: React.FC = () => {
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
-                        Minha Carteira
+                        {t('dashboard.title')}
                     </h1>
                     <p className="text-slate-500 dark:text-slate-400 mt-1">
-                        Sua saúde financeira em um só lugar.
+                        {t('dashboard.subtitle')}
                     </p>
                 </div>
 
                 <Link
                     to="/settings"
                     className="md:hidden p-3 text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm transition-all active:scale-95"
-                    aria-label="Acessar Configurações"
+                    aria-label={t('auth.access_settings')}
                 >
                     <Settings size={20} />
                 </Link>
@@ -92,7 +96,7 @@ export const Dashboard: React.FC = () => {
                     <button
                         onClick={() => refresh()}
                         className="p-3 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-2xl transition-all active:rotate-180"
-                        title="Atualizar dados"
+                        title={t('dashboard.refresh')}
                     >
                         <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
                     </button>
@@ -102,7 +106,7 @@ export const Dashboard: React.FC = () => {
                         className="hidden md:flex items-center gap-2 px-6 py-3 bg-primary dark:bg-primary-dark text-primary-fg dark:text-primary-fg-dark rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all active:scale-95"
                     >
                         <Plus size={20} />
-                        Nova Transação
+                        {t('transactions.new')}
                     </button>
                 </div>
             </header>
@@ -133,7 +137,7 @@ export const Dashboard: React.FC = () => {
                     />
 
                     <div className="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                        <h4 className="font-bold text-slate-900 dark:text-white mb-4">Minhas Contas</h4>
+                        <h4 className="font-bold text-slate-900 dark:text-white mb-4">{t('dashboard.my_accounts')}</h4>
                         <div className="space-y-4">
                             {accounts.slice(0, 3).map(acc => (
                                 <div key={acc.id} className="flex items-center justify-between">
@@ -142,12 +146,12 @@ export const Dashboard: React.FC = () => {
                                         <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{acc.name}</span>
                                     </div>
                                     <span className="text-sm font-bold text-slate-900 dark:text-white">
-                                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(acc.balance)}
+                                        {formatCurrency(acc.balance)}
                                     </span>
                                 </div>
                             ))}
                             {accounts.length === 0 && !loading && (
-                                <p className="text-xs text-slate-400 text-center py-2">Nenhuma conta cadastrada.</p>
+                                <p className="text-xs text-slate-400 text-center py-2">{t('dashboard.no_accounts')}</p>
                             )}
                         </div>
                     </div>
