@@ -1,0 +1,35 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.17 [39m[90mC:/Users/hercules/Documents/projetos/vibe-code/zenbolso[39m
+
+ [32m✓[39m src/components/dashboard/__tests__/ZenInsightsCard.test.tsx[2m > [22mZenInsightsCard[2m > [22mrenders the correct "Hourly Rate" calculation based on props/mock[32m 52[2mms[22m[39m
+ [31m×[39m src/components/dashboard/__tests__/ZenInsightsCard.test.tsx[2m > [22mZenInsightsCard[2m > [22mrenders the "Time Cost" correctly for different inputs[32m 8[2mms[22m[39m
+[31m   → element?.className.includes is not a function[39m
+ [32m✓[39m src/components/dashboard/__tests__/ZenInsightsCard.test.tsx[2m > [22mZenInsightsCard[2m > [22mshows the CTA button if profile data is missing (null state)[32m 5[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/components/dashboard/__tests__/ZenInsightsCard.test.tsx[2m > [22mZenInsightsCard[2m > [22mrenders the "Time Cost" correctly for different inputs
+[31m[1mTypeError[22m: element?.className.includes is not a function[39m
+[36m [2m❯[22m src/components/dashboard/__tests__/ZenInsightsCard.test.tsx:[2m85:49[22m[39m
+    [90m 83| [39m            [35mconst[39m hasText [33m=[39m element[33m?.[39mtextContent[33m?.[39m[34mincludes[39m([32m'5.0'[39m)[33m;[39m
+    [90m 84| [39m            [35mconst[39m isDiv [33m=[39m element[33m?.[39mtagName[33m.[39m[34mtoLowerCase[39m() [33m===[39m [32m'div'[39m[33m;[39m
+    [90m 85| [39m            [35mconst[39m hasClass [33m=[39m element[33m?.[39mclassName[33m.[39m[34mincludes[39m([32m'text-4xl'[39m)[33m;[39m
+    [90m   | [39m                                                [31m^[39m
+    [90m 86| [39m            [35mreturn[39m [33m![39m[33m![39m(hasText [33m&&[39m isDiv [33m&&[39m hasClass)[33m;[39m
+    [90m 87| [39m        })[33m;[39m
+[90m [2m❯[22m matches node_modules/@testing-library/dom/dist/matches.js:[2m38:12[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/queries/text.js:[2m31:68[22m[39m
+[90m [2m❯[22m queryAllByText node_modules/@testing-library/dom/dist/queries/text.js:[2m31:53[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m74:17[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[90m [2m❯[22m src/components/dashboard/__tests__/ZenInsightsCard.test.tsx:[2m82:37[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[90m (3)[39m
+[2m   Start at [22m 23:16:14
+[2m   Duration [22m 1.69s[2m (transform 82ms, setup 145ms, import 296ms, tests 66ms, environment 972ms)[22m
+
