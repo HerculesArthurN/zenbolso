@@ -59,6 +59,7 @@ const AppRoutes: React.FC = () => {
 
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ToastProvider } from './contexts/ToastContext';
+import { ReloadPrompt } from './components/pwa/ReloadPrompt';
 
 const App: React.FC = () => {
     return (
@@ -68,6 +69,7 @@ const App: React.FC = () => {
                     <DataProvider>
                         <BrowserRouter>
                             <AppRoutes />
+                            <ReloadPrompt />
                         </BrowserRouter>
                     </DataProvider>
                 </ToastProvider>
@@ -75,5 +77,6 @@ const App: React.FC = () => {
         </AuthProvider>
     );
 };
+
 
 export default App;

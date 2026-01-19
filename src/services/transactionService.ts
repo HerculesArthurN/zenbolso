@@ -2,6 +2,7 @@ import { supabase } from '../lib/supabase';
 import { db } from '../../services/db';
 import { Transaction } from '../types';
 import { handleApiError } from './api';
+import { encrypt, decrypt } from '../utils/crypto';
 
 export const transactionService = {
     async fetchTransactions(limit = 50): Promise<Transaction[]> {
@@ -34,8 +35,8 @@ export const transactionService = {
             user_id: '',
             account_id: tx.accountId || '',
             category_id: tx.category || null,
-            amount: tx.value,
-            description: tx.description || '',
+            amount: typeof tx.value === 'string' ? Number(decrypt(tx.value)) : tx.value,
+            description: decrypt(tx.description || ''),
             date: tx.date,
             type: tx.type.toUpperCase() as any,
             is_paid: true,
@@ -71,10 +72,10 @@ export const transactionService = {
         const localTx = {
             id: (payload as any).id || crypto.randomUUID(),
             type: (payload.type?.toLowerCase() || 'expense') as any,
-            value: payload.amount || 0,
+            value: encrypt(payload.amount), // Encrypting amount as well for v2.1
             date: payload.date || new Date().toISOString().split('T')[0],
             category: payload.category_id || 'Outros',
-            description: payload.description || '',
+            description: encrypt(payload.description),
             accountId: payload.account_id
         };
         await db.transactions.add(localTx as any);
@@ -115,15 +116,20 @@ export const transactionService = {
 
         const localUpdate = {
             ...existing,
-            ...(payload.amount !== undefined && { value: payload.amount }),
+            ...(payload.amount !== undefined && { value: encrypt(payload.amount) }),
             ...(payload.date && { date: payload.date }),
-            ...(payload.description && { description: payload.description }),
+            ...(payload.description !== undefined && { description: encrypt(payload.description) }),
             ...(payload.category_id && { category: payload.category_id }),
             ...(payload.account_id && { accountId: payload.account_id }),
             ...(payload.type && { type: payload.type.toLowerCase() as any })
         };
-        await db.transactions.put(localUpdate);
-        return { ...payload, id } as Transaction;
+        await db.transactions.put(localUpdate as any);
+        return {
+            ...payload,
+            id,
+            description: updates.description ?? decrypt((existing as any).description),
+            amount: updates.amount ?? (typeof (existing as any).value === 'string' ? Number(decrypt((existing as any).value)) : (existing as any).value)
+        } as Transaction;
     },
 
     async deleteTransaction(id: string): Promise<void> {
@@ -142,3 +148,4 @@ export const transactionService = {
         await db.transactions.delete(id);
     }
 };
+
