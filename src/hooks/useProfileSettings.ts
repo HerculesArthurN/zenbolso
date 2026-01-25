@@ -5,12 +5,14 @@ export interface FinancialProfile {
     monthlyIncome: number;
     workHoursPerMonth: number;
     monthlyBudgetLimit: number;
+    mainCurrency: string; // ISO 4217 currency code (BRL, USD, EUR, etc.)
 }
 
 const DEFAULT_PROFILE: FinancialProfile = {
     monthlyIncome: 0,
     workHoursPerMonth: 160,
     monthlyBudgetLimit: 0,
+    mainCurrency: 'BRL',
 };
 
 export const useProfileSettings = () => {
@@ -32,15 +34,16 @@ export const useProfileSettings = () => {
                 if (user) {
                     const { data, error } = await supabase
                         .from('profiles')
-                        .select('monthly_income, work_hours, budget_limit')
+                        .select('monthly_income, work_hours, budget_limit, main_currency')
                         .eq('id', user.id)
                         .single();
 
                     if (!error && data) {
-                        const syncedProfile = {
+                        const syncedProfile: FinancialProfile = {
                             monthlyIncome: data.monthly_income || 0,
                             workHoursPerMonth: data.work_hours || 160,
                             monthlyBudgetLimit: data.budget_limit || 0,
+                            mainCurrency: data.main_currency || 'BRL',
                         };
                         setProfile(syncedProfile);
                         localStorage.setItem('zenbolso_profile', JSON.stringify(syncedProfile));
@@ -70,6 +73,7 @@ export const useProfileSettings = () => {
                     monthly_income: newProfile.monthlyIncome,
                     work_hours: newProfile.workHoursPerMonth,
                     budget_limit: newProfile.monthlyBudgetLimit,
+                    main_currency: newProfile.mainCurrency,
                     updated_at: new Date().toISOString(),
                 });
             }

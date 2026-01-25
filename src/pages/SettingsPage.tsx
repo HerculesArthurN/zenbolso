@@ -239,6 +239,33 @@ export const SettingsPage: React.FC = () => {
                                 </div>
                             </div>
 
+                            <div className="flex flex-col gap-2">
+                                <label htmlFor="currency" className="text-xs font-black text-text-muted uppercase tracking-widest ml-1">{t('profile.currency_label')}</label>
+                                <div className="relative">
+                                    <svg className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <path d="M12 6v12M9 9h6M9 15h6" />
+                                    </svg>
+                                    <select
+                                        id="currency"
+                                        value={localProfile.mainCurrency || 'BRL'}
+                                        onChange={e => setLocalProfile({ ...localProfile, mainCurrency: e.target.value })}
+                                        className="w-full pl-12 pr-4 py-4 bg-background dark:bg-slate-900 border-2 border-transparent focus:border-indigo-500 rounded-2xl outline-none font-bold text-text-main dark:text-white appearance-none transition-all"
+                                        aria-label="Moeda principal"
+                                    >
+                                        <option value="BRL">🇧🇷 Real Brasileiro (R$)</option>
+                                        <option value="USD">🇺🇸 US Dollar ($)</option>
+                                        <option value="EUR">🇪🇺 Euro (€)</option>
+                                        <option value="GBP">🇬🇧 British Pound (£)</option>
+                                        <option value="JPY">🇯🇵 Japanese Yen (¥)</option>
+                                        <option value="CNY">🇨🇳 Chinese Yuan (¥)</option>
+                                        <option value="KRW">🇰🇷 Korean Won (₩)</option>
+                                        <option value="ARS">🇦🇷 Argentine Peso ($)</option>
+                                        <option value="MXN">🇲🇽 Mexican Peso ($)</option>
+                                    </select>
+                                </div>
+                            </div>
+
                             <button
                                 onClick={handleSaveProfile}
                                 disabled={isSavingProfile}

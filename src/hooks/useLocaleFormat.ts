@@ -1,10 +1,15 @@
 import { useTranslation } from 'react-i18next';
+import { useProfileSettings } from './useProfileSettings';
 
 /**
  * Custom hook for locale-aware number and date formatting
+ * CRITICAL: Currency is decoupled from locale to prevent financial inaccuracy
+ * - Locale controls formatting rules (decimal separators, date format)
+ * - Currency is determined by user's financial profile (mainCurrency)
  */
 export const useLocaleFormat = () => {
     const { i18n } = useTranslation();
+    const { profile } = useProfileSettings();
 
     // Map i18n language codes to Intl locale codes
     const getLocale = (): string => {
@@ -21,23 +26,21 @@ export const useLocaleFormat = () => {
         return localeMap[i18n.language] || 'pt-BR';
     };
 
-    // Map locale to currency
+    /**
+     * Get user's preferred currency from profile
+     * This is independent of UI language to prevent financial confusion
+     */
     const getCurrency = (): string => {
-        const currencyMap: Record<string, string> = {
-            'pt-BR': 'BRL',
-            'en-US': 'USD',
-            'es-ES': 'EUR',
-            'zh-CN': 'CNY',
-            'ja-JP': 'JPY',
-            'ko-KR': 'KRW',
-            'fr-FR': 'EUR',
-            'de-DE': 'EUR',
-        };
-        return currencyMap[i18n.language] || 'BRL';
+        return profile.mainCurrency || 'BRL';
     };
 
     /**
-     * Format currency based on current locale
+     * Format currency based on current locale formatting rules
+     * but using the user's actual currency
+     * 
+     * Examples:
+     * - Locale: en-US, Currency: BRL -> "R$ 1,000.00" (US format, BRL symbol)
+     * - Locale: pt-BR, Currency: USD -> "US$ 1.000,00" (BR format, USD symbol)
      */
     const formatCurrency = (value: number, options?: Intl.NumberFormatOptions): string => {
         return new Intl.NumberFormat(getLocale(), {
