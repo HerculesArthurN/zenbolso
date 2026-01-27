@@ -17,19 +17,21 @@ class PocketManagerDB extends Dexie {
     recurring_transactions!: Table<any, string>;
     settings!: Table<AppSettings & { id: string }, string>;
     goals!: Table<Goal, string>;
+    sync_queue!: Table<any, number>;
 
     constructor() {
         super('PocketManagerDB');
 
         // Define Schema
-        (this as any).version(3).stores({
+        (this as any).version(4).stores({
             transactions: 'id, date, type, category, accountId',
             accounts: 'id',
             categories: 'id, type, name',
             recurringConfigs: 'id, active',
             recurring_transactions: 'id, active, day_of_month',
             settings: 'id',
-            goals: 'id'
+            goals: 'id',
+            sync_queue: '++id, type, status, entity_id'
         });
 
         // Populate / Migrate Hook

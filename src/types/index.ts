@@ -53,3 +53,17 @@ export interface RecurringTransaction {
     created_at: string;
     updated_at: string;
 }
+
+export type SyncStatus = 'pending' | 'success' | 'error' | 'retry';
+
+export interface SyncJob {
+    id?: number;
+    type: 'create' | 'update' | 'delete';
+    entity: 'transactions' | 'accounts' | 'categories' | 'recurring_transactions';
+    entity_id: string;
+    payload: any;
+    status: SyncStatus;
+    retry_count: number;
+    error?: string;
+    created_at: number;
+}
