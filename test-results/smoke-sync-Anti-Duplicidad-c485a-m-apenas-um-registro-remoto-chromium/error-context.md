@@ -1,0 +1,110 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - img [ref=e6]
+      - generic [ref=e18]: ZenBolso
+    - generic [ref=e19]:
+      - generic [ref=e20]:
+        - paragraph [ref=e21]: Current Balance
+        - paragraph [ref=e22]: R$ 0
+      - button "New Transaction" [ref=e23] [cursor=pointer]:
+        - img [ref=e24]
+        - text: New Transaction
+    - navigation [ref=e25]:
+      - link "Home" [ref=e26] [cursor=pointer]:
+        - /url: /
+        - img [ref=e27]
+        - text: Home
+      - link "Transactions" [ref=e32] [cursor=pointer]:
+        - /url: /transactions
+        - img [ref=e33]
+        - text: Transactions
+      - link "Planning" [ref=e34] [cursor=pointer]:
+        - /url: /planning
+        - img [ref=e35]
+        - text: Planning
+      - link "Recurring" [ref=e39] [cursor=pointer]:
+        - /url: /recurring
+        - img [ref=e40]
+        - text: Recurring
+      - link "Reports" [ref=e45] [cursor=pointer]:
+        - /url: /reports
+        - img [ref=e46]
+        - text: Reports
+      - link "Settings" [ref=e49] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e50]
+        - text: Settings
+    - generic [ref=e53]:
+      - generic [ref=e54]: v1.3.0 • ZenBolso
+      - button "Ativar modo escuro" [ref=e55] [cursor=pointer]:
+        - img [ref=e56]
+  - main [ref=e58]:
+    - generic [ref=e60]:
+      - generic [ref=e61]:
+        - generic [ref=e62]:
+          - heading "My Wallet" [level=1] [ref=e63]
+          - paragraph [ref=e64]: Your financial health in one place.
+        - generic [ref=e65]:
+          - generic "All synced" [ref=e66]:
+            - img [ref=e67]
+            - generic [ref=e69]: Cloud
+          - button "Refresh data" [ref=e70] [cursor=pointer]:
+            - img [ref=e71]
+          - button "New Transaction" [ref=e76] [cursor=pointer]:
+            - img [ref=e77]
+            - text: New Transaction
+      - generic [ref=e78]:
+        - generic [ref=e79]:
+          - generic [ref=e80]:
+            - img [ref=e82]
+            - generic [ref=e85]: Total Balance
+          - heading "R$0.00" [level=3] [ref=e86]
+        - generic [ref=e87]:
+          - generic [ref=e88]:
+            - img [ref=e90]
+            - generic [ref=e93]: Income (Month)
+          - heading "R$0.00" [level=3] [ref=e94]
+        - generic [ref=e95]:
+          - generic [ref=e96]:
+            - img [ref=e98]
+            - generic [ref=e101]: Expenses (Month)
+          - heading "R$100.00" [level=3] [ref=e102]
+      - generic [ref=e103]:
+        - generic [ref=e105]:
+          - heading "Recent Transactions" [level=3] [ref=e107]
+          - generic [ref=e109]:
+            - generic [ref=e110]:
+              - img [ref=e112]
+              - generic [ref=e115]:
+                - paragraph [ref=e116]: Teste Duplicidade
+                - generic [ref=e117]:
+                  - img [ref=e118]
+                  - generic [ref=e121]: 01/26/2026
+            - generic [ref=e122]:
+              - generic [ref=e123]: "- R$100.00"
+              - generic [ref=e124]:
+                - button "Edit Transaction" [ref=e125] [cursor=pointer]:
+                  - img [ref=e126]
+                - button "Delete Transaction" [ref=e129] [cursor=pointer]:
+                  - img [ref=e130]
+        - generic [ref=e133]:
+          - generic [ref=e134]:
+            - img [ref=e136]
+            - generic [ref=e139]:
+              - img [ref=e141]
+              - generic [ref=e144]:
+                - heading "Quanto vale seu tempo?" [level=3] [ref=e145]
+                - paragraph [ref=e146]: Configure seu perfil financeiro para transformar gastos em horas de vida.
+              - button "Configurar Agora" [ref=e147] [cursor=pointer]:
+                - text: Configurar Agora
+                - img [ref=e148]
+          - generic [ref=e150]:
+            - heading "My Accounts" [level=4] [ref=e151]
+            - generic [ref=e153]:
+              - generic [ref=e156]: Carteira
+              - generic [ref=e157]: R$0.00
+```
