@@ -15,6 +15,7 @@ import { useToast } from '../contexts/ToastContext';
 import { OnboardingWizard } from '../components/onboarding/OnboardingWizard';
 import { useData } from '../contexts/DataContext';
 import { ZenInsightsCard } from '../components/dashboard/ZenInsightsCard';
+import { SyncStatus } from '../components/common/SyncStatus';
 
 export const Dashboard: React.FC = () => {
     const { t } = useTranslation();
@@ -84,15 +85,19 @@ export const Dashboard: React.FC = () => {
                     </p>
                 </div>
 
-                <Link
-                    to="/settings"
-                    className="md:hidden p-3 text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm transition-all active:scale-95"
-                    aria-label={t('auth.access_settings')}
-                >
-                    <Settings size={20} />
-                </Link>
+                <div className="md:hidden flex items-center gap-2">
+                    <SyncStatus />
+                    <Link
+                        to="/settings"
+                        className="p-3 text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm transition-all active:scale-95"
+                        aria-label={t('auth.access_settings')}
+                    >
+                        <Settings size={20} />
+                    </Link>
+                </div>
 
                 <div className="hidden md:flex items-center gap-2">
+                    <SyncStatus />
                     <button
                         onClick={() => refresh()}
                         className="p-3 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-2xl transition-all active:rotate-180"
@@ -103,6 +108,7 @@ export const Dashboard: React.FC = () => {
 
                     <button
                         onClick={handleOpenCreate}
+                        id="btn-new-transaction"
                         className="hidden md:flex items-center gap-2 px-6 py-3 bg-primary dark:bg-primary-dark text-primary-fg dark:text-primary-fg-dark rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all active:scale-95"
                     >
                         <Plus size={20} />

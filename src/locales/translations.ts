@@ -110,6 +110,15 @@ export const resources = {
                 sort: 'Ordenar',
                 close: 'Fechar',
             },
+
+            // Sync Status
+            sync: {
+                synced: 'Tudo sincronizado',
+                syncing: 'Sincronizando...',
+                offline: 'Aguardando conexão',
+                error: 'Erro na sincronização',
+                ok: 'Nuvem',
+            },
         }
     },
 
@@ -214,6 +223,15 @@ export const resources = {
                 filter: 'Filter',
                 sort: 'Sort',
                 close: 'Close',
+            },
+
+            // Sync Status
+            sync: {
+                synced: 'All synced',
+                syncing: 'Syncing...',
+                offline: 'Waiting for connection',
+                error: 'Sync error',
+                ok: 'Cloud',
             },
         }
     },

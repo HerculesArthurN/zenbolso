@@ -6,6 +6,9 @@ import { SyncJob } from '../../types';
 let isProcessing = false;
 
 export const SyncProcessor = {
+    isProcessing() {
+        return isProcessing;
+    },
     /**
      * Main entry point to process the queue.
      * Can be called after any mutation or periodically.

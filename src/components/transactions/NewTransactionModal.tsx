@@ -187,6 +187,7 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
                             value={form.amount}
                             onChange={(e) => setForm({ ...form, amount: e.target.value })}
                             placeholder="0,00"
+                            id="input-amount"
                             className="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-lg text-slate-900 dark:text-white"
                             disabled={isSubmitting}
                         />
@@ -201,6 +202,7 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
                         value={form.description}
                         onChange={(e) => setForm({ ...form, description: e.target.value })}
                         placeholder="O que você comprou?"
+                        id="input-description"
                         className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-900 dark:text-white"
                         disabled={isSubmitting}
                     />
@@ -272,6 +274,7 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
                 {/* Submit Button */}
                 <button
                     type="submit"
+                    id="btn-save-transaction"
                     disabled={isSubmitting || (accounts.length === 0 && !initialData)}
                     className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 disabled:text-slate-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-2xl font-bold text-lg shadow-lg shadow-indigo-500/20 transition-all active:scale-[0.98] flex items-center justify-center"
                 >
@@ -288,6 +291,6 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
                     )}
                 </button>
             </form>
-        </Modal>
+        </Modal >
     );
 };
