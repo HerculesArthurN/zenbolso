@@ -57,13 +57,13 @@ export const ZenInsightsCard: React.FC<ZenInsightsCardProps> = ({ transactions, 
             const d = new Date(t.date);
             return t.type === 'EXPENSE' && d.getUTCMonth() === currentMonth && d.getUTCFullYear() === currentYear;
         })
-        .reduce((sum, t) => sum + t.amount, 0);
+        .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
 
-    const hourlyRate = profile.monthlyIncome / profile.workHoursPerMonth;
-    const timeCost = monthExpenses / hourlyRate;
-    const percentageOfWorkMonth = (timeCost / profile.workHoursPerMonth) * 100;
+    const hourlyRate = (profile.monthlyIncome || 0) / (profile.workHoursPerMonth || 160);
+    const timeCost = hourlyRate > 0 ? (monthExpenses / hourlyRate) : 0;
+    const percentageOfWorkMonth = profile.workHoursPerMonth > 0 ? ((timeCost / profile.workHoursPerMonth) * 100) : 0;
 
-    const isExceeded = monthExpenses > profile.monthlyIncome;
+    const isExceeded = monthExpenses > (profile.monthlyIncome || 0);
 
     return (
         <div className="relative overflow-hidden p-8 rounded-[40px] bg-gradient-to-br from-slate-900 to-indigo-950 text-white shadow-2xl border border-white/5">

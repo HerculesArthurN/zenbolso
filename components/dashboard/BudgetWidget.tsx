@@ -1,5 +1,7 @@
 import React from 'react';
 import { TrendingUp, AlertCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { useLocaleFormat } from '../../src/hooks/useLocaleFormat';
 
 interface BudgetWidgetProps {
     currentExpense: number;
@@ -7,10 +9,17 @@ interface BudgetWidgetProps {
 }
 
 export const BudgetWidget: React.FC<BudgetWidgetProps> = ({ currentExpense, budgetLimit }) => {
+    const { t } = useTranslation();
+    const { formatCurrency } = useLocaleFormat();
+
     if (budgetLimit <= 0) return null;
 
-    const percentage = Math.min((currentExpense / budgetLimit) * 100, 100);
-    const remaining = budgetLimit - currentExpense;
+    // Sanitize values to prevent NaN
+    const safeExpense = Number(currentExpense) || 0;
+    const safeLimit = Number(budgetLimit) || 0;
+
+    const percentage = Math.min((safeExpense / safeLimit) * 100, 100);
+    const remaining = safeLimit - safeExpense;
     const isExceeded = remaining < 0;
 
     let colorClass = 'bg-emerald-500';
@@ -27,20 +36,19 @@ export const BudgetWidget: React.FC<BudgetWidgetProps> = ({ currentExpense, budg
         bgClass = 'bg-amber-50 dark:bg-amber-900/30';
     }
 
-    const formatCurrency = (val: number) =>
-        new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Math.abs(val));
-
     return (
-        <div className="bg-white dark:bg-gray-900 p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm relative overflow-hidden">
+        <div className="bg-white dark:bg-gray-900 p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm relative overflow-hidden text-left">
             <div className="flex justify-between items-end mb-2">
                 <div>
-                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Orçamento Mensal</h3>
+                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                        {t('planning.monthly_budget')}
+                    </h3>
                     <div className="flex items-baseline gap-1">
                         <span className="text-xl font-bold text-gray-900 dark:text-white">
-                            {formatCurrency(currentExpense)}
+                            {formatCurrency(safeExpense)}
                         </span>
                         <span className="text-sm text-gray-400 font-medium">
-                            / {formatCurrency(budgetLimit)}
+                            / {formatCurrency(safeLimit)}
                         </span>
                     </div>
                 </div>
@@ -61,8 +69,12 @@ export const BudgetWidget: React.FC<BudgetWidgetProps> = ({ currentExpense, budg
             {/* Status Message */}
             <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                 {isExceeded
-                    ? <span className="text-rose-500">Você excedeu o orçamento em {formatCurrency(remaining)}.</span>
-                    : <span>Resta <span className="text-gray-900 dark:text-white font-bold">{formatCurrency(remaining)}</span> para gastar este mês.</span>
+                    ? <span className="text-rose-500">
+                        {t('planning.exceeded', { amount: formatCurrency(Math.abs(remaining)) })}
+                    </span>
+                    : <span>
+                        {t('planning.remaining', { amount: formatCurrency(remaining) })}
+                    </span>
                 }
             </p>
         </div>

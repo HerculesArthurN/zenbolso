@@ -17,7 +17,7 @@ export const SummaryOverview: React.FC<SummaryOverviewProps> = ({ accounts, tran
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
 
-    const totalBalance = accounts.reduce((acc, account) => acc + account.balance, 0);
+    const totalBalance = accounts.reduce((acc, account) => acc + (Number(account.balance) || 0), 0);
 
     const monthTransactions = transactions.filter(t => {
         const d = new Date(t.date);
@@ -26,11 +26,11 @@ export const SummaryOverview: React.FC<SummaryOverviewProps> = ({ accounts, tran
 
     const monthIncome = monthTransactions
         .filter(t => t.type === 'INCOME')
-        .reduce((acc, t) => acc + t.amount, 0);
+        .reduce((acc, t) => acc + (Number(t.amount) || 0), 0);
 
     const monthExpense = monthTransactions
         .filter(t => t.type === 'EXPENSE')
-        .reduce((acc, t) => acc + t.amount, 0);
+        .reduce((acc, t) => acc + (Number(t.amount) || 0), 0);
 
     const Skeleton = () => (
         <div className="h-32 bg-slate-100 dark:bg-slate-800 animate-pulse rounded-2xl border border-slate-200 dark:border-slate-700" />

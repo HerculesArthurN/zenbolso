@@ -1,11 +1,10 @@
 import React from 'react';
+import { RefreshCw, Plus } from 'lucide-react'; // Added based on usage in JSX
 import { useDashboardData } from '../hooks/useDashboardData';
 import { SummaryOverview } from '../components/dashboard/SummaryOverview';
 import { RecentTransactions } from '../components/dashboard/RecentTransactions';
 import { NewTransactionModal } from '../components/transactions/NewTransactionModal';
-import { RefreshCw, Plus, Settings } from 'lucide-react';
 import { Transaction } from '../types';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useLocaleFormat } from '../hooks/useLocaleFormat';
 
@@ -85,15 +84,19 @@ export const Dashboard: React.FC = () => {
                     </p>
                 </div>
 
-                <div className="md:hidden flex items-center gap-2">
-                    <SyncStatus />
-                    <Link
-                        to="/settings"
-                        className="p-3 text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm transition-all active:scale-95"
-                        aria-label={t('auth.access_settings')}
-                    >
-                        <Settings size={20} />
-                    </Link>
+                <div className="md:hidden flex items-center justify-between w-full bg-white dark:bg-slate-900 p-4 pl-16 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
+                    <div className="flex flex-col">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">
+                            {t('sidebar.current_balance')}
+                        </span>
+                        <span className={`text-xl font-black leading-none ${accounts.reduce((acc, a) => acc + (Number(a.balance) || 0), 0) >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                            {formatCurrency(accounts.reduce((acc, a) => acc + (Number(a.balance) || 0), 0))}
+                        </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <SyncStatus />
+                    </div>
                 </div>
 
                 <div className="hidden md:flex items-center gap-2">

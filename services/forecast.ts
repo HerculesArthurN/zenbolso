@@ -42,10 +42,10 @@ export const calculateForecast = (
           dailyChanges[dateStr] = { income: 0, expense: 0 };
         }
 
-        if (config.type === 'income') {
-          dailyChanges[dateStr].income += config.value;
+        if (config.type.toLowerCase() === 'income') {
+          dailyChanges[dateStr].income += Number(config.value) || 0;
         } else {
-          dailyChanges[dateStr].expense += config.value;
+          dailyChanges[dateStr].expense += Number(config.value) || 0;
         }
       });
     } catch (e) {

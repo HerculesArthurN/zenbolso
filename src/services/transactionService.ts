@@ -41,7 +41,13 @@ export const transactionService = {
             user_id: '',
             account_id: tx.accountId || '',
             category_id: tx.category || null,
-            amount: typeof tx.value === 'string' ? Number(decrypt(tx.value)) : tx.value,
+            amount: (() => {
+                if (typeof tx.value === 'string') {
+                    const decrypted = decrypt(tx.value);
+                    return decrypted ? Number(decrypted) : 0;
+                }
+                return Number(tx.value) || 0;
+            })(),
             description: decrypt(tx.description || ''),
             date: tx.date,
             type: tx.type.toUpperCase() as any,
@@ -151,7 +157,14 @@ export const transactionService = {
             id,
             ...updates,
             description: updates.description ?? (existing ? decrypt((existing as any).description) : ''),
-            amount: updates.amount ?? (existing ? (typeof (existing as any).value === 'string' ? Number(decrypt((existing as any).value)) : (existing as any).value) : 0)
+            amount: updates.amount ?? (existing ? (() => {
+                const val = (existing as any).value;
+                if (typeof val === 'string') {
+                    const decrypted = decrypt(val);
+                    return decrypted ? Number(decrypted) : 0;
+                }
+                return Number(val) || 0;
+            })() : 0)
         } as any;
     },
 

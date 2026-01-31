@@ -1,12 +1,15 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, RefreshCcw, Plus, Wallet, PieChart } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface MobileNavProps {
     onOpenTransactionModal: () => void;
 }
 
 export const MobileNav: React.FC<MobileNavProps> = ({ onOpenTransactionModal }) => {
+    const { t } = useTranslation();
+
     return (
         <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-surface dark:bg-surface-dark border-t border-border-color dark:border-border-color-dark pb-safe">
             <div className="flex items-center justify-around h-16 px-2 relative">
@@ -17,7 +20,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ onOpenTransactionModal }) 
                     className={({ isActive }) => `flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors ${isActive ? 'text-primary' : 'text-text-muted'}`}
                 >
                     <LayoutDashboard size={20} />
-                    <span className="text-[10px] font-bold uppercase tracking-tighter">Início</span>
+                    <span className="text-[10px] font-bold uppercase tracking-tighter">{t('sidebar.home')}</span>
                 </NavLink>
 
                 {/* Recurring */}
@@ -26,7 +29,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ onOpenTransactionModal }) 
                     className={({ isActive }) => `flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors ${isActive ? 'text-primary' : 'text-text-muted'}`}
                 >
                     <RefreshCcw size={20} />
-                    <span className="text-[10px] font-bold uppercase tracking-tighter">Planos</span>
+                    <span className="text-[10px] font-bold uppercase tracking-tighter">{t('sidebar.recurring')}</span>
                 </NavLink>
 
                 {/* FAB Center */}
@@ -34,7 +37,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ onOpenTransactionModal }) 
                     <button
                         onClick={onOpenTransactionModal}
                         className="w-14 h-14 bg-primary text-primary-fg dark:text-primary-fg-dark rounded-full flex items-center justify-center shadow-lg shadow-primary/40 active:scale-95 transition-transform border-4 border-background dark:border-background-dark"
-                        aria-label="Nova Transação"
+                        aria-label={t('sidebar.new_transaction')}
                     >
                         <Plus size={28} />
                     </button>
@@ -46,7 +49,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ onOpenTransactionModal }) 
                     className={({ isActive }) => `flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors ${isActive ? 'text-primary' : 'text-text-muted'}`}
                 >
                     <Wallet size={20} />
-                    <span className="text-[10px] font-bold uppercase tracking-tighter">Contas</span>
+                    <span className="text-[10px] font-bold uppercase tracking-tighter">{t('manage.accounts')}</span>
                 </NavLink>
 
                 {/* Reports */}
@@ -55,7 +58,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ onOpenTransactionModal }) 
                     className={({ isActive }) => `flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors ${isActive ? 'text-primary' : 'text-text-muted'}`}
                 >
                     <PieChart size={20} />
-                    <span className="text-[10px] font-bold uppercase tracking-tighter">Relatórios</span>
+                    <span className="text-[10px] font-bold uppercase tracking-tighter">{t('sidebar.reports')}</span>
                 </NavLink>
 
             </div>

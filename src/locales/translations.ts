@@ -109,6 +109,7 @@ export const resources = {
                 filter: 'Filtrar',
                 sort: 'Ordenar',
                 close: 'Fechar',
+                export: 'Exportar',
             },
 
             // Sync Status
@@ -118,6 +119,24 @@ export const resources = {
                 offline: 'Aguardando conexão',
                 error: 'Erro na sincronização',
                 ok: 'Nuvem',
+            },
+
+            // Planning & Budget
+            planning: {
+                title: 'Planejamento',
+                subtitle: 'Metas, orçamento e futuro.',
+                monthly_budget: 'Orçamento Mensal',
+                remaining: 'Resta {{amount}} para gastar este mês.',
+                exceeded: 'Você excedeu o orçamento em {{amount}}.',
+                evolution: 'Evolução Financeira',
+                avg_income: 'Média Rec.',
+                avg_expense: 'Média Desp.',
+                year_summary: 'Resumo Ano',
+                simulate_purchase: 'Simular Compra',
+                no_data: 'Sem dados para exibir',
+                distribution: 'Distribuição',
+                total: 'Total',
+                others: 'Outros',
             },
         }
     },
@@ -223,6 +242,7 @@ export const resources = {
                 filter: 'Filter',
                 sort: 'Sort',
                 close: 'Close',
+                export: 'Export',
             },
 
             // Sync Status
@@ -232,6 +252,24 @@ export const resources = {
                 offline: 'Waiting for connection',
                 error: 'Sync error',
                 ok: 'Cloud',
+            },
+
+            // Planning & Budget
+            planning: {
+                title: 'Planning',
+                subtitle: 'Goals, budget and future.',
+                monthly_budget: 'Monthly Budget',
+                remaining: '{{amount}} remaining this month.',
+                exceeded: 'You exceeded your budget by {{amount}}.',
+                evolution: 'Financial Evolution',
+                avg_income: 'Avg Income',
+                avg_expense: 'Avg Expense',
+                year_summary: 'Year Summary',
+                simulate_purchase: 'Simulate Purchase',
+                no_data: 'No data to display',
+                distribution: 'Distribution',
+                total: 'Total',
+                others: 'Others',
             },
         }
     },

@@ -2,6 +2,7 @@ import { supabase } from '../lib/supabase';
 import { db } from '../../services/db';
 import { Account } from '../types';
 import { handleApiError } from './api';
+import { decrypt } from '../utils/crypto';
 
 export const accountService = {
     async fetchAccounts(): Promise<Account[]> {
@@ -18,18 +19,33 @@ export const accountService = {
         }
 
         // Guest Mode: Fetch from Dexie
-        const localAccounts = await db.accounts.toArray();
-        return localAccounts.map(acc => ({
-            id: acc.id,
-            user_id: '',
-            name: acc.name,
-            balance: acc.initialBalance, // In a real app, we'd sum transactions
-            type: this.mapLegacyType(acc.type),
-            color: acc.color,
-            is_archived: false,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-        }));
+        const [localAccounts, localTransactions] = await Promise.all([
+            db.accounts.toArray(),
+            db.transactions.toArray()
+        ]);
+
+        return localAccounts.map(acc => {
+            const accountTransactions = localTransactions.filter(t => t.accountId === acc.id || (!t.accountId && acc.id === 'default-wallet'));
+
+            const flow = accountTransactions.reduce((sum, t) => {
+                const rawValue = typeof t.value === 'string' ? decrypt(t.value) : t.value;
+                const val = Number(rawValue) || 0;
+                const type = String(t.type || '').toUpperCase();
+                return sum + (type === 'INCOME' ? val : (type === 'EXPENSE' ? -val : 0));
+            }, 0);
+
+            return {
+                id: acc.id,
+                user_id: '',
+                name: acc.name,
+                balance: (Number(acc.initialBalance) || 0) + flow,
+                type: this.mapLegacyType(acc.type),
+                color: acc.color,
+                is_archived: false,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+            };
+        });
     },
 
     mapLegacyType(type: string): any {

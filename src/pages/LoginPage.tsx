@@ -14,22 +14,38 @@ export const LoginPage: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!email) return;
+        const trimmedEmail = email.trim();
+        if (!trimmedEmail) return;
 
         setIsLoading(true);
         setError(null);
 
         try {
-            const { error: otpError } = await signInWithOtp(email);
-            if (otpError) throw otpError;
+            console.log('Initiating Magic Link login for:', trimmedEmail);
+            const { error: otpError } = await signInWithOtp(trimmedEmail);
+
+            if (otpError) {
+                console.error('Supabase Auth Error:', otpError);
+
+                // Specific error handling for better UX
+                if (otpError.status === 429 || otpError.message?.includes('rate limit')) {
+                    setError('Muitas solicitações. Por favor, aguarde alguns minutos antes de tentar novamente.');
+                } else if (otpError.status === 400 || otpError.message?.includes('invalid email')) {
+                    setError('E-mail inválido. Por favor, verifique o endereço digitado.');
+                } else {
+                    setError(otpError.message || 'Ocorreu um erro ao enviar o link. Tente novamente.');
+                }
+                return;
+            }
+
             setIsSent(true);
         } catch (err: any) {
-            console.error('Login error:', err);
+            console.error('Unexpected Login error:', err);
 
             if (err.message === 'Failed to fetch') {
-                setError('Erro de Conexão: Verifique sua internet ou a configuração do arquivo .env (URL do Supabase).');
+                setError('Erro de Conexão: Verifique sua internet ou a configuração do Supabase.');
             } else {
-                setError(err.message || 'Ocorreu um erro ao enviar o link.');
+                setError('Um erro inesperado ocorreu. Por favor, tente novamente mais tarde.');
             }
         } finally {
             setIsLoading(false);
