@@ -3,6 +3,7 @@ import { useProfileSettings } from '../../hooks/useProfileSettings';
 import { Transaction } from '../../types';
 import { useNavigate } from 'react-router-dom';
 import { Clock, TrendingUp, AlertCircle, ArrowRight } from 'lucide-react';
+import { safeNumber, safeDivide, safePercentage } from '../../utils/numberUtils';
 
 interface ZenInsightsCardProps {
     transactions: Transaction[];
@@ -57,13 +58,16 @@ export const ZenInsightsCard: React.FC<ZenInsightsCardProps> = ({ transactions, 
             const d = new Date(t.date);
             return t.type === 'EXPENSE' && d.getUTCMonth() === currentMonth && d.getUTCFullYear() === currentYear;
         })
-        .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+        .reduce((sum, t) => sum + safeNumber(t.amount, 0), 0);
 
-    const hourlyRate = (profile.monthlyIncome || 0) / (profile.workHoursPerMonth || 160);
-    const timeCost = hourlyRate > 0 ? (monthExpenses / hourlyRate) : 0;
-    const percentageOfWorkMonth = profile.workHoursPerMonth > 0 ? ((timeCost / profile.workHoursPerMonth) * 100) : 0;
+    const monthlyIncome = safeNumber(profile.monthlyIncome, 0);
+    const workHours = safeNumber(profile.workHoursPerMonth, 160);
 
-    const isExceeded = monthExpenses > (profile.monthlyIncome || 0);
+    const hourlyRate = safeDivide(monthlyIncome, workHours, 0);
+    const timeCost = safeDivide(monthExpenses, hourlyRate, 0);
+    const percentageOfWorkMonth = safePercentage(timeCost, workHours, 0);
+
+    const isExceeded = monthExpenses > monthlyIncome;
 
     return (
         <div className="relative overflow-hidden p-8 rounded-[40px] bg-gradient-to-br from-slate-900 to-indigo-950 text-white shadow-2xl border border-white/5">
@@ -88,12 +92,12 @@ export const ZenInsightsCard: React.FC<ZenInsightsCardProps> = ({ transactions, 
 
                 <div className="space-y-1">
                     <div className="text-4xl font-black tracking-tight">
-                        {timeCost.toFixed(1)} <span className="text-xl font-normal text-indigo-300">horas</span>
+                        {safeNumber(timeCost, 0).toFixed(1)} <span className="text-xl font-normal text-indigo-300">horas</span>
                     </div>
                     <p className="text-xs font-medium text-slate-400">
                         {isExceeded
                             ? "Você já gastou mais do que ganha este mês."
-                            : `Isso equivale a ${percentageOfWorkMonth.toFixed(1)}% do seu mês trabalhado.`
+                            : `Isso equivale a ${safeNumber(percentageOfWorkMonth, 0).toFixed(1)}% do seu mês trabalhado.`
                         }
                     </p>
                 </div>
@@ -102,12 +106,12 @@ export const ZenInsightsCard: React.FC<ZenInsightsCardProps> = ({ transactions, 
                 <div className="space-y-3">
                     <div className="flex items-center justify-between text-[10px] uppercase font-black tracking-tighter text-slate-500">
                         <span>Gastos</span>
-                        <span>Renda (R$ {profile.monthlyIncome.toLocaleString()})</span>
+                        <span>Renda (R$ {safeNumber(monthlyIncome, 0).toLocaleString()})</span>
                     </div>
                     <div className="h-3 bg-white/5 rounded-full overflow-hidden border border-white/5">
                         <div
                             className={`h-full transition-all duration-1000 ${isExceeded ? 'bg-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.5)]' : 'bg-gradient-to-r from-indigo-500 to-purple-500'}`}
-                            style={{ width: `${Math.min(100, (monthExpenses / profile.monthlyIncome) * 100)}%` }}
+                            style={{ width: `${Math.min(100, safePercentage(monthExpenses, monthlyIncome, 0))}%` }}
                         />
                     </div>
                 </div>

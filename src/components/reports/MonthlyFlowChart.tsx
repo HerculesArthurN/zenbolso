@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { Transaction } from '../../types';
+import { safeNumber } from '../../utils/numberUtils';
 
 interface MonthlyFlowChartProps {
     transactions: Transaction[];
@@ -10,11 +11,11 @@ export const MonthlyFlowChart: React.FC<MonthlyFlowChartProps> = ({ transactions
     const data = useMemo(() => {
         const income = transactions
             .filter(t => t.type === 'INCOME')
-            .reduce((sum, t) => sum + Number(t.amount), 0);
+            .reduce((sum, t) => sum + safeNumber(t.amount, 0), 0);
 
         const expense = transactions
             .filter(t => t.type === 'EXPENSE')
-            .reduce((sum, t) => sum + Number(t.amount), 0);
+            .reduce((sum, t) => sum + safeNumber(t.amount, 0), 0);
 
         return [
             { name: 'Receita', value: income, color: '#10b981' },

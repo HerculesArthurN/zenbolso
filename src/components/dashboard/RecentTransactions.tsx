@@ -4,6 +4,7 @@ import { Transaction } from '../../types';
 import { transactionService } from '../../services/transactionService';
 import { useTranslation } from 'react-i18next';
 import { useLocaleFormat } from '../../hooks/useLocaleFormat';
+import { safeNumber } from '../../utils/numberUtils';
 
 interface RecentTransactionsProps {
     transactions: Transaction[];
@@ -84,7 +85,7 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
                         <div className="flex items-center gap-4">
                             <div className={`text-sm font-bold ${tx.type === 'INCOME' ? 'text-emerald-600' : 'text-slate-900 dark:text-white'
                                 }`}>
-                                {tx.type === 'INCOME' ? '+' : '-'} {formatCurrency(tx.amount)}
+                                {tx.type === 'INCOME' ? '+' : '-'} {formatCurrency(safeNumber(tx.amount, 0))}
                             </div>
 
                             {/* Actions */}

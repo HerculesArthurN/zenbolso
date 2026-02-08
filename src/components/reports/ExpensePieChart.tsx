@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { Transaction, Category } from '../../types';
+import { safeNumber } from '../../utils/numberUtils';
 
 interface ExpensePieChartProps {
     transactions: Transaction[];
@@ -12,7 +13,7 @@ export const ExpensePieChart: React.FC<ExpensePieChartProps> = ({ transactions, 
         const expenses = transactions.filter(t => t.type === 'EXPENSE');
         const grouped = expenses.reduce((acc, t) => {
             const catId = t.category_id || 'unnamed';
-            acc[catId] = (acc[catId] || 0) + Number(t.amount);
+            acc[catId] = (acc[catId] || 0) + safeNumber(t.amount, 0);
             return acc;
         }, {} as Record<string, number>);
 

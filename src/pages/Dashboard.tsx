@@ -7,6 +7,7 @@ import { NewTransactionModal } from '../components/transactions/NewTransactionMo
 import { Transaction } from '../types';
 import { useTranslation } from 'react-i18next';
 import { useLocaleFormat } from '../hooks/useLocaleFormat';
+import { safeNumber } from '../utils/numberUtils';
 
 import { recurringService } from '../services/recurringService';
 import { useToast } from '../contexts/ToastContext';
@@ -89,8 +90,8 @@ export const Dashboard: React.FC = () => {
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">
                             {t('sidebar.current_balance')}
                         </span>
-                        <span className={`text-xl font-black leading-none ${accounts.reduce((acc, a) => acc + (Number(a.balance) || 0), 0) >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
-                            {formatCurrency(accounts.reduce((acc, a) => acc + (Number(a.balance) || 0), 0))}
+                        <span className={`text-xl font-black leading-none ${accounts.reduce((acc, a) => acc + safeNumber(a.balance, 0), 0) >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                            {formatCurrency(accounts.reduce((acc, a) => acc + safeNumber(a.balance, 0), 0))}
                         </span>
                     </div>
 
@@ -155,7 +156,7 @@ export const Dashboard: React.FC = () => {
                                         <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{acc.name}</span>
                                     </div>
                                     <span className="text-sm font-bold text-slate-900 dark:text-white">
-                                        {formatCurrency(acc.balance)}
+                                        {formatCurrency(safeNumber(acc.balance, 0))}
                                     </span>
                                 </div>
                             ))}
@@ -177,9 +178,11 @@ export const Dashboard: React.FC = () => {
                 onSuccess={refresh}
             />
 
-            {showOnboarding && (
-                <OnboardingWizard onFinish={handleFinishOnboarding} />
-            )}
-        </div>
+            {
+                showOnboarding && (
+                    <OnboardingWizard onFinish={handleFinishOnboarding} />
+                )
+            }
+        </div >
     );
 };

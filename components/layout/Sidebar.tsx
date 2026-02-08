@@ -8,6 +8,7 @@ import { BrandLogo } from '../../src/components/ui/BrandLogo';
 import { useTranslation } from 'react-i18next';
 import { useLocaleFormat } from '../../src/hooks/useLocaleFormat';
 import { UserWidget } from '../../src/components/layout/UserWidget';
+import { safeNumber } from '../../src/utils/numberUtils';
 
 interface SidebarProps {
   isMobile?: boolean;
@@ -21,7 +22,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobile, onClose }) => {
   const { data: summary } = useSummaryQuery();
   const location = useLocation();
 
-  const safeBalance = Number(summary?.netBalance) || 0;
+  const safeBalance = safeNumber(summary?.netBalance, 0);
 
   const getLinkClass = (path: string) => {
     const currentPath = location.pathname;
