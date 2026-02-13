@@ -2,6 +2,8 @@ import { db } from '../db';
 import { Transaction } from '../../types';
 import { v4 as uuidv4 } from 'uuid';
 import { handleDBError } from '../repositoryUtils';
+import { decrypt, encrypt } from '../../src/utils/crypto';
+import { safeNumber } from '../../src/utils/numberUtils';
 
 export const TransactionRepository = {
   /**
@@ -10,14 +12,24 @@ export const TransactionRepository = {
    */
   findAll: async (filter?: { start?: string; end?: string }): Promise<Transaction[]> => {
     try {
+      let data: any[];
       if (filter?.start && filter?.end) {
-        return await db.transactions
+        data = await db.transactions
           .where('date')
-          .between(filter.start, filter.end, true, true) // true = inclusivo
+          .between(filter.start, filter.end, true, true)
           .reverse()
           .toArray();
+      } else {
+        data = await db.transactions.orderBy('date').reverse().toArray();
       }
-      return await db.transactions.orderBy('date').reverse().toArray();
+
+      // Descriptografa e garante tipos numéricos antes de retornar para a UI
+      return data.map(tx => ({
+        ...tx,
+        value: safeNumber(decrypt(tx.value)),
+        description: decrypt(tx.description),
+        category: decrypt(tx.category) // Algumas categorias antigas podiam estar criptografadas
+      }));
     } catch (error) {
       throw handleDBError(error, 'DB_READ_ERROR');
     }
@@ -29,7 +41,13 @@ export const TransactionRepository = {
   create: async (data: Omit<Transaction, 'id'>): Promise<string> => {
     try {
       const id = uuidv4();
-      const transaction: Transaction = { ...data, id };
+      const transaction: any = {
+        ...data,
+        id,
+        value: encrypt(data.value),
+        description: encrypt(data.description),
+        category: data.category // Categorias normalmente salvamos texto puro para filtros no DB
+      };
       await db.transactions.add(transaction);
       return id;
     } catch (error) {
@@ -42,7 +60,12 @@ export const TransactionRepository = {
    */
   add: async (transaction: Transaction): Promise<void> => {
     try {
-      await db.transactions.add(transaction);
+      const encryptedTx = {
+        ...transaction,
+        value: encrypt(transaction.value),
+        description: encrypt(transaction.description)
+      };
+      await db.transactions.add(encryptedTx as any);
     } catch (error) {
       throw handleDBError(error, 'DB_WRITE_ERROR');
     }
@@ -53,7 +76,12 @@ export const TransactionRepository = {
    */
   update: async (transaction: Transaction): Promise<void> => {
     try {
-      await db.transactions.put(transaction);
+      const encryptedTx = {
+        ...transaction,
+        value: encrypt(transaction.value),
+        description: encrypt(transaction.description)
+      };
+      await db.transactions.put(encryptedTx as any);
     } catch (error) {
       throw handleDBError(error, 'DB_WRITE_ERROR');
     }

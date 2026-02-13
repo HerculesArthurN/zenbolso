@@ -6,6 +6,7 @@ import { Button } from '../ui/Button';
 import { Skeleton } from '../ui/Skeleton';
 import { useCategoriesQuery, useSettingsQuery } from '../../hooks/useFinanceData';
 import { CategoryIcon } from '../ui/CategoryIcon';
+import { safeNumber, safeDivide } from '../../src/utils/numberUtils';
 
 interface TransactionListProps {
     transactions: Transaction[];
@@ -36,10 +37,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
     const currencyFormatter = useMemo(() => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }), []);
 
     const hourlyRate = useMemo(() => {
-        if (settings?.monthlyIncome && settings?.workHoursPerMonth) {
-            return settings.monthlyIncome / settings.workHoursPerMonth;
-        }
-        return 0;
+        return safeDivide(settings?.monthlyIncome, settings?.workHoursPerMonth, 0);
     }, [settings]);
 
     // Reset pagination when list changes
@@ -200,11 +198,11 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
                                                 <span className={`font-bold tabular-nums tracking-tight block ${t.type === 'income' ? 'text-income-text dark:text-income-dark' : 'text-slate-900 dark:text-white'
                                                     }`}>
                                                     {t.type === 'income' ? '+' : '-'}
-                                                    {currencyFormatter.format(t.value)}
+                                                    {currencyFormatter.format(safeNumber(t.value))}
                                                 </span>
-                                                {t.type === 'expense' && hourlyRate > 0 && getTimeCost(t.value) && (
+                                                {t.type === 'expense' && hourlyRate > 0 && getTimeCost(safeNumber(t.value)) && (
                                                     <span className="text-[10px] font-medium text-rose-500/80 flex justify-end items-center gap-1">
-                                                        <Clock size={10} /> {getTimeCost(t.value)}
+                                                        <Clock size={10} /> {getTimeCost(safeNumber(t.value))}
                                                     </span>
                                                 )}
                                             </div>

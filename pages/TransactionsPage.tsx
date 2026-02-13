@@ -10,12 +10,13 @@ import { COLORS } from '../constants';
 import { ImportModal } from '../components/transactions/ImportModal';
 import { Wand2 } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
+import { safeNumber } from '../src/utils/numberUtils';
 
 export const TransactionsPage: React.FC = () => {
   const { openTransactionModal } = useData();
   const { data: categories = [] } = useCategoriesQuery();
   const { data: accounts = [] } = useAccountsQuery();
-  
+
   const { addToast } = useToast();
   const [isImportOpen, setIsImportOpen] = useState(false);
 
@@ -39,12 +40,12 @@ export const TransactionsPage: React.FC = () => {
   // NEW: Fetching Data using the specific Hook with filters passed down
   // This enables DB-level filtering for date ranges
   const { data: filteredTransactions = [], isLoading } = useTransactions({
-      startDate: filters.startDate,
-      endDate: filters.endDate,
-      type: filters.type === 'all' ? undefined : filters.type,
-      category: filters.category === 'all' ? undefined : filters.category,
-      tags: filters.tags,
-      searchQuery: filters.searchQuery
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+    type: filters.type === 'all' ? undefined : filters.type,
+    category: filters.category === 'all' ? undefined : filters.category,
+    tags: filters.tags,
+    searchQuery: filters.searchQuery
   });
 
   // NEW: Mutations Hook
@@ -54,20 +55,21 @@ export const TransactionsPage: React.FC = () => {
     const totals: Record<string, number> = {};
     let totalExp = 0;
     filteredTransactions.forEach(t => {
-        if (t.type === 'expense') {
-            const cat = t.category || 'Outros';
-            totals[cat] = (totals[cat] || 0) + t.value;
-            totalExp += t.value;
-        }
+      if (t.type === 'expense') {
+        const val = safeNumber(t.value);
+        const cat = t.category || 'Outros';
+        totals[cat] = (totals[cat] || 0) + val;
+        totalExp += val;
+      }
     });
     return Object.entries(totals)
-        .map(([category, total], index) => ({
-            category,
-            total,
-            percentage: totalExp > 0 ? (total / totalExp) * 100 : 0,
-            color: COLORS[index % COLORS.length]
-        }))
-        .sort((a, b) => b.total - a.total);
+      .map(([category, total], index) => ({
+        category,
+        total,
+        percentage: totalExp > 0 ? (total / totalExp) * 100 : 0,
+        color: COLORS[index % COLORS.length]
+      }))
+      .sort((a, b) => b.total - a.total);
   }, [filteredTransactions]);
 
   const uniqueTags = useMemo(() => {
@@ -84,77 +86,77 @@ export const TransactionsPage: React.FC = () => {
     if (!transactionToDelete) return;
 
     try {
-        await deleteTransaction.mutateAsync(id);
-        
-        addToast('Transação removida.', 'success', 5000, {
-            label: 'Desfazer',
-            onClick: async () => {
-                await addTransaction.mutateAsync(transactionToDelete);
-                addToast('Transação restaurada.', 'info');
-            }
-        });
+      await deleteTransaction.mutateAsync(id);
+
+      addToast('Transação removida.', 'success', 5000, {
+        label: 'Desfazer',
+        onClick: async () => {
+          await addTransaction.mutateAsync(transactionToDelete);
+          addToast('Transação restaurada.', 'info');
+        }
+      });
     } catch (error) {
-        // Error handling inside hook
+      // Error handling inside hook
     }
   };
 
   const handleImport = async (importedTxs: any[]) => {
-      try {
-          // Process sequentially to maintain order or use bulkAdd in repo
-          const promises = importedTxs.map(tx => addTransaction.mutateAsync(tx));
-          await Promise.all(promises);
-          
-          addToast(`${importedTxs.length} transações importadas!`, 'success');
-          setIsImportOpen(false);
-      } catch (e) {
-          addToast('Erro parcial na importação', 'error');
-      }
+    try {
+      // Process sequentially to maintain order or use bulkAdd in repo
+      const promises = importedTxs.map(tx => addTransaction.mutateAsync(tx));
+      await Promise.all(promises);
+
+      addToast(`${importedTxs.length} transações importadas!`, 'success');
+      setIsImportOpen(false);
+    } catch (e) {
+      addToast('Erro parcial na importação', 'error');
+    }
   };
 
   return (
     <div className="space-y-6">
       <header className="flex items-center justify-between mb-4">
         <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Extrato</h1>
-            <p className="text-slate-500 text-sm">Gerencie suas receitas e despesas.</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Extrato</h1>
+          <p className="text-slate-500 text-sm">Gerencie suas receitas e despesas.</p>
         </div>
         <button
-            onClick={() => setIsImportOpen(true)}
-            className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors"
-            title="Importar Inteligente"
+          onClick={() => setIsImportOpen(true)}
+          className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors"
+          title="Importar Inteligente"
         >
-            <Wand2 size={20} />
+          <Wand2 size={20} />
         </button>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="md:col-span-1 h-fit md:sticky md:top-6">
-             <SummaryChart data={dynamicCategories} />
+        <div className="md:col-span-1 h-fit md:sticky md:top-6">
+          <SummaryChart data={dynamicCategories} />
+        </div>
+
+        <div className="md:col-span-2 space-y-4">
+          <TransactionFilters
+            filters={filters}
+            onFilterChange={setFilters}
+            availableTags={uniqueTags}
+          />
+
+          <div className="flex items-center justify-between px-2">
+            <span className="text-xs text-slate-500 uppercase font-medium tracking-wider">
+              {filteredTransactions.length} lançamentos encontrados
+            </span>
           </div>
 
-          <div className="md:col-span-2 space-y-4">
-             <TransactionFilters 
-                filters={filters} 
-                onFilterChange={setFilters} 
-                availableTags={uniqueTags}
-            />
-
-            <div className="flex items-center justify-between px-2">
-                <span className="text-xs text-slate-500 uppercase font-medium tracking-wider">
-                   {filteredTransactions.length} lançamentos encontrados
-                </span>
-            </div>
-
-            <TransactionList 
-                transactions={filteredTransactions} 
-                onDelete={handleDeleteTransaction}
-                onEdit={openTransactionModal}
-                loading={isLoading}
-            />
-          </div>
+          <TransactionList
+            transactions={filteredTransactions}
+            onDelete={handleDeleteTransaction}
+            onEdit={openTransactionModal}
+            loading={isLoading}
+          />
+        </div>
       </div>
 
-      <ImportModal 
+      <ImportModal
         isOpen={isImportOpen}
         onClose={() => setIsImportOpen(false)}
         onImport={handleImport}
