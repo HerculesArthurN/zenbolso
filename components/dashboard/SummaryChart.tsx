@@ -114,7 +114,7 @@ export const SummaryChart: React.FC<SummaryChartProps> = ({ data }) => {
           <span className="text-2xl mb-1 filter drop-shadow-sm">{centerIcon}</span>
           <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">{centerLabel}</p>
           <p className="text-xl font-bold text-gray-900 dark:text-white">
-            {formatCurrency(centerValue, { notation: 'compact' })}
+            {formatCurrency(centerValue)}
           </p>
         </div>
 

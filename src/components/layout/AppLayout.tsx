@@ -4,13 +4,21 @@ import { MobileNav } from './MobileNav';
 import { UserWidget } from './UserWidget';
 import { useData } from '../../contexts/DataContext';
 import { Menu } from 'lucide-react';
+import { NewTransactionModal } from '../transactions/NewTransactionModal';
+import { useDashboardData } from '../../hooks/useDashboardData';
 
 interface AppLayoutProps {
     children?: React.ReactNode;
 }
 
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
-    const { openTransactionModal } = useData();
+    const {
+        isTransactionModalOpen,
+        openTransactionModal,
+        closeTransactionModal,
+        transactionToEdit
+    } = useData();
+    const { accounts, refresh, loading } = useDashboardData();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     return (
@@ -50,6 +58,16 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
             {/* Mobile Bottom Nav */}
             <MobileNav onOpenTransactionModal={() => openTransactionModal?.()} />
+
+            {/* Global Transaction Modal */}
+            <NewTransactionModal
+                isOpen={isTransactionModalOpen}
+                onClose={closeTransactionModal}
+                accounts={accounts}
+                isLoadingAccounts={loading}
+                initialData={transactionToEdit}
+                onSuccess={refresh}
+            />
         </div>
     );
 };

@@ -57,7 +57,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobile, onClose }) => {
         <div className="bg-background dark:bg-surface-dark/50 rounded-xl p-4 border border-border-color dark:border-border-color-dark shadow-sm">
           <p className="text-[10px] text-text-muted uppercase font-bold mb-1 tracking-widest">{t('sidebar.current_balance')}</p>
           <p className={`text-xl font-black ${safeBalance >= 0 ? 'text-emerald-500' : 'text-danger'}`}>
-            {summary ? formatCurrency(safeBalance, { notation: 'compact' }) : '...'}
+            {summary ? formatCurrency(safeBalance) : '...'}
           </p>
         </div>
 

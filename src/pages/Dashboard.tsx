@@ -3,7 +3,6 @@ import { RefreshCw, Plus } from 'lucide-react'; // Added based on usage in JSX
 import { useDashboardData } from '../hooks/useDashboardData';
 import { SummaryOverview } from '../components/dashboard/SummaryOverview';
 import { RecentTransactions } from '../components/dashboard/RecentTransactions';
-import { NewTransactionModal } from '../components/transactions/NewTransactionModal';
 import { Transaction } from '../types';
 import { useTranslation } from 'react-i18next';
 import { useLocaleFormat } from '../hooks/useLocaleFormat';
@@ -23,10 +22,7 @@ export const Dashboard: React.FC = () => {
     const { accounts, transactions, loading, refresh } = useDashboardData();
     const { addToast } = useToast();
     const {
-        isTransactionModalOpen: isModalOpen,
-        openTransactionModal,
-        closeTransactionModal,
-        transactionToEdit: editingTransaction
+        openTransactionModal
     } = useData() as any;
 
     const [showOnboarding, setShowOnboarding] = React.useState(false);
@@ -68,9 +64,6 @@ export const Dashboard: React.FC = () => {
         openTransactionModal(t);
     };
 
-    const handleCloseModal = () => {
-        closeTransactionModal();
-    };
 
     return (
         <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-500">
@@ -167,16 +160,6 @@ export const Dashboard: React.FC = () => {
                     </div>
                 </div>
             </div>
-
-            {/* Modals */}
-            <NewTransactionModal
-                isOpen={isModalOpen}
-                onClose={handleCloseModal}
-                accounts={accounts}
-                isLoadingAccounts={loading}
-                initialData={editingTransaction}
-                onSuccess={refresh}
-            />
 
             {
                 showOnboarding && (
