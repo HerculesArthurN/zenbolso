@@ -634,7 +634,7 @@ IndexedDB ←─────────────────→ IndexedDB + 
 ### 7.1 Pontos Fortes
 - **Latência Zero:** Experiência offline-first garante responsividade
 - **Segurança Robusta:** RLS no nível do banco previne vazamentos de dados
-- **UX Premium:** Magic Bar e Zen Insights diferenciam o produto
+- **UX Premium:** Relatórios PDF e Zen Insights diferenciam o produto
 
 ### 7.2 Áreas de Melhoria
 - **Testes Automatizados:** Cobertura de testes inexistente

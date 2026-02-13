@@ -1,24 +1,18 @@
 import React, { useState, useMemo } from 'react';
 import { useData } from '../context/DataContext';
-import { useCategoriesQuery, useAccountsQuery } from '../hooks/useFinanceData';
 import { useTransactions } from '../hooks/queries/useTransactions'; // New Hook
 import { useTransactionMutations } from '../hooks/queries/useTransactionMutations'; // New Hook
 import { TransactionList } from '../components/transactions/TransactionList';
 import { TransactionFilters, FilterState } from '../components/transactions/TransactionFilters';
 import { SummaryChart } from '../components/dashboard/SummaryChart';
 import { COLORS } from '../constants';
-import { ImportModal } from '../components/transactions/ImportModal';
-import { Wand2 } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import { safeNumber } from '../src/utils/numberUtils';
 
 export const TransactionsPage: React.FC = () => {
   const { openTransactionModal } = useData();
-  const { data: categories = [] } = useCategoriesQuery();
-  const { data: accounts = [] } = useAccountsQuery();
 
   const { addToast } = useToast();
-  const [isImportOpen, setIsImportOpen] = useState(false);
 
   // Filters State
   const [filters, setFilters] = useState<FilterState>(() => {
@@ -100,18 +94,6 @@ export const TransactionsPage: React.FC = () => {
     }
   };
 
-  const handleImport = async (importedTxs: any[]) => {
-    try {
-      // Process sequentially to maintain order or use bulkAdd in repo
-      const promises = importedTxs.map(tx => addTransaction.mutateAsync(tx));
-      await Promise.all(promises);
-
-      addToast(`${importedTxs.length} transações importadas!`, 'success');
-      setIsImportOpen(false);
-    } catch (e) {
-      addToast('Erro parcial na importação', 'error');
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -120,13 +102,6 @@ export const TransactionsPage: React.FC = () => {
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Extrato</h1>
           <p className="text-slate-500 text-sm">Gerencie suas receitas e despesas.</p>
         </div>
-        <button
-          onClick={() => setIsImportOpen(true)}
-          className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors"
-          title="Importar Inteligente"
-        >
-          <Wand2 size={20} />
-        </button>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -156,13 +131,6 @@ export const TransactionsPage: React.FC = () => {
         </div>
       </div>
 
-      <ImportModal
-        isOpen={isImportOpen}
-        onClose={() => setIsImportOpen(false)}
-        onImport={handleImport}
-        accounts={accounts}
-        categories={categories}
-      />
     </div>
   );
 };

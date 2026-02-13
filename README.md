@@ -6,7 +6,7 @@
 [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.io/)
 [![Dexie](https://img.shields.io/badge/Dexie.js-blue?style=for-the-badge)](https://dexie.org/)
 
-**ZenBolso** is a personal finance PWA (Progressive Web App) designed to bring peace of mind to financial tracking. By combining a "Local-First" approach with smart automation, it eliminates the friction of traditional balance sheets.
+**ZenBolso** is a personal finance PWA (Progressive Web App) designed to bring peace of mind to financial tracking. By combining a "Local-First" approach with efficient tools, it eliminates the friction of traditional balance sheets.
 
 ---
 
@@ -18,8 +18,8 @@ Experience zero latency. ZenBolso prioritizes your local data using **Dexie.js (
 ### ⏳ "Time = Money" Logic (Zen Insights)
 Stop looking at just numbers. Our custom algorithm translates your monthly expenses into "Minutes of Life." Based on your financial profile, the app calculates how many work hours each purchase truly cost you.
 
-### 🪄 The "Magic Bar" (Smart Input)
-Input transactions in seconds using natural language. The Smart Input parser interprets entries like *"Pizza 50 Nubank"* or *"Salary 5000 yesterday"* and automatically categorizes them into your structure.
+### 📄 Professional PDF Exports
+Generate detailed financial reports with one click. Export your monthly balance, category distribution, and flow charts into a clean, professional PDF document ready for filing or review.
 
 ### 🛡️ Enterprise-Grade Resilience
 - **Route-based Code Splitting:** Optimized initial load using `React.lazy` and `Suspense`.
