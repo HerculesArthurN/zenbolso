@@ -565,7 +565,7 @@ src/
 - **Nenhum teste automatizado implementado**
 
 **Recomendações para v2.0:**
-- **Unit Tests:** Vitest para funções puras (smartParser, utils)
+- **Unit Tests:** Vitest para funções puras (dashboard.service, utils)
 - **Integration Tests:** Testing Library para componentes React
 - **E2E Tests:** Playwright para fluxos críticos
 

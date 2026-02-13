@@ -1,10 +1,9 @@
 import React from 'react';
 import { Transaction } from '../../types';
 import { Button } from '../ui/Button';
-import { ChevronDown, ChevronUp, Plus, Minus, Sparkles, Repeat, Wallet, CreditCard } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Minus, Repeat, Wallet, CreditCard } from 'lucide-react';
 import { useTransactionForm } from '../../hooks/useTransactionForm';
 import { CategoryIcon } from '../ui/CategoryIcon';
-import { SmartInput } from './SmartInput';
 
 interface TransactionFormProps {
   onSave: (t: Transaction) => void;
@@ -23,12 +22,10 @@ export const TransactionForm: React.FC<TransactionFormProps> = (props) => {
     date, setDate,
     tags, setTags,
     accountId, setAccountId,
-    smartInput, setSmartInput, isParsing, parsedPreview,
     showAdvanced, setShowAdvanced,
     repeatMode, setRepeatMode,
     frequency, setFrequency,
     installments, setInstallments,
-    suggestedCategory, applySuggestion,
     accounts,
     currentCategories,
     handleSubmit
@@ -37,17 +34,6 @@ export const TransactionForm: React.FC<TransactionFormProps> = (props) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
 
-      {!initialData && (
-        <>
-          <SmartInput
-            value={smartInput}
-            onChange={setSmartInput}
-            isParsing={isParsing}
-            parsedData={parsedPreview}
-          />
-          <div className="h-px bg-gray-100 dark:bg-gray-800 w-full" />
-        </>
-      )}
 
       {/* Type Toggle */}
       <div className="flex p-1 bg-gray-100 dark:bg-gray-800 rounded-xl">
@@ -98,17 +84,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = (props) => {
 
       {/* Description Field */}
       <div className="animate-in fade-in slide-in-from-top-2 duration-200">
-        <label className="block text-xs font-medium text-gray-500 mb-1 flex justify-between">
-          <span>Descrição (Opcional)</span>
-          {suggestedCategory && suggestedCategory !== category && (
-            <span
-              onClick={applySuggestion}
-              className="text-emerald-500 flex items-center gap-1 cursor-pointer hover:underline text-[10px]"
-            >
-              <Sparkles size={10} />
-              Sugerir: {suggestedCategory}
-            </span>
-          )}
+        <label className="block text-xs font-medium text-gray-500 mb-1">
+          Descrição (Opcional)
         </label>
         <input
           type="text"
@@ -164,9 +141,6 @@ export const TransactionForm: React.FC<TransactionFormProps> = (props) => {
             >
               <CategoryIcon iconName={cat.icon} color={cat.color || '#64748B'} size={18} />
               <span className="truncate">{cat.name}</span>
-              {suggestedCategory === cat.name && category !== cat.name && (
-                <span className="absolute top-0 right-0 w-2 h-2 bg-emerald-400 rounded-full m-1 animate-pulse" title="Sugestão IA" />
-              )}
             </button>
           ))}
         </div>
