@@ -3,8 +3,7 @@ import { Modal } from '../../../components/ui/Modal';
 import { transactionService } from '../../services/transactionService';
 import { useCategories } from '../../hooks/useCategories';
 import { Account, Transaction } from '../../types';
-import { Loader2, Plus, Sparkles, Save, AlertCircle } from 'lucide-react';
-import { useSmartInput } from '../../hooks/useSmartInput';
+import { Loader2, Plus, Save, AlertCircle } from 'lucide-react';
 
 interface NewTransactionModalProps {
     isOpen: boolean;
@@ -25,10 +24,6 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
 }) => {
     const { categories, loading: loadingCats } = useCategories();
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [smartText, setSmartText] = useState('');
-
-    // We pass accounts here for fuzzy matching
-    const parsed = useSmartInput(smartText, accounts, categories);
 
     const [form, setForm] = useState({
         description: '',
@@ -41,10 +36,7 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
 
     // 4. Initialization & Sync Effects
     useEffect(() => {
-        if (!isOpen) {
-            setSmartText('');
-            return;
-        }
+        if (!isOpen) return;
 
         if (initialData) {
             setForm({
@@ -74,20 +66,6 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
         }
     }, [isOpen, accounts, form.account_id]);
 
-    // 3. Sync parsed data from the "Magic Bar"
-    useEffect(() => {
-        if (parsed) {
-            setForm(prev => ({
-                ...prev,
-                ...(parsed.amount !== undefined && { amount: parsed.amount.toString() }),
-                ...(parsed.description && { description: parsed.description }),
-                ...(parsed.date && { date: parsed.date }),
-                ...(parsed.type && { type: parsed.type }),
-                ...(parsed.category_id && { category_id: parsed.category_id }),
-                ...(parsed.account_id && { account_id: parsed.account_id }),
-            }));
-        }
-    }, [parsed]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -130,24 +108,6 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
             onClose={onClose}
             title={initialData ? "Editar Transação" : "Nova Transação"}
         >
-            {/* Smart Input Bar */}
-            <div className="mb-6">
-                <div className="flex items-center gap-2 mb-2 ml-1">
-                    <Sparkles size={14} className="text-indigo-500" />
-                    <span className="text-xs font-bold text-indigo-600 uppercase tracking-tighter">Entrada Mágica</span>
-                </div>
-                <textarea
-                    value={smartText}
-                    onChange={(e) => setSmartText(e.target.value)}
-                    placeholder="Ex: Pizza 45,90 no Nubank ontem..."
-                    className="w-full h-20 p-4 bg-indigo-50/50 dark:bg-slate-800/50 border-2 border-dashed border-indigo-200 dark:border-slate-700 rounded-2xl text-slate-700 dark:text-slate-200 text-sm focus:border-indigo-400 focus:bg-indigo-50 dark:focus:bg-slate-800 outline-none transition-all resize-none"
-                    disabled={isSubmitting}
-                    maxLength={200}
-                    autoFocus
-                    aria-label="Entrada inteligente: digite descrição, valor e data em linguagem natural"
-                />
-            </div>
-
             <form onSubmit={handleSubmit} className="space-y-5">
                 {/* Type Toggle */}
                 <div className="flex p-1 bg-slate-100 dark:bg-slate-900 rounded-xl">

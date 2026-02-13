@@ -146,8 +146,8 @@ export const LandingPage: React.FC = () => {
                     </h1>
 
                     <p className="text-xl md:text-2xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
-                        Escreva como se estivesse no <span className="text-emerald-400 font-bold">WhatsApp</span>.
-                        Nossa inteligência entende tudo instantaneamente.
+                        Escreva de forma rápida e intuitiva.
+                        Nosso sistema organiza tudo para você instantaneamente.
                     </p>
 
                     <div className="flex flex-col items-center gap-6 pt-4">
@@ -181,11 +181,11 @@ export const LandingPage: React.FC = () => {
                         <div className="space-y-8">
                             <div className="inline-flex items-center gap-2 text-violet-400 font-black uppercase tracking-[0.2em] text-sm">
                                 <Zap size={18} fill="currentColor" />
-                                O Fim dos Formulários
+                                O Fim da Complexidade
                             </div>
                             <h2 className="text-4xl md:text-5xl font-black text-white leading-tight">
-                                A Barra Mágica que <br />
-                                <span className="text-violet-500 italic">elimina 10 cliques.</span>
+                                Interface Simples que <br />
+                                <span className="text-violet-500 italic">elimina a burocracia.</span>
                             </h2>
                             <p className="text-lg text-slate-400 leading-relaxed">
                                 Esqueça selecionar data, categoria, conta e valor.
@@ -194,9 +194,9 @@ export const LandingPage: React.FC = () => {
 
                             <ul className="space-y-4">
                                 {[
-                                    "Categorização Automática",
-                                    "Detecção de Meio de Pagamento",
-                                    "Data Inteligente (ex: 'hoje', 'ontem')",
+                                    "Categorização Rápida",
+                                    "Histórico Detalhado",
+                                    "Datas Simplificadas",
                                     "Velocidade Relâmpago"
                                 ].map((item, i) => (
                                     <li key={i} className="flex items-center gap-3 text-slate-200 font-medium font-bold">
@@ -225,14 +225,14 @@ export const LandingPage: React.FC = () => {
 
                                     <div className="space-y-2">
                                         <div className="text-sm font-bold text-slate-500 italic">O que você digita:</div>
-                                        <div className="bg-slate-900 text-white p-5 rounded-2xl border-2 border-violet-500/50 text-xl font-medium flex items-center gap-3">
-                                            Pizza 45 Nubank
-                                            <span className="w-1 h-6 bg-violet-500 animate-pulse" />
+                                        <div className="bg-slate-900 text-white p-5 rounded-2xl border-2 border-violet-500/50 text-xl font-medium flex items-center justify-between">
+                                            <span>Pizza 45 Nubank</span>
+                                            <span className="text-sm font-bold text-slate-500">Manual</span>
                                         </div>
                                     </div>
 
                                     <div className="space-y-4 pt-4">
-                                        <div className="text-sm font-bold text-slate-500 italic">O que detectamos:</div>
+                                        <div className="text-sm font-bold text-slate-500 italic">Controle total:</div>
                                         <div className="grid grid-cols-3 gap-3">
                                             {[
                                                 { label: "Valor", value: "R$ 45,00", color: "text-emerald-400" },
@@ -313,7 +313,7 @@ export const LandingPage: React.FC = () => {
                             price="R$ 19,90"
                             period="mês"
                             features={[
-                                "Smart Input Ilimitado",
+                                "Lançamento Rápido Ilimitado",
                                 "Sincronização na Nuvem",
                                 "Dashboard Completo",
                                 "Relatórios de Tempo x Valor",

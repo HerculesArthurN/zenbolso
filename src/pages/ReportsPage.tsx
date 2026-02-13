@@ -3,17 +3,23 @@ import { useDashboardData } from '../hooks/useDashboardData';
 import { useCategories } from '../hooks/useCategories';
 import { ExpensePieChart } from '../components/reports/ExpensePieChart';
 import { MonthlyFlowChart } from '../components/reports/MonthlyFlowChart';
-import { ChevronLeft, ChevronRight, Calendar, PieChart as PieIcon, BarChart3, Download, Settings } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, PieChart as PieIcon, BarChart3, Download, Settings, FileText } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useLocaleFormat } from '../hooks/useLocaleFormat';
 import { SyncStatus } from '../components/common/SyncStatus';
 import { Link } from 'react-router-dom';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import { useToast } from '../contexts/ToastContext';
 
 export const ReportsPage: React.FC = () => {
     const { t } = useTranslation();
+    const { addToast } = useToast();
     const { formatCurrency, formatDate } = useLocaleFormat();
     const { accounts, transactions, loading: loadingTxs } = useDashboardData();
     const { categories, loading: loadingCats } = useCategories();
+    const reportRef = React.useRef<HTMLDivElement>(null);
+    const [isExporting, setIsExporting] = useState(false);
 
     // Month state: 0 for Jan, 11 for Dec
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -61,8 +67,48 @@ export const ReportsPage: React.FC = () => {
         return { income, expense, balance: income - expense, categoryData };
     }, [filteredTransactions, categories, t]);
 
+    const handleExportPDF = async () => {
+        if (!reportRef.current) return;
+
+        setIsExporting(true);
+        addToast(t('common.loading'), 'info');
+
+        try {
+            const element = reportRef.current;
+            // Temporarily hide elements with "no-print" class
+            const noPrintElements = element.querySelectorAll('.no-print');
+            noPrintElements.forEach(el => (el as HTMLElement).style.display = 'none');
+
+            const canvas = await html2canvas(element, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff'
+            });
+
+            // Restore visibility
+            noPrintElements.forEach(el => (el as HTMLElement).style.display = '');
+
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`relatorio-${monthLabel.replace(/\s/g, '-')}.pdf`);
+
+            addToast('PDF gerado com sucesso!', 'success');
+        } catch (error) {
+            console.error('Erro ao gerar PDF:', error);
+            addToast('Erro ao gerar PDF. Tente novamente.', 'error');
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
     return (
-        <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-500 text-left">
+        <div ref={reportRef} className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-500 text-left bg-white dark:bg-slate-950 p-4 md:p-8 rounded-[48px]">
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
@@ -73,7 +119,7 @@ export const ReportsPage: React.FC = () => {
                     </p>
                 </div>
 
-                <div className="md:hidden flex items-center justify-between w-full bg-white dark:bg-slate-900 p-4 pl-16 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
+                <div className="md:hidden flex items-center justify-between w-full bg-white dark:bg-slate-900 p-4 pl-16 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm no-print">
                     <div className="flex flex-col">
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">
                             {t('sidebar.current_balance')}
@@ -96,13 +142,13 @@ export const ReportsPage: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <div className="hidden md:block">
+                    <div className="hidden md:block no-print">
                         <SyncStatus />
                     </div>
                     <div className="flex items-center bg-white dark:bg-slate-900 p-2 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
                         <button
                             onClick={() => changeMonth(-1)}
-                            className="p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                            className="p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors no-print"
                         >
                             <ChevronLeft size={20} />
                         </button>
@@ -112,7 +158,7 @@ export const ReportsPage: React.FC = () => {
                         </div>
                         <button
                             onClick={() => changeMonth(1)}
-                            className="p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                            className="p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors no-print"
                         >
                             <ChevronRight size={20} />
                         </button>
@@ -169,7 +215,7 @@ export const ReportsPage: React.FC = () => {
                             </div>
                             <h3 className="font-bold text-slate-900 dark:text-white">{t('planning.evolution')}</h3>
                         </div>
-                        <button className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-indigo-600 transition-colors">
+                        <button className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-indigo-600 transition-colors no-print">
                             <Download size={14} /> {t('common.export')}
                         </button>
                     </div>
@@ -184,13 +230,24 @@ export const ReportsPage: React.FC = () => {
                 </div>
             </div>
 
-            <div className="p-8 bg-slate-900 dark:bg-indigo-950 rounded-[40px] text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl shadow-indigo-500/20">
+            {/* AI Removal: This section previously had "Conectado na Nuvem" which was generic. 
+                The button now triggers the PDF export. */}
+            <div className="p-8 bg-slate-900 dark:bg-indigo-950 rounded-[40px] text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl shadow-indigo-500/20 no-print">
                 <div className="text-center md:text-left">
-                    <h4 className="text-xl font-bold mb-1">{t('auth.connected')}</h4>
-                    <p className="text-indigo-200 text-sm">{t('dashboard.subtitle')}</p>
+                    <h4 className="text-xl font-bold mb-1">Exportar Relatório</h4>
+                    <p className="text-indigo-200 text-sm">Gere um documento PDF completo do seu desempenho mensal.</p>
                 </div>
-                <button className="px-8 py-4 bg-white text-indigo-600 rounded-2xl font-bold hover:bg-indigo-50 transition-all active:scale-95 shadow-lg">
-                    {t('common.confirm')} PDF
+                <button
+                    onClick={handleExportPDF}
+                    disabled={isExporting}
+                    className="px-8 py-4 bg-white text-indigo-600 rounded-2xl font-bold hover:bg-indigo-50 transition-all active:scale-95 shadow-lg flex items-center gap-2 disabled:opacity-50"
+                >
+                    {isExporting ? (
+                        <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                        <FileText size={20} />
+                    )}
+                    Confirmar PDF
                 </button>
             </div>
         </div>

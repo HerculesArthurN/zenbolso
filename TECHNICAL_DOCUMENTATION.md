@@ -57,12 +57,9 @@ O ZenBolso implementa uma **Arquitetura Híbrida Local-First** com sincronizaç�
 │  • ThemeContext (UI)                                     │
 └─────────────────────────────────────────────────────────┘
                             ↓
-┌─────────────────────────────────────────────────────────┐
-│                  CAMADA DE SERVIÇOS                      │
 │  Service Layer (accountService, transactionService)      │
 │  • Lógica de Negócio                                     │
 │  • Abstração de Persistência                            │
-│  • Smart Parser (NLP)                                    │
 └─────────────────────────────────────────────────────────┘
                             ↓
 ┌──────────────────────┬──────────────────────────────────┐
@@ -117,13 +114,9 @@ O ZenBolso implementa uma **Arquitetura Híbrida Local-First** com sincronizaç�
 **Exemplo: Criação de Transação**
 
 ```
-1. Usuário insere "Pizza 50 Nubank hoje" na Magic Bar
+1. Usuário abre modal de nova transação
    ↓
-2. smartParser.ts processa a string:
-   - Extrai valor: 50
-   - Identifica conta via Fuse.js: "Nubank"
-   - Identifica categoria: "Alimentação"
-   - Define data: hoje
+2. Preenche dados manuais (valor, conta, categoria)
    ↓
 3. transactionService.createTransaction() é chamado
    ↓
@@ -225,21 +218,16 @@ O ZenBolso implementa uma **Arquitetura Híbrida Local-First** com sincronizaç�
 
 ### 4.1 Funcionalidades Principais
 
-#### 4.1.1 Magic Bar (Smart Input)
-**Descrição:** Sistema de entrada de transações via linguagem natural.
+#### 4.1.1 Exportação de Relatórios (PDF)
+**Descrição:** Geração de documentos PDF detalhados dos relatórios mensais.
 
-**Tecnologia:** Parser customizado com Fuse.js para fuzzy matching.
+**Tecnologia:** jsPDF e html2canvas para captura de UI e geração de documentos.
 
-**Exemplos de Uso:**
-- `"Almoço 45 Nubank"` → Cria transação de R$ 45,00 na conta Nubank, categoria Alimentação
-- `"Salário 5000 ontem"` → Cria receita de R$ 5.000,00 com data de ontem
-- `"Uber 25,50"` → Cria despesa de R$ 25,50 na conta padrão
-
-**Algoritmo:**
-1. Extração de valor via regex: `/(?:r\$?\s*)?(\d+(?:[.,]\d{2})?)/i`
-2. Identificação de data relativa: "hoje", "ontem", "anteontem"
-3. Fuzzy matching de contas e categorias (threshold: 0.4)
-4. Remoção de stopwords: "no", "na", "de", "com"
+**Funcionalidades:**
+- Exportação de gráficos de distribuição (Pie Chart)
+- Exportação de fluxos mensais (Bar Chart)
+- Resumo financeiro (Entradas, Saídas, Saldo)
+- Formatação otimizada para impressão
 
 #### 4.1.2 Zen Insights (Custo de Tempo)
 **Descrição:** Conversão de gastos em horas de trabalho.
@@ -318,21 +306,12 @@ Custo em Horas = Valor da Transação / (Renda Mensal / Horas Trabalhadas por M�
 10. Sincronização bidirecional ativada
 ```
 
-#### 4.2.3 Criação de Transação via Magic Bar
-```
-1. Usuário foca no input da Magic Bar (Dashboard)
-2. Digita "Pizza 50 Nubank"
-3. Pressiona Enter
-4. smartParser.parseTransactionText() processa:
-   - amount: 50
-   - account_id: UUID da conta "Nubank" (via Fuse.js)
-   - category_id: UUID de "Alimentação"
-   - description: "Pizza"
-5. transactionService.createTransaction() salva
-6. useDashboardData() invalida cache via TanStack Query
-7. UI atualiza lista de transações
-8. Toast de sucesso exibido
-```
+#### 4.2.3 Exportação de PDF
+1. Usuário acessa a aba de Relatórios
+2. Seleciona o mês desejado
+3. Clica em "Confirmar PDF"
+4. O sistema processa o conteúdo via html2canvas
+5. Gera o documento via jsPDF e realiza o download automático
 
 ### 4.3 Regras de Negócio Relevantes
 
@@ -626,7 +605,7 @@ src/
 ┌─────────────────────────────────────────┐
 │          ZenBolso (SPA)                 │
 │  • Dashboard                            │
-│  • Magic Bar                            │
+│  • Relatórios Exportáveis               │
 │  • Zen Insights                         │
 └──────┬──────────────────────┬───────────┘
        │                      │

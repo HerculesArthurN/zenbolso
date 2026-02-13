@@ -6,121 +6,120 @@ import { ShoppingBag, CheckCircle, AlertTriangle, XCircle, ArrowRight } from 'lu
 import { DailyForecast } from '../../services/forecast';
 
 interface PurchaseSimulatorProps {
-  isOpen: boolean;
-  onClose: () => void;
-  summary: DashboardSummary | null;
-  forecast: DailyForecast[];
+    isOpen: boolean;
+    onClose: () => void;
+    summary: DashboardSummary | null;
+    forecast: DailyForecast[];
 }
 
 export const PurchaseSimulator: React.FC<PurchaseSimulatorProps> = ({ isOpen, onClose, summary, forecast }) => {
-  const [amount, setAmount] = useState('');
-  const [result, setResult] = useState<'safe' | 'warning' | 'danger' | null>(null);
-  const [message, setMessage] = useState('');
+    const [amount, setAmount] = useState('');
+    const [result, setResult] = useState<'safe' | 'warning' | 'danger' | null>(null);
+    const [message, setMessage] = useState('');
 
-  const handleSimulate = () => {
-      if (!summary) return;
-      const val = parseFloat(amount);
-      if (isNaN(val) || val <= 0) return;
+    const handleSimulate = () => {
+        if (!summary) return;
+        const val = parseFloat(amount);
+        if (isNaN(val) || val <= 0) return;
 
-      const currentAvailable = summary.netBalance;
-      const remainingAfterPurchase = currentAvailable - val;
+        const currentAvailable = summary.netBalance;
+        const remainingAfterPurchase = currentAvailable - val;
 
-      // 1. Check Immediate Balance
-      if (remainingAfterPurchase < 0) {
-          setResult('danger');
-          setMessage(`Isso deixaria seu saldo negativo em R$ ${Math.abs(remainingAfterPurchase).toFixed(2)} imediatamente.`);
-          return;
-      }
+        // 1. Check Immediate Balance
+        if (remainingAfterPurchase < 0) {
+            setResult('danger');
+            setMessage(`Isso deixaria seu saldo negativo em R$ ${Math.abs(remainingAfterPurchase).toFixed(2)} imediatamente.`);
+            return;
+        }
 
-      // 2. Check Forecast (Next 30 days)
-      // Check if adding this expense makes any future day go negative
-      // We assume the forecast data assumes "status quo". If we drop the baseline by 'val', does any day dip below 0?
-      const dangerDay = forecast.find(day => (day.balance - val) < 0);
+        // 2. Check Forecast (Next 30 days)
+        // Check if adding this expense makes any future day go negative
+        // We assume the forecast data assumes "status quo". If we drop the baseline by 'val', does any day dip below 0?
+        const dangerDay = forecast.find(day => (day.balance - val) < 0);
 
-      if (dangerDay) {
-          setResult('danger');
-          setMessage(`Perigo! Se você comprar isso, seu saldo ficará negativo no dia ${dangerDay.label}.`);
-          return;
-      }
+        if (dangerDay) {
+            setResult('danger');
+            setMessage(`Perigo! Se você comprar isso, seu saldo ficará negativo no dia ${dangerDay.label}.`);
+            return;
+        }
 
-      // 3. Check Budget Buffer
-      // If remaining balance is less than 20% of current balance, warn
-      if (remainingAfterPurchase < (currentAvailable * 0.2)) {
-          setResult('warning');
-          setMessage('Cuidado. Você pode comprar, mas isso consumirá quase toda sua reserva atual.');
-          return;
-      }
+        // 3. Check Budget Buffer
+        // If remaining balance is less than 20% of current balance, warn
+        if (remainingAfterPurchase < (currentAvailable * 0.2)) {
+            setResult('warning');
+            setMessage('Cuidado. Você pode comprar, mas isso consumirá quase toda sua reserva atual.');
+            return;
+        }
 
-      setResult('safe');
-      setMessage('Luz Verde! Essa compra cabe no seu bolso e não compromete os próximos 30 dias.');
-  };
+        setResult('safe');
+        setMessage('Luz Verde! Essa compra cabe no seu bolso e não compromete os próximos 30 dias.');
+    };
 
-  const reset = () => {
-      setAmount('');
-      setResult(null);
-      setMessage('');
-  };
+    const reset = () => {
+        setAmount('');
+        setResult(null);
+        setMessage('');
+    };
 
-  const close = () => {
-      reset();
-      onClose();
-  }
+    const close = () => {
+        reset();
+        onClose();
+    }
 
-  return (
-    <Modal isOpen={isOpen} onClose={close} title="Simulador de Compra">
-        <div className="space-y-6">
-            {!result ? (
-                <>
-                    <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-xl flex gap-3 text-purple-800 dark:text-purple-300">
-                        <ShoppingBag className="flex-shrink-0" size={24} />
-                        <p className="text-sm">Quer comprar algo fora do orçamento? Digite o valor e nossa IA verificará se isso afeta suas contas futuras.</p>
+    return (
+        <Modal isOpen={isOpen} onClose={close} title="Simulador de Compra">
+            <div className="space-y-6">
+                {!result ? (
+                    <>
+                        <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-xl flex gap-3 text-purple-800 dark:text-purple-300">
+                            <ShoppingBag className="flex-shrink-0" size={24} />
+                            <p className="text-sm">Quer comprar algo fora do orçamento? Digite o valor e nosso sistema verificará se isso afeta suas contas futuras.</p>
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Valor da Compra</label>
+                            <div className="relative">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl font-bold">R$</span>
+                                <input
+                                    type="number"
+                                    value={amount}
+                                    onChange={(e) => setAmount(e.target.value)}
+                                    autoFocus
+                                    placeholder="0,00"
+                                    className="w-full pl-12 pr-4 py-4 bg-gray-50 dark:bg-gray-800 border-none rounded-2xl text-2xl font-bold text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500"
+                                />
+                            </div>
+                        </div>
+
+                        <Button onClick={handleSimulate} disabled={!amount} className="w-full gap-2 py-3 text-lg">
+                            Verificar <ArrowRight size={20} />
+                        </Button>
+                    </>
+                ) : (
+                    <div className="text-center animate-in zoom-in-95 duration-300">
+                        <div className={`mx-auto w-20 h-20 rounded-full flex items-center justify-center mb-4 ${result === 'safe' ? 'bg-emerald-100 text-emerald-600' :
+                                result === 'warning' ? 'bg-amber-100 text-amber-600' : 'bg-rose-100 text-rose-600'
+                            }`}>
+                            {result === 'safe' && <CheckCircle size={40} />}
+                            {result === 'warning' && <AlertTriangle size={40} />}
+                            {result === 'danger' && <XCircle size={40} />}
+                        </div>
+
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                            {result === 'safe' ? 'Pode Comprar!' : result === 'warning' ? 'Atenção' : 'Melhor Evitar'}
+                        </h3>
+
+                        <p className="text-gray-600 dark:text-gray-300 mb-6 px-4">
+                            {message}
+                        </p>
+
+                        <div className="flex gap-3">
+                            <Button variant="secondary" onClick={reset} className="flex-1">Nova Simulação</Button>
+                            <Button onClick={close} className="flex-1">Fechar</Button>
+                        </div>
                     </div>
-                    
-                    <div>
-                         <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Valor da Compra</label>
-                         <div className="relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl font-bold">R$</span>
-                            <input
-                                type="number"
-                                value={amount}
-                                onChange={(e) => setAmount(e.target.value)}
-                                autoFocus
-                                placeholder="0,00"
-                                className="w-full pl-12 pr-4 py-4 bg-gray-50 dark:bg-gray-800 border-none rounded-2xl text-2xl font-bold text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500"
-                            />
-                         </div>
-                    </div>
-
-                    <Button onClick={handleSimulate} disabled={!amount} className="w-full gap-2 py-3 text-lg">
-                        Verificar <ArrowRight size={20} />
-                    </Button>
-                </>
-            ) : (
-                <div className="text-center animate-in zoom-in-95 duration-300">
-                     <div className={`mx-auto w-20 h-20 rounded-full flex items-center justify-center mb-4 ${
-                         result === 'safe' ? 'bg-emerald-100 text-emerald-600' :
-                         result === 'warning' ? 'bg-amber-100 text-amber-600' : 'bg-rose-100 text-rose-600'
-                     }`}>
-                         {result === 'safe' && <CheckCircle size={40} />}
-                         {result === 'warning' && <AlertTriangle size={40} />}
-                         {result === 'danger' && <XCircle size={40} />}
-                     </div>
-                     
-                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                         {result === 'safe' ? 'Pode Comprar!' : result === 'warning' ? 'Atenção' : 'Melhor Evitar'}
-                     </h3>
-                     
-                     <p className="text-gray-600 dark:text-gray-300 mb-6 px-4">
-                         {message}
-                     </p>
-
-                     <div className="flex gap-3">
-                         <Button variant="secondary" onClick={reset} className="flex-1">Nova Simulação</Button>
-                         <Button onClick={close} className="flex-1">Fechar</Button>
-                     </div>
-                </div>
-            )}
-        </div>
-    </Modal>
-  );
+                )}
+            </div>
+        </Modal>
+    );
 };
