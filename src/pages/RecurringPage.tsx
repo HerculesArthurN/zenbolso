@@ -6,6 +6,7 @@ import { RecurringTransaction } from '../types';
 import { Calendar, Trash2, Plus, Loader2, DollarSign, ToggleLeft, ToggleRight, CreditCard, AlertCircle } from 'lucide-react';
 import { Modal } from '../../components/ui/Modal';
 import { useToast } from '../contexts/ToastContext';
+import { safeNumber } from '../utils/numberUtils';
 
 export const RecurringPage: React.FC = () => {
     const { accounts, loading: loadingAccounts } = useDashboardData();
@@ -162,7 +163,7 @@ export const RecurringPage: React.FC = () => {
                                             <span className="text-[11px] font-bold text-indigo-500 uppercase tracking-widest bg-indigo-50 dark:bg-indigo-900/20 px-2 py-0.5 rounded-md">Todo dia {rule.day_of_month}</span>
                                             <span className="w-1 h-1 bg-slate-300 rounded-full" />
                                             <span className={`text-sm font-bold ${rule.type === 'INCOME' ? 'text-emerald-600' : 'text-slate-900 dark:text-white'}`}>
-                                                {formatCurrency(rule.amount)}
+                                                {formatCurrency(safeNumber(rule.amount, 0))}
                                             </span>
                                             {account && (
                                                 <>

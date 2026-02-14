@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useToast } from '../contexts/ToastContext';
+import { safeNumber } from '../utils/numberUtils';
 
 export const ReportsPage: React.FC = () => {
     const { t } = useTranslation();
@@ -47,10 +48,10 @@ export const ReportsPage: React.FC = () => {
     const stats = useMemo(() => {
         const income = filteredTransactions
             .filter(t => t.type === 'INCOME')
-            .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+            .reduce((sum, t) => sum + safeNumber(t.amount, 0), 0);
         const expense = filteredTransactions
             .filter(t => t.type === 'EXPENSE')
-            .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+            .reduce((sum, t) => sum + safeNumber(t.amount, 0), 0);
 
         // Group by category for accessibility fallback
         const catMap: Record<string, number> = {};
@@ -59,7 +60,7 @@ export const ReportsPage: React.FC = () => {
             .forEach(tx => {
                 const cat = categories.find(c => c.id === tx.category_id);
                 const name = cat ? cat.name : t('transactions.no_description');
-                catMap[name] = (catMap[name] || 0) + (Number(tx.amount) || 0);
+                catMap[name] = (catMap[name] || 0) + safeNumber(tx.amount, 0);
             });
 
         const categoryData = Object.entries(catMap).map(([name, value]) => ({ name, value }));
@@ -124,8 +125,8 @@ export const ReportsPage: React.FC = () => {
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">
                             {t('sidebar.current_balance')}
                         </span>
-                        <span className={`text-xl font-black leading-none ${accounts.reduce((acc, a) => acc + (Number(a.balance) || 0), 0) >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
-                            {formatCurrency(accounts.reduce((acc, a) => acc + (Number(a.balance) || 0), 0))}
+                        <span className={`text-xl font-black leading-none ${accounts.reduce((acc, a) => acc + safeNumber(a.balance, 0), 0) >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                            {formatCurrency(accounts.reduce((acc, a) => acc + safeNumber(a.balance, 0), 0))}
                         </span>
                     </div>
 
