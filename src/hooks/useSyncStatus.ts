@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '../../services/db';
-import { SyncProcessor } from '../services/sync/SyncProcessor';
+import { db } from '../services/db';
 
 export type SyncUIStatus = 'synced' | 'syncing' | 'offline-pending' | 'error';
 
@@ -11,9 +10,9 @@ export const useSyncStatus = () => {
     // Live query the sync queue
     const queueItems = useLiveQuery(() => db.sync_queue.toArray()) || [];
 
-    const pendingCount = queueItems.filter(item => item.status === 'pending' || item.status === 'retry').length;
-    const errorCount = queueItems.filter(item => item.status === 'error').length;
-    const isSyncing = SyncProcessor.isProcessing();
+    const pendingCount = queueItems.filter((item: any) => item.status === 'pending' || item.status === 'retry').length;
+    const errorCount = queueItems.filter((item: any) => item.status === 'error').length;
+    const isSyncing = false; // SyncProcessor was removed
 
     useEffect(() => {
         const handleOnline = () => setIsOnline(true);
@@ -43,6 +42,6 @@ export const useSyncStatus = () => {
         pendingCount,
         errorCount,
         isOnline,
-        retry: () => SyncProcessor.process()
+        retry: () => { } // No-op since SyncProcessor was removed
     };
 };

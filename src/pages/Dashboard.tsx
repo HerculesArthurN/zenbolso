@@ -159,7 +159,7 @@ export const Dashboard: React.FC = () => {
 
             {
                 showOnboarding && (
-                    <OnboardingWizard onFinish={handleFinishOnboarding} />
+                    <OnboardingWizard isOpen={showOnboarding} onComplete={handleFinishOnboarding} />
                 )
             }
         </div >

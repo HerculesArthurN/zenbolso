@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import { db } from '../../services/db';
+import { db } from './db';
 import { RecurringTransaction } from '../types';
 import { transactionService } from './transactionService';
 import { handleApiError } from './api';

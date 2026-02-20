@@ -1,4 +1,4 @@
-import { db } from '../../services/db';
+import { db } from './db';
 import { Transaction } from '../types';
 import { encrypt, decrypt } from '../utils/crypto';
 
@@ -11,7 +11,7 @@ export const transactionService = {
             .limit(limit)
             .toArray();
 
-        return localTxs.map(tx => ({
+        return localTxs.map((tx: any) => ({
             id: tx.id,
             user_id: '', // Deprecated
             account_id: tx.accountId || '',
@@ -39,7 +39,7 @@ export const transactionService = {
         // Standardized internal payload for Dexie
         const localTx = {
             id,
-            type: (transaction.type?.toLowerCase() || 'expense') as any,
+            type: (transaction.type?.toUpperCase() || 'EXPENSE') as any,
             value: encrypt(transaction.amount ? Number(transaction.amount) : 0),
             date: transaction.date || now.split('T')[0],
             category: transaction.category_id || 'Outros',

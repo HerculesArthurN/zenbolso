@@ -1,3 +1,4 @@
+
 const errorMessages: Record<string, string> = {
   // --- Validação (Entrada do Usuário) ---
   'VALIDATION_REQUIRED_FIELD': 'Por favor, preencha todos os campos obrigatórios.',
@@ -32,4 +33,15 @@ const errorMessages: Record<string, string> = {
 
 export function getUserFriendlyMessage(code: string): string {
   return errorMessages[code] || errorMessages['UNKNOWN_ERROR'];
+}
+
+export function getErrorMessage(error: unknown): string {
+  if (error && typeof error === 'object' && 'code' in error) {
+      const code = (error as any).code;
+      return getUserFriendlyMessage(code) || (error as any).message;
+  }
+  if (error instanceof Error) {
+      return error.message;
+  }
+  return getUserFriendlyMessage('UNKNOWN_ERROR');
 }

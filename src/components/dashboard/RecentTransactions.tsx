@@ -2,7 +2,6 @@ import React from 'react';
 import { Tag, ArrowUpRight, ArrowDownLeft, Ghost, Pencil, Trash2 } from 'lucide-react';
 import { Transaction } from '../../types';
 import { transactionService } from '../../services/transactionService';
-import { useTranslation } from 'react-i18next';
 import { useLocaleFormat } from '../../hooks/useLocaleFormat';
 import { safeNumber } from '../../utils/numberUtils';
 
@@ -19,17 +18,16 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
     onEdit,
     onRefresh
 }) => {
-    const { t } = useTranslation();
     const { formatCurrency, formatDateShort } = useLocaleFormat();
 
     const handleDelete = async (id: string) => {
-        if (window.confirm(t('transactions.confirm_delete'))) {
+        if (window.confirm('Deseja excluir esta transação?')) {
             try {
                 await transactionService.deleteTransaction(id);
                 onRefresh();
             } catch (error) {
                 console.error('Delete error:', error);
-                alert(t('transactions.delete_error'));
+                alert('Erro ao excluir transação.');
             }
         }
     };
@@ -48,8 +46,8 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
         return (
             <div className="flex flex-col items-center justify-center py-12 bg-slate-50 dark:bg-slate-800/20 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-800 text-slate-400">
                 <Ghost size={40} className="mb-3 opacity-20" />
-                <p className="text-sm">{t('transactions.no_transactions')}</p>
-                <p className="text-xs opacity-60">{t('transactions.no_transactions_hint')}</p>
+                <p className="text-sm">Nenhuma transação encontrada</p>
+                <p className="text-xs opacity-60">Comece adicionando sua primeira transação.</p>
             </div>
         );
     }
@@ -57,7 +55,7 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
     return (
         <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
             <div className="p-6 border-b border-slate-50 dark:border-slate-800">
-                <h3 className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-xs">{t('transactions.recent')}</h3>
+                <h3 className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-xs">Recentes</h3>
             </div>
             <div className="divide-y divide-slate-50 dark:divide-slate-800">
                 {transactions.slice(0, 10).map((tx) => (
@@ -71,7 +69,7 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
                             </div>
                             <div>
                                 <p className="font-semibold text-slate-900 dark:text-white text-sm">
-                                    {tx.description || t('transactions.no_description')}
+                                    {tx.description || 'Sem descrição'}
                                 </p>
                                 <div className="flex items-center gap-2 mt-0.5">
                                     <Tag size={10} className="text-slate-400" />
@@ -93,14 +91,14 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
                                 <button
                                     onClick={() => onEdit(tx)}
                                     className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
-                                    title={t('transactions.edit')}
+                                    title="Editar"
                                 >
                                     <Pencil size={14} />
                                 </button>
                                 <button
                                     onClick={() => handleDelete(tx.id)}
                                     className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-colors"
-                                    title={t('transactions.delete')}
+                                    title="Excluir"
                                 >
                                     <Trash2 size={14} />
                                 </button>

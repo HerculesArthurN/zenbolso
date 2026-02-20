@@ -12,8 +12,8 @@ import { Dashboard } from './pages/Dashboard';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 
 // Lazy Imports (Secondary / Heavy)
-const TransactionsPage = lazy(() => import('../pages/TransactionsPage').then(m => ({ default: m.TransactionsPage })));
-const Planning = lazy(() => import('../pages/Planning').then(m => ({ default: m.Planning })));
+const TransactionsPage = lazy(() => import('./pages/TransactionsPage').then(m => ({ default: m.TransactionsPage })));
+const Planning = lazy(() => import('./pages/Planning').then(m => ({ default: m.Planning })));
 const SettingsPage = lazy(() => import('./pages/SettingsPage').then(m => ({ default: m.SettingsPage })));
 const RecurringPage = lazy(() => import('./pages/RecurringPage').then(m => ({ default: m.RecurringPage })));
 const ReportsPage = lazy(() => import('./pages/ReportsPage').then(m => ({ default: m.ReportsPage })));

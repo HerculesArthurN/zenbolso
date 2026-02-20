@@ -4,7 +4,7 @@ import { useDashboardData } from '../hooks/useDashboardData';
 import { useCategories } from '../hooks/useCategories';
 import { RecurringTransaction } from '../types';
 import { Calendar, Trash2, Plus, Loader2, DollarSign, ToggleLeft, ToggleRight, CreditCard, AlertCircle } from 'lucide-react';
-import { Modal } from '../../components/ui/Modal';
+import { Modal } from '../components/ui/Modal';
 import { useToast } from '../contexts/ToastContext';
 import { safeNumber } from '../utils/numberUtils';
 

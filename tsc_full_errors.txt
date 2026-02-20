@@ -1,0 +1,40 @@
+﻿src/components/dashboard/RecentTransactions.tsx(5,32): error TS2307: Cannot find module 'react-i18next' or its corresponding type declarations.
+src/components/dashboard/SummaryChart.tsx(5,32): error TS2307: Cannot find module 'react-i18next' or its corresponding type declarations.
+src/components/dashboard/SummaryChart.tsx(6,33): error TS2307: Cannot find module '../../src/hooks/useLocaleFormat' or its corresponding type declarations.
+src/components/dashboard/SummaryOverview.tsx(4,32): error TS2307: Cannot find module 'react-i18next' or its corresponding type declarations.
+src/components/layout/AppLayout.tsx(3,27): error TS2307: Cannot find module '../../src/components/layout/MobileNav' or its corresponding type declarations.
+src/components/layout/AppLayout.tsx(4,25): error TS2307: Cannot find module '../../context/DataContext' or its corresponding type declarations.
+src/components/layout/BottomNav.tsx(4,25): error TS2307: Cannot find module '../../context/DataContext' or its corresponding type declarations.
+src/components/reports/MonthlyReportDocument.tsx(2,62): error TS2307: Cannot find module '@react-pdf/renderer' or its corresponding type declarations.
+src/components/settings/DataManagement.tsx(2,63): error TS6133: 'CheckCircle2' is declared but its value is never read.
+src/hooks/queries/useTransactionMutations.ts(2,39): error TS2307: Cannot find module '../../services/repositories/transaction.repository' or its corresponding type declarations.
+src/hooks/queries/useTransactionMutations.ts(4,26): error TS2307: Cannot find module '../../context/ToastContext' or its corresponding type declarations.
+src/hooks/queries/useTransactions.ts(2,39): error TS2307: Cannot find module '../../services/repositories/transaction.repository' or its corresponding type declarations.
+src/hooks/queries/useTransactions.ts(31,26): error TS7006: Parameter 't' implicitly has an 'any' type.
+src/hooks/useDashboardData.ts(5,25): error TS2307: Cannot find module '../contexts/AuthContext' or its corresponding type declarations.
+src/hooks/useLocaleFormat.ts(11,11): error TS6133: 'getLocale' is declared but its value is never read.
+src/hooks/useSyncStatus.ts(3,20): error TS2307: Cannot find module '../../services/db' or its corresponding type declarations.
+src/hooks/useSyncStatus.ts(4,31): error TS2307: Cannot find module '../services/sync/SyncProcessor' or its corresponding type declarations.
+src/hooks/useSyncStatus.ts(14,44): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/hooks/useSyncStatus.ts(15,42): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/hooks/useTransactionForm.ts(127,9): error TS2322: Type 'string | undefined' is not assignable to type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+src/pages/Dashboard.tsx(162,39): error TS2322: Type '{ onFinish: () => void; }' is not assignable to type 'IntrinsicAttributes & OnboardingWizardProps'.
+  Property 'onFinish' does not exist on type 'IntrinsicAttributes & OnboardingWizardProps'.
+src/pages/ReportsPage.tsx(7,32): error TS2307: Cannot find module 'react-i18next' or its corresponding type declarations.
+src/pages/SettingsPage.tsx(22,5): error TS6133: 'Globe' is declared but its value is never read.
+src/pages/SettingsPage.tsx(23,5): error TS6133: 'ShieldCheck' is declared but its value is never read.
+src/pages/SettingsPage.tsx(25,5): error TS6133: 'LogIn' is declared but its value is never read.
+src/pages/SettingsPage.tsx(26,5): error TS6133: 'AlertTriangle' is declared but its value is never read.
+src/pages/SettingsPage.tsx(27,5): error TS6133: 'CheckCircle2' is declared but its value is never read.
+src/services/categoryService.ts(2,20): error TS2307: Cannot find module '../../services/db' or its corresponding type declarations.
+src/services/categoryService.ts(22,30): error TS7006: Parameter 'cat' implicitly has an 'any' type.
+src/services/csv.ts(22,25): error TS2339: Property 'tags' does not exist on type 'Transaction'.
+src/services/csv.ts(22,34): error TS2339: Property 'tags' does not exist on type 'Transaction'.
+src/services/csv.ts(27,24): error TS2339: Property 'category' does not exist on type 'Transaction'.
+src/services/csv.ts(28,11): error TS2339: Property 'value' does not exist on type 'Transaction'.
+src/services/csv.ts(89,13): error TS2322: Type '"income" | "expense"' is not assignable to type 'TransactionType'.
+  Type '"income"' is not assignable to type 'TransactionType'. Did you mean '"INCOME"'?
+src/services/dataExportService.ts(1,20): error TS2307: Cannot find module '../../services/db' or its corresponding type declarations.
+src/services/dataExportService.ts(116,53): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/services/dataExportService.ts(122,43): error TS7006: Parameter 'tx' implicitly has an 'any' type.

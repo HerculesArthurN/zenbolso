@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import { db } from '../../services/db';
+import { db } from './db';
 import { Account } from '../types';
 import { handleApiError } from './api';
 import { decrypt } from '../utils/crypto';
@@ -24,10 +24,10 @@ export const accountService = {
             db.transactions.toArray()
         ]);
 
-        return localAccounts.map(acc => {
-            const accountTransactions = localTransactions.filter(t => t.accountId === acc.id || (!t.accountId && acc.id === 'default-wallet'));
+        return localAccounts.map((acc: any) => {
+            const accountTransactions = localTransactions.filter((t: any) => t.accountId === acc.id || (!t.accountId && acc.id === 'default-wallet'));
 
-            const flow = accountTransactions.reduce((sum, t) => {
+            const flow = accountTransactions.reduce((sum: number, t: any) => {
                 const rawValue = typeof t.value === 'string' ? decrypt(t.value) : t.value;
                 const val = Number(rawValue) || 0;
                 const type = String(t.type || '').toUpperCase();
@@ -49,14 +49,17 @@ export const accountService = {
     },
 
     mapLegacyType(type: string): any {
+        const t = type.toUpperCase();
+        if (['WALLET', 'BANK', 'INVESTMENT'].includes(t)) return t;
+
         const map: Record<string, string> = {
-            'checking': 'BANK',
-            'savings': 'BANK',
-            'investment': 'INVESTMENT',
-            'cash': 'WALLET',
-            'credit': 'BANK'
+            'CHECKING': 'BANK',
+            'SAVINGS': 'BANK',
+            'INVESTMENT': 'INVESTMENT',
+            'CASH': 'WALLET',
+            'CREDIT': 'BANK'
         };
-        return map[type] || 'BANK';
+        return map[t] || 'BANK';
     },
 
     async createAccount(account: Partial<Account>): Promise<Account> {

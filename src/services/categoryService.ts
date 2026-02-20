@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import { db } from '../../services/db';
+import { db } from './db';
 import { Category } from '../types';
 import { handleApiError } from './api';
 

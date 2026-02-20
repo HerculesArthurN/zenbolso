@@ -8,7 +8,6 @@ export const useLocaleFormat = () => {
     const { profile } = useProfileSettings();
 
     // Force pt-BR
-    const getLocale = (): string => 'pt-BR';
 
     /**
      * Get user's preferred currency from profile or default to BRL

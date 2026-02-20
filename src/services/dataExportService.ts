@@ -1,4 +1,4 @@
-import { db } from '../../services/db';
+import { db } from './db';
 import { decrypt } from '../utils/crypto';
 import { saveAs } from 'file-saver';
 import { format } from 'date-fns';
@@ -74,7 +74,7 @@ export const dataExportService = {
                     }
 
                     // Transaction to wipe and restore
-                    await db.transaction('rw', db.transactions, db.accounts, db.categories, db.recurringConfigs, db.goals, db.settings, async () => {
+                    await db.transaction('rw', [db.transactions, db.accounts, db.categories, db.recurringConfigs, db.goals, db.settings], async () => {
                         // Wipe all tables
                         await Promise.all([
                             db.transactions.clear(),
@@ -113,28 +113,28 @@ export const dataExportService = {
         try {
             const transactions = await db.transactions.toArray();
             const accounts = await db.accounts.toArray();
-            const accountMap = new Map(accounts.map(a => [a.id, a.name]));
+            const accountMap = new Map(accounts.map((a: any) => [a.id, a.name]));
 
             // Header Row
             const headers = ['Data', 'Descrição', 'Categoria', 'Valor', 'Tipo', 'Conta', 'Status'];
 
             // Data Rows
-            const rows = transactions.map(tx => {
+            const rows = transactions.map((tx: any) => {
                 const date = tx.date;
                 const description = decrypt(tx.description || '') || 'Sem descrição';
 
                 // Decrypt amount
                 let amount = 0;
-                if (typeof tx.value === 'string') {
-                    const decrypted = decrypt(tx.value);
+                if (typeof tx.amount === 'string') {
+                    const decrypted = decrypt(tx.amount);
                     amount = decrypted ? Number(decrypted) : 0;
                 } else {
-                    amount = Number(tx.value) || 0;
+                    amount = Number(tx.amount) || 0;
                 }
 
-                const category = typeof tx.category === 'string' ? tx.category : 'Outros';
-                const type = tx.type === 'expense' ? 'Despesa' : 'Receita';
-                const accountName = accountMap.get(tx.accountId || '') || 'Carteira';
+                const category = typeof tx.category_id === 'string' ? tx.category_id : 'Outros';
+                const type = tx.type === 'EXPENSE' ? 'Despesa' : 'Receita';
+                const accountName = accountMap.get(tx.account_id || '') || 'Carteira';
                 const status = 'Pago'; // Dexie items are usually confirmed in this app model
 
                 // CSV escaping for description

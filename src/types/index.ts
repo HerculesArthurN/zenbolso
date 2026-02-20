@@ -67,3 +67,93 @@ export interface SyncJob {
     error?: string;
     created_at: number;
 }
+
+export interface RecurringConfig {
+    id: string;
+    type: TransactionType;
+    value: number;
+    category: string;
+    account_id: string;
+    user_id: string;
+    description: string;
+    frequency: 'monthly' | 'weekly' | 'daily' | 'yearly';
+    rruleString: string;
+    lastGeneratedDate: string;
+    nextDueDate: string; // or null
+    active: boolean;
+}
+
+export interface AppSettings {
+    budgetLimit: number;
+    monthlyIncome: number;
+    workHoursPerMonth: number;
+    isDark?: boolean;
+    googleDrive?: {
+        enabled: boolean;
+        lastBackup?: string;
+        clientId?: string;
+        frequency?: 'daily' | 'weekly' | 'monthly';
+    };
+}
+
+export interface CategorySummary {
+    category: string;
+    total: number;
+    percentage: number;
+    color: string;
+    icon: string;
+}
+
+export interface AccountSummary extends Account {
+    currentBalance: number;
+}
+
+export interface MonthlySummary {
+    month: string;
+    fullDate: string;
+    income: number;
+    expense: number;
+    balance: number;
+}
+
+export interface DashboardSummary {
+    netBalance: number;
+    totalIncome: number;
+    totalExpense: number;
+    currentMonthExpense: number;
+    budgetLimit: number;
+    categories: CategorySummary[];
+    accounts: AccountSummary[];
+    insights: Insight[];
+}
+
+export interface Insight {
+    id: string;
+    type: 'alert' | 'success' | 'info' | 'neutral' | 'warning';
+    title: string;
+    message: string;
+    icon: string;
+}
+
+export interface Badge {
+    id: string;
+    key: string;
+    name: string;
+    description: string;
+    icon: string;
+    unlocked: boolean;
+    progress: number;
+}
+
+export interface Goal {
+    id: string;
+    name: string;
+    targetAmount: number;
+    currentAmount: number;
+    imageUrl?: string;
+    deadline?: string;
+    icon?: string;
+    color?: string;
+    created_at: string;
+    updated_at: string;
+}

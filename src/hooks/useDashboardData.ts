@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { accountService } from '../services/accountService';
 import { transactionService } from '../services/transactionService';
 import { Account, Transaction } from '../types';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/SessionContext';
 
 export const useDashboardData = () => {
     const auth = useAuth();
@@ -31,13 +31,13 @@ export const useDashboardData = () => {
     }, []);
 
     useEffect(() => {
-        if (auth.loading) {
+        if (auth.isLoading) {
             setLoading(true);
             return;
         }
 
         refresh();
-    }, [auth.user, auth.loading, refresh]);
+    }, [auth.user, auth.isLoading, refresh]);
 
     return { accounts, transactions, loading, error, refresh };
 };

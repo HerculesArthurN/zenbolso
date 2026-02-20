@@ -1,88 +1,125 @@
 import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import {
-    LayoutDashboard,
-    RefreshCcw,
-    Wallet,
-    PieChart,
-    Settings,
-    LogOut
-} from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { LayoutDashboard, List, Plus, Target, Settings, RefreshCcw, PieChart, X } from 'lucide-react';
+import { ThemeToggle } from './ThemeToggle';
+import { useData } from '../../contexts/DataContext';
+import { useSummaryQuery } from '../../hooks/useFinanceData';
 import { BrandLogo } from '../ui/BrandLogo';
+import { useLocaleFormat } from '../../hooks/useLocaleFormat';
+import { UserWidget } from './UserWidget';
+import { safeNumber } from '../../utils/numberUtils';
 
 interface SidebarProps {
-    isMobile?: boolean;
-    onClose?: () => void;
+  isMobile?: boolean;
+  onClose?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isMobile, onClose }) => {
-    const navigate = useNavigate();
+  const { formatCurrency } = useLocaleFormat();
+  const { openTransactionModal } = useData();
+  const { data: summary } = useSummaryQuery();
+  const location = useLocation();
 
-    const menuItems = [
-        { icon: LayoutDashboard, label: 'Início', path: '/dashboard' },
-        { icon: RefreshCcw, label: 'Fixos', path: '/recurring' },
-        { icon: Wallet, label: 'Contas', path: '/transactions' },
-        { icon: PieChart, label: 'Dados', path: '/reports' },
-    ];
+  const safeBalance = safeNumber(summary?.netBalance, 0);
 
-    const sidebarClasses = isMobile
-        ? "fixed inset-y-0 left-0 z-50 w-64 bg-slate-50 dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shadow-2xl transform transition-transform duration-300 ease-in-out"
-        : "hidden md:flex flex-col fixed inset-y-0 left-0 w-64 bg-slate-50 dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800";
+  const getLinkClass = (path: string) => {
+    const currentPath = location.pathname;
+    // Map '/' to '/dashboard' if needed, but here they seem distinct or '/' is dashboard
+    const isActive = path === '/' ? currentPath === '/' : currentPath.startsWith(path);
 
+    return `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${isActive
+      ? 'bg-primary/10 text-primary font-bold'
+      : 'text-text-muted hover:bg-background dark:hover:bg-surface-dark'
+      }`;
+  };
+
+  const content = (
+    <>
+      {/* Header / Logo */}
+      <div className="h-20 flex items-center justify-between px-6 border-b border-border-color dark:border-border-color-dark">
+        <div className="flex items-center gap-3">
+          <BrandLogo className="h-10 w-10 p-1" variant="color" />
+          <span className="font-extrabold text-xl text-text-main dark:text-text-main-dark tracking-tighter uppercase italic">
+            Zen<span className="text-primary">Bolso</span>
+          </span>
+        </div>
+        {isMobile && (
+          <button onClick={onClose} className="p-2 text-text-muted hover:text-text-main">
+            <X size={24} />
+          </button>
+        )}
+      </div>
+
+      {/* Quick Summary Widget */}
+      <div className="px-6 py-6">
+        <div className="bg-background dark:bg-surface-dark/50 rounded-xl p-4 border border-border-color dark:border-border-color-dark shadow-sm">
+          <p className="text-[10px] text-text-muted uppercase font-bold mb-1 tracking-widest">Saldo Atual</p>
+          <p className={`text-xl font-black ${safeBalance >= 0 ? 'text-emerald-500' : 'text-danger'}`}>
+            {summary ? formatCurrency(safeBalance) : '...'}
+          </p>
+        </div>
+
+        <button
+          onClick={() => {
+            openTransactionModal();
+            if (isMobile) onClose?.();
+          }}
+          className="w-full mt-4 flex items-center justify-center gap-2 bg-primary dark:bg-primary-dark text-primary-fg dark:text-primary-fg-dark py-3 rounded-xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+        >
+          <Plus size={18} /> Nova Transação
+        </button>
+      </div>
+
+      <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
+        <Link to="/" className={getLinkClass('/')} onClick={isMobile ? onClose : undefined}>
+          <LayoutDashboard size={20} /> Início
+        </Link>
+        <Link to="/transactions" className={getLinkClass('/transactions')} onClick={isMobile ? onClose : undefined}>
+          <List size={20} /> Extrato
+        </Link>
+        <Link to="/planning" className={getLinkClass('/planning')} onClick={isMobile ? onClose : undefined}>
+          <Target size={20} /> Planejamento
+        </Link>
+        <Link to="/recurring" className={getLinkClass('/recurring')} onClick={isMobile ? onClose : undefined}>
+          <RefreshCcw size={20} /> Recorrência
+        </Link>
+        <Link to="/reports" className={getLinkClass('/reports')} onClick={isMobile ? onClose : undefined}>
+          <PieChart size={20} /> Relatórios
+        </Link>
+        <Link to="/settings" className={getLinkClass('/settings')} onClick={isMobile ? onClose : undefined}>
+          <Settings size={20} /> Configurações
+        </Link>
+      </nav>
+
+      <div className="border-t border-border-color dark:border-border-color-dark mt-auto">
+        <div className="p-4 flex items-center justify-between">
+          <ThemeToggle />
+          <div className="text-[10px] text-text-muted font-bold uppercase tracking-widest">
+            v3.1.2
+          </div>
+        </div>
+        <UserWidget mode="expanded" />
+      </div>
+    </>
+  );
+
+  if (isMobile) {
     return (
-        <>
-            {/* Backdrop for Mobile */}
-            {isMobile && (
-                <div
-                    className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"
-                    onClick={onClose}
-                />
-            )}
+      <div className="fixed inset-0 z-50 flex">
+        {/* Backdrop */}
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
-            <aside className={sidebarClasses}>
-                <div className="p-6 flex items-center gap-3">
-                    <BrandLogo variant="color" className="w-8 h-8" />
-                    <span className="text-xl font-black tracking-tighter italic">
-                        <span className="text-slate-900 dark:text-white">ZEN</span>
-                        <span className="text-emerald-500">BOLSO</span>
-                    </span>
-                </div>
-
-                <nav className="flex-1 px-4 space-y-2 mt-4">
-                    {menuItems.map((item) => (
-                        <NavLink
-                            key={item.path}
-                            to={item.path}
-                            onClick={isMobile ? onClose : undefined}
-                            className={({ isActive }) => `
-                                flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-bold
-                                ${isActive
-                                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                                    : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'}
-                            `}
-                        >
-                            <item.icon size={20} />
-                            {item.label}
-                        </NavLink>
-                    ))}
-                </nav>
-
-                <div className="p-4 mt-auto border-t border-slate-200 dark:border-slate-800">
-                    <NavLink
-                        to="/settings"
-                        onClick={isMobile ? onClose : undefined}
-                        className={({ isActive }) => `
-                            flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium
-                            ${isActive
-                                ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
-                                : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'}
-                        `}
-                    >
-                        <Settings size={20} />
-                        Configurações
-                    </NavLink>
-                </div>
-            </aside>
-        </>
+        {/* Drawer */}
+        <div className="relative flex flex-col w-72 h-full bg-surface dark:bg-surface-dark shadow-2xl animate-in slide-in-from-left duration-300">
+          {content}
+        </div>
+      </div>
     );
+  }
+
+  return (
+    <div className="hidden md:flex flex-col w-64 fixed left-0 top-0 bottom-0 bg-surface dark:bg-surface-dark border-r border-border-color dark:border-border-color-dark z-40">
+      {content}
+    </div>
+  );
 };

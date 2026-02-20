@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Download, Upload, FileJson, FileText, AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react';
+import { Download, Upload, FileJson, FileText, AlertTriangle, Loader2 } from 'lucide-react';
 import { dataExportService } from '../../services/dataExportService';
 import { useToast } from '../../contexts/ToastContext';
 

@@ -1,11 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './src/App';
-import { ToastProvider } from './context/ToastContext';
+import { ToastProvider } from './src/contexts/ToastContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './index.css';
-import './src/lib/i18n';
-import { db } from './services/db';
+import { db } from './src/services/db';
 import { supabase } from './src/lib/supabase';
 
 // Expose for Headless Smoke Tests

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal } from '../../../components/ui/Modal';
+import { Modal } from '../ui/Modal';
 import { transactionService } from '../../services/transactionService';
 import { useCategories } from '../../hooks/useCategories';
 import { Account, Transaction } from '../../types';
@@ -110,7 +110,7 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
         >
             <form onSubmit={handleSubmit} className="space-y-5">
                 {/* Type Toggle */}
-                <div className="flex p-1 bg-slate-100 dark:bg-slate-900 rounded-xl">
+                <div role="group" aria-label="Tipo de Transação" className="flex p-1 bg-slate-100 dark:bg-slate-900 rounded-xl">
                     <button
                         type="button"
                         onClick={() => setForm({ ...form, type: 'EXPENSE' })}
@@ -119,6 +119,7 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
                             : 'text-slate-500'
                             }`}
                         disabled={isSubmitting}
+                        aria-pressed={form.type === 'EXPENSE'}
                     >
                         Despesa
                     </button>
@@ -130,6 +131,7 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
                             : 'text-slate-500'
                             }`}
                         disabled={isSubmitting}
+                        aria-pressed={form.type === 'INCOME'}
                     >
                         Receita
                     </button>
@@ -137,9 +139,9 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
 
                 {/* Amount */}
                 <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1 tracking-wider text-left">Valor</label>
+                    <label htmlFor="input-amount" className="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1 tracking-wider text-left">Valor</label>
                     <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">R$</span>
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold" aria-hidden="true">R$</span>
                         <input
                             type="number"
                             step="0.01"
@@ -156,7 +158,7 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
 
                 {/* Description */}
                 <div className="text-left">
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1 tracking-wider">Descrição</label>
+                    <label htmlFor="input-description" className="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1 tracking-wider">Descrição</label>
                     <input
                         type="text"
                         value={form.description}
@@ -171,12 +173,13 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
                 <div className="grid grid-cols-2 gap-4 text-left">
                     {/* Date */}
                     <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1 tracking-wider">Data</label>
+                        <label htmlFor="input-date" className="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1 tracking-wider">Data</label>
                         <input
                             type="date"
                             required
                             value={form.date}
                             onChange={(e) => setForm({ ...form, date: e.target.value })}
+                            id="input-date"
                             className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm text-slate-900 dark:text-white"
                             disabled={isSubmitting}
                         />
@@ -184,11 +187,12 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
 
                     {/* Account */}
                     <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1 tracking-wider">Conta</label>
+                        <label htmlFor="input-account" className="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1 tracking-wider">Conta</label>
                         <select
                             required
                             value={form.account_id}
                             onChange={(e) => setForm({ ...form, account_id: e.target.value })}
+                            id="input-account"
                             className={`w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm appearance-none text-slate-900 dark:text-white ${!form.account_id && 'border-2 border-rose-500/20'}`}
                             disabled={isSubmitting || isLoadingAccounts}
                         >
@@ -206,7 +210,7 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
                             )}
                         </select>
                         {accounts.length === 0 && !isLoadingAccounts && (
-                            <div className="flex items-center gap-1 mt-1 ml-1 text-rose-500 text-[10px] font-bold">
+                            <div className="flex items-center gap-1 mt-1 ml-1 text-rose-500 text-[10px] font-bold" role="alert">
                                 <AlertCircle size={10} />
                                 <span>Crie uma conta nas configurações primeiro.</span>
                             </div>
@@ -216,10 +220,11 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
 
                 {/* Category */}
                 <div className="text-left">
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1 tracking-wider">Categoria</label>
+                    <label htmlFor="input-category" className="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1 tracking-wider">Categoria</label>
                     <select
                         value={form.category_id}
                         onChange={(e) => setForm({ ...form, category_id: e.target.value })}
+                        id="input-category"
                         className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm appearance-none text-slate-900 dark:text-white"
                         disabled={isSubmitting}
                     >

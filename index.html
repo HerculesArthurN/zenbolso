@@ -5,20 +5,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- SECURITY HEADERS -->
-  <!-- CSP restritiva permitindo apenas fontes confiáveis (Google, Unsplash, ESM.sh para dev) -->
-  <meta http-equiv="Content-Security-Policy" content="
-      default-src 'self'; 
-      script-src 'self' 'unsafe-inline' https://esm.sh https://accounts.google.com https://apis.google.com; 
-      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; 
-      font-src 'self' https://fonts.gstatic.com; 
-      img-src 'self' data: https://lh3.googleusercontent.com https://images.unsplash.com https://*.supabase.co; 
-      connect-src 'self' https://accounts.google.com https://www.googleapis.com https://content.googleapis.com https://*.supabase.co wss://*.supabase.co; 
-      frame-src https://accounts.google.com;
-    ">
-  <meta name="referrer" content="strict-origin-when-cross-origin" />
-  <meta http-equiv="X-Content-Type-Options" content="nosniff">
-
   <title>ZenBolso - Finanças Inteligentes</title>
   <link rel="icon" type="image/png" href="/favicon.png" />
   <link rel="manifest" href="/manifest.json" />
@@ -29,27 +15,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://apis.google.com/js/api.js" async defer></script>
-  <script type="importmap">
-{
-  "imports": {
-    "react/": "https://esm.sh/react@^19.2.2/",
-    "react": "https://esm.sh/react@^19.2.2",
-    "recharts": "https://esm.sh/recharts@^3.5.1",
-    "react-dom": "https://esm.sh/react-dom@^19.2.2",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.2/",
-    "vite": "https://esm.sh/vite@^7.2.7",
-    "uuid": "https://esm.sh/uuid@^13.0.0",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
-    "lucide-react": "https://esm.sh/lucide-react@^0.560.0",
-    "react-router-dom": "https://esm.sh/react-router-dom@^7.10.1",
-    "@tanstack/react-query": "https://esm.sh/@tanstack/react-query@^5.90.12",
-    "fuse.js": "https://esm.sh/fuse.js@^7.1.0",
-    "dexie": "https://esm.sh/dexie@^4.2.1",
-    "rrule": "https://esm.sh/rrule@^2.8.1",
-    "@react-oauth/google": "https://esm.sh/@react-oauth/google@^0.12.2"
-  }
-}
-</script>
 </head>
 
 <body>

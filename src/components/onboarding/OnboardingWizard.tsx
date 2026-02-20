@@ -1,190 +1,232 @@
-import React, { useState, useEffect } from 'react';
-import { accountService } from '../../services/accountService';
-import { Modal } from '../../../components/ui/Modal';
-import { BrandLogo } from '../ui/BrandLogo';
-import { Sparkles, Wallet, ArrowRight, CheckCircle2, Wand2 } from 'lucide-react';
+import React, { useState } from 'react';
+
+import { Button } from '../ui/Button';
+import { ArrowRight, Check, Wallet, Home, ShoppingCart, Sparkles } from 'lucide-react';
+import { postTransaction, postRecurringConfig, updateSettings } from '../../services/api';
+import { RecurringConfig } from '../../types';
+import { v4 as uuidv4 } from 'uuid';
 import { useToast } from '../../contexts/ToastContext';
+import { generateRRule } from '../../services/recurrence';
 
 interface OnboardingWizardProps {
-    onFinish: () => void;
+    isOpen: boolean;
+    onComplete: () => void;
 }
 
-export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onFinish }) => {
-    const [step, setStep] = useState(1);
-    const [name, setName] = useState('');
-    const [balance, setBalance] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [typewriterText, setTypewriterText] = useState('');
+export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ isOpen, onComplete }) => {
     const { addToast } = useToast();
+    const [step, setStep] = useState(1);
+    const [income, setIncome] = useState('');
+    const [rent, setRent] = useState('');
+    const [groceries, setGroceries] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const fullDemoText = "Café 10 hoje";
+    const handleNext = () => setStep(step + 1);
 
-    useEffect(() => {
-        if (step === 2) {
-            let i = 0;
-            const timer = setInterval(() => {
-                if (i <= fullDemoText.length) {
-                    setTypewriterText(fullDemoText.slice(0, i));
-                    i++;
-                } else {
-                    clearInterval(timer);
-                }
-            }, 100);
-            return () => clearInterval(timer);
-        }
-    }, [step]);
+    const handleFinish = async () => {
+        setLoading(true);
+        const now = new Date();
+        const dateStr = now.toISOString().split('T')[0];
+        const localDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const rruleMonthly = generateRRule('monthly', localDate);
 
-    const handleCreateAccount = async () => {
-        if (!name.trim()) return;
-        setIsLoading(true);
         try {
-            await accountService.createAccount({
-                name: name.trim(),
-                balance: Number(balance) || 0,
-                color: '#0D9488',
-                type: 'WALLET'
-            });
-            setStep(2);
-        } catch (err) {
-            addToast('Erro ao criar conta inicial.', 'error');
+            // 1. Income (Recurring)
+            if (income) {
+                const val = parseFloat(income);
+                if (!isNaN(val) && val > 0) {
+                    const config: RecurringConfig = {
+                        id: uuidv4(),
+                        type: 'INCOME',
+                        account_id: 'default-wallet',
+                        user_id: 'local',
+                        value: val,
+                        category: 'Salário',
+                        description: 'Renda Mensal',
+                        frequency: 'monthly',
+                        rruleString: rruleMonthly,
+                        lastGeneratedDate: dateStr,
+                        nextDueDate: '',
+                        active: true
+                    };
+                    await postRecurringConfig(config);
+                    // Create initial transaction too
+                    await postTransaction({
+                        id: uuidv4(),
+                        type: 'INCOME',
+                        value: val,
+                        category: 'Salário',
+                        date: dateStr,
+                        description: 'Renda Inicial'
+                    });
+                }
+            }
+
+            // 2. Rent (Recurring Expense)
+            if (rent) {
+                const val = parseFloat(rent);
+                if (!isNaN(val) && val > 0) {
+                    const config: RecurringConfig = {
+                        id: uuidv4(),
+                        type: 'EXPENSE',
+                        account_id: 'default-wallet',
+                        user_id: 'local',
+                        value: val,
+                        category: 'Moradia',
+                        description: 'Aluguel/Condomínio',
+                        frequency: 'monthly',
+                        rruleString: rruleMonthly,
+                        lastGeneratedDate: dateStr,
+                        nextDueDate: '',
+                        active: true
+                    };
+                    await postRecurringConfig(config);
+                    // Create initial transaction
+                    await postTransaction({
+                        id: uuidv4(),
+                        type: 'EXPENSE',
+                        value: val,
+                        category: 'Moradia',
+                        date: dateStr,
+                        description: 'Aluguel/Condomínio'
+                    });
+                }
+            }
+
+            // 3. Groceries (Budget Estimate - set as transaction)
+            if (groceries) {
+                const val = parseFloat(groceries);
+                if (!isNaN(val) && val > 0) {
+                    await postTransaction({
+                        id: uuidv4(),
+                        type: 'EXPENSE',
+                        value: val,
+                        category: 'Alimentação',
+                        date: dateStr,
+                        description: 'Estimativa Mercado'
+                    });
+                }
+            }
+
+            // Set Budget Limit based on income (70% rule suggestion)
+            const incomeVal = parseFloat(income) || 0;
+            if (incomeVal > 0) {
+                await updateSettings({
+                    budgetLimit: incomeVal * 0.8,
+                    monthlyIncome: incomeVal,
+                    workHoursPerMonth: 160 // Default
+                });
+            }
+
+            addToast('Perfil configurado com sucesso!', 'success');
+            onComplete();
+        } catch (e) {
+            addToast('Erro ao configurar perfil.', 'error');
         } finally {
-            setIsLoading(false);
+            setLoading(false);
         }
     };
 
+    if (!isOpen) return null;
+
     return (
-        <Modal
-            isOpen={true}
-            onClose={() => { }} // Bloquear fechamento
-            title=""
-        >
-            <div className="py-6 px-2 text-center space-y-8 animate-in fade-in zoom-in duration-500">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div className="bg-white dark:bg-gray-900 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+                <div className="bg-primary p-6 text-white text-center">
+                    <Sparkles size={48} className="mx-auto mb-3 opacity-90" />
+                    <h2 className="text-2xl font-bold">Boas-vindas!</h2>
+                    <p className="text-teal-100 text-sm mt-1">Vamos organizar sua vida financeira em 30 segundos.</p>
+                </div>
 
-                {/* Step 1: A Carteira */}
-                {step === 1 && (
-                    <div className="space-y-6">
-                        <div className="flex justify-center">
-                            <div className="p-4 bg-teal-50 dark:bg-teal-900/20 rounded-[32px] animate-bounce">
-                                <Wallet size={40} className="text-primary" />
+                <div className="p-6 flex-1 overflow-y-auto">
+                    {step === 1 && (
+                        <div className="space-y-4 animate-in slide-in-from-right duration-300">
+                            <div className="flex items-center gap-3 text-emerald-600 dark:text-emerald-400 mb-2">
+                                <Wallet size={24} />
+                                <h3 className="font-semibold text-lg">Qual sua renda mensal aproximada?</h3>
                             </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Primeiro, sua conta!</h2>
-                            <p className="text-sm text-text-muted">Como você quer chamar sua carteira principal?</p>
-                        </div>
-
-                        <div className="space-y-4">
-                            <input
-                                type="text"
-                                value={name}
-                                onChange={e => setName(e.target.value)}
-                                placeholder="Ex: Carteira, Nubank, Cofre..."
-                                className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 rounded-2xl focus:border-primary transition-all font-bold text-center"
-                                autoFocus
-                            />
+                            <p className="text-gray-500 text-sm">Considere o valor líquido que cai na conta.</p>
                             <div className="relative">
-                                <span className="absolute left-6 top-1/2 -translate-y-1/2 font-bold text-slate-400">R$</span>
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">R$</span>
                                 <input
                                     type="number"
-                                    value={balance}
-                                    onChange={e => setBalance(e.target.value)}
-                                    placeholder="Saldo inicial (opcional)"
-                                    className="w-full pl-14 pr-6 py-4 bg-slate-50 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 rounded-2xl focus:border-primary transition-all font-bold text-center"
+                                    autoFocus
+                                    value={income}
+                                    onChange={e => setIncome(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-emerald-500 rounded-xl text-xl font-bold outline-none"
+                                    placeholder="0,00"
                                 />
                             </div>
+                            <Button onClick={handleNext} disabled={!income} className="w-full mt-4 gap-2">
+                                Próximo <ArrowRight size={18} />
+                            </Button>
                         </div>
+                    )}
 
-                        <button
-                            onClick={handleCreateAccount}
-                            disabled={!name || isLoading}
-                            className="w-full py-5 bg-primary text-white rounded-[24px] font-black shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
-                        >
-                            Criar e Continuar
-                            <ArrowRight size={20} />
-                        </button>
+                    {step === 2 && (
+                        <div className="space-y-4 animate-in slide-in-from-right duration-300">
+                            <div className="flex items-center gap-3 text-blue-600 dark:text-blue-400 mb-2">
+                                <Home size={24} />
+                                <h3 className="font-semibold text-lg">Gastos fixos de moradia?</h3>
+                            </div>
+                            <p className="text-gray-500 text-sm">Soma de Aluguel, Condomínio, Luz e Internet.</p>
+                            <div className="relative">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">R$</span>
+                                <input
+                                    type="number"
+                                    autoFocus
+                                    value={rent}
+                                    onChange={e => setRent(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-blue-500 rounded-xl text-xl font-bold outline-none"
+                                    placeholder="0,00"
+                                />
+                            </div>
+                            <div className="flex gap-3 mt-4">
+                                <Button variant="secondary" onClick={() => setStep(1)}>Voltar</Button>
+                                <Button onClick={handleNext} className="flex-1 gap-2">Próximo <ArrowRight size={18} /></Button>
+                            </div>
+                        </div>
+                    )}
+
+                    {step === 3 && (
+                        <div className="space-y-4 animate-in slide-in-from-right duration-300">
+                            <div className="flex items-center gap-3 text-orange-600 dark:text-orange-400 mb-2">
+                                <ShoppingCart size={24} />
+                                <h3 className="font-semibold text-lg">Estimativa de Mercado/Alimentação?</h3>
+                            </div>
+                            <p className="text-gray-500 text-sm">Quanto você gasta aproximadamente com compras por mês?</p>
+                            <div className="relative">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">R$</span>
+                                <input
+                                    type="number"
+                                    autoFocus
+                                    value={groceries}
+                                    onChange={e => setGroceries(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-orange-500 rounded-xl text-xl font-bold outline-none"
+                                    placeholder="0,00"
+                                />
+                            </div>
+                            <div className="flex gap-3 mt-4">
+                                <Button variant="secondary" onClick={() => setStep(2)}>Voltar</Button>
+                                <Button onClick={handleFinish} disabled={loading} className="flex-1 gap-2">
+                                    {loading ? 'Finalizando...' : 'Gerar Meu Dashboard'} <Check size={18} />
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                <div className="p-4 bg-gray-50 dark:bg-gray-800/50 text-center border-t border-gray-100 dark:border-gray-800">
+                    <div className="flex gap-2 justify-center mb-2">
+                        {[1, 2, 3].map(i => (
+                            <div key={i} className={`h-2 rounded-full transition-all duration-300 ${step === i ? 'w-8 bg-primary' : 'w-2 bg-gray-300 dark:bg-gray-700'}`} />
+                        ))}
                     </div>
-                )}
-
-                {/* Step 2: A Mágica do Input */}
-                {step === 2 && (
-                    <div className="space-y-8">
-                        <div className="flex justify-center">
-                            <div className="p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-[32px]">
-                                <Wand2 size={40} className="text-secondary" />
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">O Toque de Mágica</h2>
-                            <p className="text-sm text-text-muted">No ZenBolso, você não preenche formulários chatos. <br /> Basta escrever:</p>
-                        </div>
-
-                        <div className="p-6 bg-slate-900 rounded-3xl shadow-2xl relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 blur-3xl rounded-full" />
-                            <div className="flex items-center gap-3 text-white/40 mb-3">
-                                <div className="w-2 h-2 rounded-full bg-rose-500" />
-                                <div className="w-2 h-2 rounded-full bg-amber-500" />
-                                <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                            </div>
-                            <p className="text-xl font-mono font-bold text-indigo-400 text-left">
-                                {typewriterText}
-                                <span className="w-2 h-6 bg-indigo-400 inline-block align-middle ml-1 animate-pulse" />
-                            </p>
-
-                            {typewriterText === fullDemoText && (
-                                <div className="mt-4 p-3 bg-white/5 rounded-xl border border-white/10 animate-in slide-in-from-top-2">
-                                    <p className="text-[10px] text-white/60 uppercase font-black tracking-widest text-left">O sistema entende:</p>
-                                    <div className="flex gap-4 mt-1">
-                                        <span className="text-xs text-rose-400 font-bold">Despesa: R$ 10,00</span>
-                                        <span className="text-xs text-indigo-300 font-bold">Cat: Alimentação</span>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        <button
-                            onClick={() => setStep(3)}
-                            className="w-full py-5 bg-secondary text-white rounded-[24px] font-black shadow-lg shadow-secondary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
-                        >
-                            Entendi, vamos lá!
-                            <Sparkles size={20} />
-                        </button>
-                    </div>
-                )}
-
-                {/* Step 3: Celebração */}
-                {step === 3 && (
-                    <div className="space-y-8 py-4">
-                        <div className="flex justify-center">
-                            <BrandLogo variant="color" className="w-32 h-32 animate-bounce" />
-                        </div>
-
-                        <div className="space-y-2">
-                            <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Tudo Pronto!</h2>
-                            <p className="text-sm text-text-muted px-4">Sua jornada para uma vida financeira zen começa agora. <br /> Aproveite a paz de espírito.</p>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-3 text-left">
-                            <div className="p-4 bg-emerald-50 dark:bg-emerald-900/10 rounded-2xl border border-emerald-100 dark:border-emerald-900/30">
-                                <CheckCircle2 size={16} className="text-emerald-600 mb-1" />
-                                <p className="text-[10px] font-black uppercase text-emerald-800 dark:text-emerald-400">Conta Criada</p>
-                            </div>
-                            <div className="p-4 bg-indigo-50 dark:bg-indigo-900/10 rounded-2xl border border-indigo-100 dark:border-indigo-900/30">
-                                <CheckCircle2 size={16} className="text-indigo-600 mb-1" />
-                                <p className="text-[10px] font-black uppercase text-indigo-800 dark:text-indigo-400">Smart Input OK</p>
-                            </div>
-                        </div>
-
-                        <button
-                            onClick={onFinish}
-                            className="w-full py-5 bg-slate-900 text-white rounded-[24px] font-black shadow-2xl hover:bg-black transition-all"
-                        >
-                            Começar Experiência
-                        </button>
-                    </div>
-                )}
+                    <button onClick={onComplete} className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 underline">
+                        Pular configuração
+                    </button>
+                </div>
             </div>
-        </Modal>
+        </div>
     );
 };

@@ -2,35 +2,33 @@ import React from 'react';
 import { Cloud, CloudOff, RefreshCw, AlertCircle } from 'lucide-react';
 import { useSyncStatus } from '../../hooks/useSyncStatus';
 import { clsx } from 'clsx';
-import { useTranslation } from 'react-i18next';
 
 export const SyncStatus: React.FC = () => {
     const { status, pendingCount, retry } = useSyncStatus();
-    const { t } = useTranslation();
 
     const config = {
         synced: {
             icon: Cloud,
             color: 'text-emerald-500',
-            label: t('sync.synced', 'Tudo sincronizado'),
+            label: 'Tudo sincronizado',
             animate: false
         },
         syncing: {
             icon: RefreshCw,
             color: 'text-blue-500',
-            label: t('sync.syncing', 'Sincronizando...'),
+            label: 'Sincronizando...',
             animate: true
         },
         'offline-pending': {
             icon: CloudOff,
             color: 'text-amber-500',
-            label: t('sync.offline', 'Aguardando conexão...'),
+            label: 'Aguardando conexão...',
             animate: false
         },
         error: {
             icon: AlertCircle,
             color: 'text-rose-500',
-            label: t('sync.error', 'Erro na sincronização'),
+            label: 'Erro na sincronização',
             animate: false
         }
     };
@@ -56,7 +54,7 @@ export const SyncStatus: React.FC = () => {
                 </span>
             )}
             <span className="hidden sm:inline text-xs font-medium text-slate-600 dark:text-slate-400">
-                {status === 'synced' ? t('sync.ok', 'Nuvem') : label}
+                {status === 'synced' ? 'Nuvem' : label}
             </span>
         </div>
     );

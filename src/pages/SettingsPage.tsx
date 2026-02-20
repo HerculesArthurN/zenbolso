@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/SessionContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { accountService } from '../services/accountService';
 import { categoryService } from '../services/categoryService';
@@ -19,12 +19,7 @@ import {
     Target,
     Moon,
     Sun,
-    Globe,
-    ShieldCheck,
     LogOut,
-    LogIn,
-    AlertTriangle,
-    CheckCircle2,
     Loader2
 
 } from 'lucide-react';
@@ -173,6 +168,12 @@ export const SettingsPage: React.FC = () => {
                     <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Configurações</h1>
                     <p className="text-slate-500 dark:text-slate-400">Hub central do seu ZenBolso.</p>
                 </div>
+                <button
+                    onClick={signOut}
+                    className="ml-auto p-3 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-2xl transition-colors"
+                >
+                    <LogOut size={20} />
+                </button>
             </header>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -186,7 +187,10 @@ export const SettingsPage: React.FC = () => {
                             <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-xl">
                                 <User size={20} />
                             </div>
-                            <h2 className="text-xl font-black text-slate-900 dark:text-white">Seu Perfil</h2>
+                            <div className="flex-1">
+                                <h2 className="text-xl font-black text-slate-900 dark:text-white">Seu Perfil</h2>
+                                {user?.email && <p className="text-xs text-slate-500 font-medium">{user.email}</p>}
+                            </div>
                         </div>
 
                         <div className="space-y-4">
