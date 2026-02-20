@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
 
 export interface FinancialProfile {
     monthlyIncome: number;
@@ -23,31 +22,10 @@ export const useProfileSettings = () => {
         const loadProfile = async () => {
             setIsLoading(true);
             try {
-                // Try to load from localStorage first (Guest First approach)
+                // Load from localStorage (Local-First)
                 const localData = localStorage.getItem('zenbolso_profile');
                 if (localData) {
                     setProfile(JSON.parse(localData));
-                }
-
-                // If user is logged in, try to sync with Supabase
-                const { data: { user } } = await supabase.auth.getUser();
-                if (user) {
-                    const { data, error } = await supabase
-                        .from('profiles')
-                        .select('monthly_income, work_hours, budget_limit, main_currency')
-                        .eq('id', user.id)
-                        .single();
-
-                    if (!error && data) {
-                        const syncedProfile: FinancialProfile = {
-                            monthlyIncome: data.monthly_income || 0,
-                            workHoursPerMonth: data.work_hours || 160,
-                            monthlyBudgetLimit: data.budget_limit || 0,
-                            mainCurrency: data.main_currency || 'BRL',
-                        };
-                        setProfile(syncedProfile);
-                        localStorage.setItem('zenbolso_profile', JSON.stringify(syncedProfile));
-                    }
                 }
             } catch (err) {
                 console.error('Failed to load profile settings:', err);
@@ -63,24 +41,6 @@ export const useProfileSettings = () => {
         const newProfile = { ...profile, ...updates };
         setProfile(newProfile);
         localStorage.setItem('zenbolso_profile', JSON.stringify(newProfile));
-
-        try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                // Attempt to update Supabase if table exists
-                await supabase.from('profiles').upsert({
-                    id: user.id,
-                    monthly_income: newProfile.monthlyIncome,
-                    work_hours: newProfile.workHoursPerMonth,
-                    budget_limit: newProfile.monthlyBudgetLimit,
-                    main_currency: newProfile.mainCurrency,
-                    updated_at: new Date().toISOString(),
-                });
-            }
-        } catch (err) {
-            // Silently fail if table doesn't exist or network error
-            console.warn('Supabase profile update failed (expected if table missing):', err);
-        }
     };
 
     return { profile, updateProfile, isLoading };

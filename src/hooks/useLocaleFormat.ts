@@ -1,49 +1,27 @@
-import { useTranslation } from 'react-i18next';
 import { useProfileSettings } from './useProfileSettings';
 
 /**
  * Custom hook for locale-aware number and date formatting
- * CRITICAL: Currency is decoupled from locale to prevent financial inaccuracy
- * - Locale controls formatting rules (decimal separators, date format)
- * - Currency is determined by user's financial profile (mainCurrency)
+ * HARDCODED: Portuguese (Brazil) - BRL
  */
 export const useLocaleFormat = () => {
-    const { i18n } = useTranslation();
     const { profile } = useProfileSettings();
 
-    // Map i18n language codes to Intl locale codes
-    const getLocale = (): string => {
-        const localeMap: Record<string, string> = {
-            'pt-BR': 'pt-BR',
-            'en-US': 'en-US',
-            'es-ES': 'es-ES',
-            'zh-CN': 'zh-CN',
-            'ja-JP': 'ja-JP',
-            'ko-KR': 'ko-KR',
-            'fr-FR': 'fr-FR',
-            'de-DE': 'de-DE',
-        };
-        return localeMap[i18n.language] || 'pt-BR';
-    };
+    // Force pt-BR
+    const getLocale = (): string => 'pt-BR';
 
     /**
-     * Get user's preferred currency from profile
-     * This is independent of UI language to prevent financial confusion
+     * Get user's preferred currency from profile or default to BRL
      */
     const getCurrency = (): string => {
         return profile.mainCurrency || 'BRL';
     };
 
     /**
-     * Format currency based on current locale formatting rules
-     * but using the user's actual currency
-     * 
-     * Examples:
-     * - Locale: en-US, Currency: BRL -> "R$ 1,000.00" (US format, BRL symbol)
-     * - Locale: pt-BR, Currency: USD -> "US$ 1.000,00" (BR format, USD symbol)
+     * Format currency (always BRL/pt-BR style)
      */
     const formatCurrency = (value: number, options?: Intl.NumberFormatOptions): string => {
-        return new Intl.NumberFormat(getLocale(), {
+        return new Intl.NumberFormat('pt-BR', {
             style: 'currency',
             currency: getCurrency(),
             ...options,
@@ -54,7 +32,7 @@ export const useLocaleFormat = () => {
      * Format currency in compact notation (e.g., R$ 1,2 mil)
      */
     const formatCurrencyCompact = (value: number): string => {
-        return new Intl.NumberFormat(getLocale(), {
+        return new Intl.NumberFormat('pt-BR', {
             style: 'currency',
             currency: getCurrency(),
             notation: 'compact',
@@ -63,18 +41,18 @@ export const useLocaleFormat = () => {
     };
 
     /**
-     * Format number based on current locale
+     * Format number based on pt-BR
      */
     const formatNumber = (value: number, options?: Intl.NumberFormatOptions): string => {
-        return new Intl.NumberFormat(getLocale(), options).format(value);
+        return new Intl.NumberFormat('pt-BR', options).format(value);
     };
 
     /**
-     * Format date based on current locale
+     * Format date based on pt-BR
      */
     const formatDate = (date: Date | string, options?: Intl.DateTimeFormatOptions): string => {
         const dateObj = typeof date === 'string' ? new Date(date) : date;
-        return new Intl.DateTimeFormat(getLocale(), options).format(dateObj);
+        return new Intl.DateTimeFormat('pt-BR', options).format(dateObj);
     };
 
     /**
@@ -111,14 +89,14 @@ export const useLocaleFormat = () => {
     };
 
     /**
-     * Format relative time (e.g., "2 days ago", "in 3 hours")
+     * Format relative time (e.g., "há 2 dias", "em 3 horas")
      */
     const formatRelativeTime = (date: Date | string): string => {
         const dateObj = typeof date === 'string' ? new Date(date) : date;
         const now = new Date();
         const diffInSeconds = Math.floor((now.getTime() - dateObj.getTime()) / 1000);
 
-        const rtf = new Intl.RelativeTimeFormat(getLocale(), { numeric: 'auto' });
+        const rtf = new Intl.RelativeTimeFormat('pt-BR', { numeric: 'auto' });
 
         if (Math.abs(diffInSeconds) < 60) {
             return rtf.format(-diffInSeconds, 'second');
@@ -144,7 +122,8 @@ export const useLocaleFormat = () => {
         formatDateMedium,
         formatDateLong,
         formatRelativeTime,
-        locale: getLocale(),
+        locale: 'pt-BR',
         currency: getCurrency(),
     };
 };
+

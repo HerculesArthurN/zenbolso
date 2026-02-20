@@ -1,35 +1,10 @@
-import { supabase } from '../lib/supabase';
 import { db } from '../../services/db';
 import { Transaction } from '../types';
-import { handleApiError } from './api';
 import { encrypt, decrypt } from '../utils/crypto';
-import { SyncQueue } from './sync/SyncQueue';
-import { SyncProcessor } from './sync/SyncProcessor';
 
 export const transactionService = {
     async fetchTransactions(limit = 50): Promise<Transaction[]> {
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (user) {
-            const { data, error } = await supabase
-                .from('transactions')
-                .select('*')
-                .order('date', { ascending: false })
-                .limit(limit);
-
-            if (error) handleApiError(error);
-
-            const transactions = (data || []).map(t => ({
-                ...t,
-                amount: Number(t.amount)
-            }));
-
-            // Sync potentially missing local transactions from remote (optional but good for consistency)
-            // For now, we just return them.
-            return transactions;
-        }
-
-        // Guest Mode: Fetch from Dexie
+        // Local Mode: Fetch directly from Dexie
         const localTxs = await db.transactions
             .orderBy('date')
             .reverse()
@@ -38,7 +13,7 @@ export const transactionService = {
 
         return localTxs.map(tx => ({
             id: tx.id,
-            user_id: '',
+            user_id: '', // Deprecated
             account_id: tx.accountId || '',
             category_id: tx.category || null,
             amount: (() => {
@@ -58,67 +33,44 @@ export const transactionService = {
     },
 
     async createTransaction(transaction: Partial<Transaction>): Promise<Transaction> {
-        const { data: { user } } = await supabase.auth.getUser();
-
         const id = transaction.id || crypto.randomUUID();
         const now = new Date().toISOString();
 
-        // Standardized payload for Supabase
-        const supabasePayload = {
+        // Standardized internal payload for Dexie
+        const localTx = {
             id,
-            user_id: user?.id || '',
-            account_id: transaction.account_id,
-            category_id: transaction.category_id,
+            type: (transaction.type?.toLowerCase() || 'expense') as any,
+            value: encrypt(transaction.amount ? Number(transaction.amount) : 0),
+            date: transaction.date || now.split('T')[0],
+            category: transaction.category_id || 'Outros',
+            description: encrypt(transaction.description || ''),
+            accountId: transaction.account_id
+        };
+
+        // Save locally
+        await db.transactions.put(localTx as any);
+
+        return {
+            id,
+            user_id: '',
+            account_id: transaction.account_id || '',
+            category_id: transaction.category_id || '',
             amount: transaction.amount ? Number(transaction.amount) : 0,
             description: transaction.description || '',
             date: transaction.date || now.split('T')[0],
             type: transaction.type || 'EXPENSE',
-            is_paid: transaction.is_paid ?? true,
+            is_paid: true,
             created_at: now,
             updated_at: now
-        };
-
-        // Standardized internal payload for Dexie (legacy format compatibility)
-        const localTx = {
-            id,
-            type: (supabasePayload.type.toLowerCase()) as any,
-            value: encrypt(supabasePayload.amount),
-            date: supabasePayload.date,
-            category: supabasePayload.category_id || 'Outros',
-            description: encrypt(supabasePayload.description),
-            accountId: supabasePayload.account_id
-        };
-
-        // 1. Save locally (Optimistic)
-        await db.transactions.put(localTx as any);
-
-        // 2. If authenticated, queue for sync
-        if (user) {
-            await SyncQueue.enqueue({
-                type: 'create',
-                entity: 'transactions',
-                entity_id: id,
-                payload: supabasePayload
-            });
-            // 3. Trigger processor
-            SyncProcessor.process().catch(console.error);
-        }
-
-        return {
-            ...supabasePayload,
-            amount: Number(supabasePayload.amount)
         } as Transaction;
     },
 
     async updateTransaction(id: string, updates: Partial<Transaction>): Promise<Transaction> {
-        const { data: { user } } = await supabase.auth.getUser();
-
-        // 1. Apply updates to Dexie locally (Optimistic)
+        // Apply updates to Dexie locally
         const existing = await db.transactions.get(id);
 
-        let localUpdate: any;
         if (existing) {
-            localUpdate = {
+            const localUpdate: any = {
                 ...existing,
                 ...(updates.amount !== undefined && { value: encrypt(updates.amount) }),
                 ...(updates.date && { date: updates.date }),
@@ -128,28 +80,6 @@ export const transactionService = {
                 ...(updates.type && { type: updates.type.toLowerCase() as any })
             };
             await db.transactions.put(localUpdate);
-        }
-
-        // 2. If authenticated, queue for sync
-        if (user) {
-            const supabaseUpdates = {
-                ...(updates.amount !== undefined && { amount: Number(updates.amount) }),
-                ...(updates.description !== undefined && { description: updates.description }),
-                ...(updates.date && { date: updates.date }),
-                ...(updates.category_id !== undefined && { category_id: updates.category_id }),
-                ...(updates.account_id !== undefined && { account_id: updates.account_id }),
-                ...(updates.type && { type: updates.type }),
-                updated_at: new Date().toISOString()
-            };
-
-            await SyncQueue.enqueue({
-                type: 'update',
-                entity: 'transactions',
-                entity_id: id,
-                payload: supabaseUpdates
-            });
-            // 3. Trigger processor
-            SyncProcessor.process().catch(console.error);
         }
 
         // Reconstruct for UI
@@ -169,21 +99,8 @@ export const transactionService = {
     },
 
     async deleteTransaction(id: string): Promise<void> {
-        const { data: { user } } = await supabase.auth.getUser();
-
-        // 1. Delete locally (Optimistic)
+        // Delete locally
         await db.transactions.delete(id);
-
-        // 2. If authenticated, queue for sync
-        if (user) {
-            await SyncQueue.enqueue({
-                type: 'delete',
-                entity: 'transactions',
-                entity_id: id,
-                payload: {}
-            });
-            // 3. Trigger processor
-            SyncProcessor.process().catch(console.error);
-        }
     }
 };
+

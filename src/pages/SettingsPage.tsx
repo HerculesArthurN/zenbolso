@@ -6,7 +6,7 @@ import { accountService } from '../services/accountService';
 import { categoryService } from '../services/categoryService';
 import { useProfileSettings } from '../hooks/useProfileSettings';
 import { useToast } from '../contexts/ToastContext';
-import { useTranslation } from 'react-i18next';
+import { DataManagement } from '../components/settings/DataManagement'; // Import DataManagement
 import { Account, Category } from '../types';
 import {
     ArrowLeft,
@@ -36,7 +36,6 @@ export const SettingsPage: React.FC = () => {
     const { theme, toggleTheme } = useTheme();
     const { profile, updateProfile, isLoading: loadingProfile } = useProfileSettings();
 
-    const { t, i18n } = useTranslation();
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
 
@@ -165,14 +164,14 @@ export const SettingsPage: React.FC = () => {
             <header className="flex items-center gap-4">
                 <button
                     onClick={() => navigate(-1)}
-                    className="p-3 bg-surface dark:bg-slate-900 text-text-muted dark:text-slate-400 rounded-2xl border border-border-color dark:border-slate-800 shadow-sm transition-all active:scale-95"
+                    className="p-3 bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-all active:scale-95"
                     aria-label="Voltar"
                 >
                     <ArrowLeft size={20} />
                 </button>
                 <div>
-                    <h1 className="text-3xl font-black text-text-main dark:text-white tracking-tight">{t('settings')}</h1>
-                    <p className="text-text-muted dark:text-slate-400">Hub central do seu ZenBolso.</p>
+                    <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Configurações</h1>
+                    <p className="text-slate-500 dark:text-slate-400">Hub central do seu ZenBolso.</p>
                 </div>
             </header>
 
@@ -182,25 +181,25 @@ export const SettingsPage: React.FC = () => {
                 <div className="space-y-8">
 
                     {/* SECTION 1: PERFIL & SIMULADOR */}
-                    <section className="bg-surface dark:bg-slate-900/40 p-8 rounded-[40px] border border-border-color dark:border-slate-800 shadow-sm space-y-6">
+                    <section className="bg-white dark:bg-slate-900/40 p-8 rounded-[40px] border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-xl">
                                 <User size={20} />
                             </div>
-                            <h2 className="text-xl font-black text-text-main dark:text-white">{t('profile.title')}</h2>
+                            <h2 className="text-xl font-black text-slate-900 dark:text-white">Seu Perfil</h2>
                         </div>
 
                         <div className="space-y-4">
                             <div className="flex flex-col gap-2">
-                                <label htmlFor="income" className="text-xs font-black text-text-muted uppercase tracking-widest ml-1">{t('profile.income_label')}</label>
+                                <label htmlFor="income" className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Renda Mensal</label>
                                 <div className="relative">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted font-bold">R$</span>
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">R$</span>
                                     <input
                                         id="income"
                                         type="number"
                                         value={localProfile.monthlyIncome || ''}
                                         onChange={e => setLocalProfile({ ...localProfile, monthlyIncome: Number(e.target.value) })}
-                                        className="w-full pl-12 pr-4 py-4 bg-background dark:bg-slate-900 border-2 border-transparent focus:border-indigo-500 rounded-2xl outline-none font-bold text-text-main dark:text-white transition-all"
+                                        className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-indigo-500 rounded-2xl outline-none font-bold text-slate-900 dark:text-white transition-all"
                                         placeholder="0,00"
                                         aria-label="Renda mensal líquida"
                                     />
@@ -208,15 +207,15 @@ export const SettingsPage: React.FC = () => {
                             </div>
 
                             <div className="flex flex-col gap-2">
-                                <label htmlFor="hours" className="text-xs font-black text-text-muted uppercase tracking-widest ml-1">{t('profile.hours_label')}</label>
+                                <label htmlFor="hours" className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Horas de Trabalho/Mês</label>
                                 <div className="relative">
-                                    <Briefcase size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+                                    <Briefcase size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
                                     <input
                                         id="hours"
                                         type="number"
                                         value={localProfile.workHoursPerMonth || ''}
                                         onChange={e => setLocalProfile({ ...localProfile, workHoursPerMonth: Number(e.target.value) })}
-                                        className="w-full pl-12 pr-4 py-4 bg-background dark:bg-slate-900 border-2 border-transparent focus:border-indigo-500 rounded-2xl outline-none font-bold text-text-main dark:text-white transition-all"
+                                        className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-indigo-500 rounded-2xl outline-none font-bold text-slate-900 dark:text-white transition-all"
                                         placeholder="160"
                                         aria-label="Horas trabalhadas por mês"
                                     />
@@ -224,15 +223,15 @@ export const SettingsPage: React.FC = () => {
                             </div>
 
                             <div className="flex flex-col gap-2">
-                                <label htmlFor="budget" className="text-xs font-black text-text-muted uppercase tracking-widest ml-1">{t('profile.budget_label')}</label>
+                                <label htmlFor="budget" className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Teto de Gastos</label>
                                 <div className="relative">
-                                    <Target size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+                                    <Target size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
                                     <input
                                         id="budget"
                                         type="number"
                                         value={localProfile.monthlyBudgetLimit || ''}
                                         onChange={e => setLocalProfile({ ...localProfile, monthlyBudgetLimit: Number(e.target.value) })}
-                                        className="w-full pl-12 pr-4 py-4 bg-background dark:bg-slate-900 border-2 border-transparent focus:border-indigo-500 rounded-2xl outline-none font-bold text-text-main dark:text-white transition-all"
+                                        className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-indigo-500 rounded-2xl outline-none font-bold text-slate-900 dark:text-white transition-all"
                                         placeholder="Defina seu limite"
                                         aria-label="Teto de gastos mensal"
                                     />
@@ -240,9 +239,9 @@ export const SettingsPage: React.FC = () => {
                             </div>
 
                             <div className="flex flex-col gap-2">
-                                <label htmlFor="currency" className="text-xs font-black text-text-muted uppercase tracking-widest ml-1">{t('profile.currency_label')}</label>
+                                <label htmlFor="currency" className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Moeda Principal</label>
                                 <div className="relative">
-                                    <svg className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <svg className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                         <circle cx="12" cy="12" r="10" />
                                         <path d="M12 6v12M9 9h6M9 15h6" />
                                     </svg>
@@ -250,18 +249,12 @@ export const SettingsPage: React.FC = () => {
                                         id="currency"
                                         value={localProfile.mainCurrency || 'BRL'}
                                         onChange={e => setLocalProfile({ ...localProfile, mainCurrency: e.target.value })}
-                                        className="w-full pl-12 pr-4 py-4 bg-background dark:bg-slate-900 border-2 border-transparent focus:border-indigo-500 rounded-2xl outline-none font-bold text-text-main dark:text-white appearance-none transition-all"
+                                        className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-indigo-500 rounded-2xl outline-none font-bold text-slate-900 dark:text-white appearance-none transition-all"
                                         aria-label="Moeda principal"
                                     >
                                         <option value="BRL">🇧🇷 Real Brasileiro (R$)</option>
                                         <option value="USD">🇺🇸 US Dollar ($)</option>
                                         <option value="EUR">🇪🇺 Euro (€)</option>
-                                        <option value="GBP">🇬🇧 British Pound (£)</option>
-                                        <option value="JPY">🇯🇵 Japanese Yen (¥)</option>
-                                        <option value="CNY">🇨🇳 Chinese Yuan (¥)</option>
-                                        <option value="KRW">🇰🇷 Korean Won (₩)</option>
-                                        <option value="ARS">🇦🇷 Argentine Peso ($)</option>
-                                        <option value="MXN">🇲🇽 Mexican Peso ($)</option>
                                     </select>
                                 </div>
                             </div>
@@ -272,58 +265,36 @@ export const SettingsPage: React.FC = () => {
                                 className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 transition-all active:scale-95"
                             >
                                 {isSavingProfile ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}
-                                {isSavingProfile ? t('profile.saving') : t('profile.save_btn')}
+                                {isSavingProfile ? 'Salvando...' : 'Salvar Alterações'}
                             </button>
                         </div>
                     </section>
 
                     {/* SECTION 2: APARÊNCIA & SISTEMA */}
-                    <section className="bg-surface dark:bg-slate-900/40 p-8 rounded-[40px] border border-border-color dark:border-slate-800 shadow-sm space-y-6">
+                    <section className="bg-white dark:bg-slate-900/40 p-8 rounded-[40px] border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-xl">
                                 <Sun size={20} />
                             </div>
-                            <h2 className="text-xl font-black text-text-main dark:text-white">{t('appearance.title')}</h2>
+                            <h2 className="text-xl font-black text-slate-900 dark:text-white">Aparência</h2>
                         </div>
 
                         <div className="space-y-4">
                             <div
                                 onClick={toggleTheme}
-                                className="flex items-center justify-between p-4 bg-background dark:bg-slate-900 rounded-2xl border border-border-color dark:border-slate-800 cursor-pointer hover:border-indigo-500 transition-all"
+                                className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 cursor-pointer hover:border-indigo-500 transition-all"
                             >
                                 <div className="flex items-center gap-3">
-                                    {theme === 'dark' ? <Moon size={20} className="text-primary" /> : <Sun size={20} className="text-warning-dark" />}
-                                    <span className="font-bold text-sm text-text-main dark:text-white">Modo {theme === 'dark' ? 'Escuro' : 'Claro'}</span>
+                                    {theme === 'dark' ? <Moon size={20} className="text-indigo-500" /> : <Sun size={20} className="text-amber-500" />}
+                                    <span className="font-bold text-sm text-slate-900 dark:text-white">Modo {theme === 'dark' ? 'Escuro' : 'Claro'}</span>
                                 </div>
-                                <div className={`w-12 h-6 rounded-full transition-colors relative ${theme === 'dark' ? 'bg-primary' : 'bg-slate-200'}`}>
+                                <div className={`w-12 h-6 rounded-full transition-colors relative ${theme === 'dark' ? 'bg-indigo-600' : 'bg-slate-200'}`}>
                                     <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${theme === 'dark' ? 'left-7' : 'left-1'}`} />
                                 </div>
                             </div>
 
-                            <div className="flex flex-col gap-2">
-                                <label className="text-xs font-black text-text-muted uppercase tracking-widest ml-1">{t('appearance.language_label')}</label>
-                                <div className="relative">
-                                    <Globe size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
-                                    <select
-                                        value={i18n.language}
-                                        onChange={e => i18n.changeLanguage(e.target.value)}
-                                        className="w-full pl-12 pr-4 py-4 bg-background dark:bg-slate-900 border-2 border-transparent focus:border-indigo-500 rounded-2xl outline-none font-bold text-text-main dark:text-white appearance-none transition-all"
-                                        aria-label="Selecionar idioma"
-                                    >
-                                        <option value="pt-BR">🇧🇷 Português (BR)</option>
-                                        <option value="en-US">🇺🇸 English</option>
-                                        <option value="es-ES">🇪🇸 Español</option>
-                                        <option value="zh-CN">🇨🇳 Chinese</option>
-                                        <option value="ja-JP">🇯🇵 Japanese</option>
-                                        <option value="ko-KR">🇰🇷 Korean</option>
-                                        <option value="fr-FR">🇫🇷 Français</option>
-                                        <option value="de-DE">🇩🇪 Deutsch</option>
-                                    </select>
-                                </div>
-                            </div>
-
                             <div className="pt-2 text-center">
-                                <p className="text-[10px] font-black uppercase text-text-muted tracking-widest">ZenBolso v1.3.0 (Beta)</p>
+                                <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">ZenBolso v1.3.0 (Local-First)</p>
                             </div>
                         </div>
                     </section>
@@ -332,14 +303,17 @@ export const SettingsPage: React.FC = () => {
                 {/* COLUMN RIGHT */}
                 <div className="space-y-8">
 
-                    {/* SECTION 3: GERENCIAMENTO DE DADOS */}
-                    <section className="bg-surface dark:bg-slate-900/40 p-8 rounded-[40px] border border-border-color dark:border-slate-800 shadow-sm space-y-6">
+                    {/* NEW SECTION: DATA MANAGEMENT */}
+                    <DataManagement />
+
+                    {/* SECTION 3: GERENCIAMENTO DE RECURSOS */}
+                    <section className="bg-white dark:bg-slate-900/40 p-8 rounded-[40px] border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-xl">
                                     <Wallet size={20} />
                                 </div>
-                                <h2 className="text-xl font-black text-text-main dark:text-white">{t('manage.title')}</h2>
+                                <h2 className="text-xl font-black text-slate-900 dark:text-white">Recursos</h2>
                             </div>
                         </div>
 
@@ -347,27 +321,27 @@ export const SettingsPage: React.FC = () => {
                             {/* Accounts */}
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between px-1">
-                                    <h3 className="text-xs font-black text-text-muted uppercase tracking-widest">{t('manage.accounts')}</h3>
+                                    <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest">Contas</h3>
                                     <button
                                         onClick={handleAddAccount}
                                         disabled={isAddingAccount}
                                         className="text-indigo-600 hover:text-indigo-700 disabled:opacity-50 font-bold text-xs flex items-center gap-1"
                                     >
                                         {isAddingAccount ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
-                                        {isAddingAccount ? t('manage.creating') : t('manage.new_btn')}
+                                        {isAddingAccount ? 'Criando...' : 'Nova Conta'}
                                     </button>
                                 </div>
                                 <div className="space-y-2">
                                     {accounts.map(acc => (
-                                        <div key={acc.id} className="flex items-center justify-between p-3 bg-background dark:bg-slate-900 rounded-2xl border border-border-color dark:border-slate-800 group">
-                                            <div className="flex items-center gap-3 font-bold text-sm">
+                                        <div key={acc.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 group">
+                                            <div className="flex items-center gap-3 font-bold text-sm text-slate-700 dark:text-slate-300">
                                                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: acc.color }} />
                                                 {acc.name}
                                             </div>
                                             <button
                                                 onClick={() => handleDeleteAccount(acc.id)}
                                                 disabled={deletingId === acc.id}
-                                                className="p-2 text-text-muted hover:text-rose-500 opacity-0 group-hover:opacity-100 disabled:opacity-50 transition-all"
+                                                className="p-2 text-slate-400 hover:text-rose-500 opacity-0 group-hover:opacity-100 disabled:opacity-50 transition-all"
                                             >
                                                 {deletingId === acc.id ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
                                             </button>
@@ -379,15 +353,15 @@ export const SettingsPage: React.FC = () => {
                             {/* Categories */}
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between px-1">
-                                    <h3 className="text-xs font-black text-text-muted uppercase tracking-widest">{t('manage.categories')}</h3>
+                                    <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest">Categorias</h3>
                                 </div>
                                 <div className="flex gap-2">
                                     <input
                                         type="text"
                                         value={newCatName}
                                         onChange={e => setNewCatName(e.target.value)}
-                                        placeholder={t('manage.category_placeholder')}
-                                        className="flex-1 px-4 py-2 bg-background dark:bg-slate-900 border-2 border-transparent focus:border-indigo-500 rounded-xl outline-none text-xs font-bold"
+                                        placeholder="Nova categoria..."
+                                        className="flex-1 px-4 py-2 bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-indigo-500 rounded-xl outline-none text-xs font-bold text-slate-900 dark:text-white"
                                     />
                                     <button
                                         onClick={handleAddCategory}
@@ -399,12 +373,12 @@ export const SettingsPage: React.FC = () => {
                                 </div>
                                 <div className="max-h-40 overflow-y-auto pr-2 space-y-2 custom-scrollbar">
                                     {categories.map(cat => (
-                                        <div key={cat.id} className="flex items-center justify-between p-3 bg-background dark:bg-slate-900 rounded-2xl border border-border-color dark:border-slate-800 group">
-                                            <span className="font-bold text-sm">{cat.name}</span>
+                                        <div key={cat.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 group">
+                                            <span className="font-bold text-sm text-slate-700 dark:text-slate-300">{cat.name}</span>
                                             <button
                                                 onClick={() => handleDeleteCategory(cat.id)}
                                                 disabled={deletingId === cat.id}
-                                                className="p-2 text-text-muted hover:text-rose-500 opacity-0 group-hover:opacity-100 disabled:opacity-50 transition-all"
+                                                className="p-2 text-slate-400 hover:text-rose-500 opacity-0 group-hover:opacity-100 disabled:opacity-50 transition-all"
                                             >
                                                 {deletingId === cat.id ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
                                             </button>
@@ -414,59 +388,21 @@ export const SettingsPage: React.FC = () => {
                             </div>
                         </div>
                     </section>
-
-                    {/* SECTION 4: CONTA & SINCRONIZAÇÃO */}
-                    <section className="bg-surface dark:bg-slate-900/40 p-8 rounded-[40px] border border-border-color dark:border-slate-800 shadow-sm space-y-6">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-xl">
-                                <ShieldCheck size={20} />
-                            </div>
-                            <h2 className="text-xl font-black text-text-main dark:text-white">{t('auth.title')}</h2>
-                        </div>
-
-                        <div className="space-y-4">
-                            {user ? (
-                                <div className="p-5 bg-emerald-50/50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/30 rounded-3xl space-y-3">
-                                    <div className="flex items-center gap-3">
-                                        <CheckCircle2 size={24} className="text-emerald-600" />
-                                        <div>
-                                            <p className="font-black text-emerald-900 dark:text-emerald-400 text-sm">{t('auth.connected')}</p>
-                                            <p className="text-[10px] text-emerald-700 dark:text-emerald-500 font-bold uppercase">{user.email}</p>
-                                        </div>
-                                    </div>
-                                    <button
-                                        onClick={signOut}
-                                        className="w-full py-3 bg-white dark:bg-slate-900 text-rose-500 border border-rose-100 dark:border-rose-900/30 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-rose-50 transition-all"
-                                    >
-                                        <LogOut size={14} /> {t('auth.logout_btn')}
-                                    </button>
-                                </div>
-                            ) : (
-                                <div className="p-5 bg-amber-50/50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30 rounded-3xl space-y-4">
-                                    <div className="flex items-center gap-3">
-                                        <AlertTriangle size={24} className="text-amber-600" />
-                                        <div>
-                                            <p className="font-black text-amber-900 dark:text-amber-400 text-sm">{t('auth.guest_mode')}</p>
-                                            <p className="text-[10px] text-amber-700 dark:text-amber-500 font-bold uppercase">{t('auth.guest_warning')}</p>
-                                        </div>
-                                    </div>
-                                    <p className="text-[11px] text-amber-800 dark:text-amber-600 leading-relaxed font-medium">{t('auth.guest_description')}</p>
-                                    <button
-                                        onClick={() => navigate('/login')}
-                                        className="w-full py-4 bg-amber-600 hover:bg-amber-700 text-white rounded-2xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all active:scale-95"
-                                    >
-                                        <LogIn size={18} /> {t('auth.login_btn')}
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    </section>
                 </div>
             </div>
 
             {/* Danger Zone Footnote */}
             <div className="mt-12 flex justify-center">
-                <button className="text-[10px] font-black uppercase text-rose-500/40 hover:text-rose-500 hover:underline tracking-[0.3em] transition-all">
+                <button
+                    onClick={() => {
+                        if (confirm('Isso apagará TODOS os dados do seu navegador. Tem certeza?')) {
+                            localStorage.clear();
+                            // Optional: dexie clear
+                            window.location.reload();
+                        }
+                    }}
+                    className="text-[10px] font-black uppercase text-rose-500/40 hover:text-rose-500 hover:underline tracking-[0.3em] transition-all"
+                >
                     Resetar Aplicativo (Perigo)
                 </button>
             </div>
