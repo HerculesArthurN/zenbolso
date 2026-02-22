@@ -1,26 +1,22 @@
 import React from 'react';
-import { Sidebar } from './Sidebar';
 import { MobileNav } from './MobileNav';
 import { useData } from '../../contexts/DataContext';
 import { Outlet } from 'react-router-dom';
 
 interface AppLayoutProps {
-  children?: React.ReactNode;
+  // No props needed for now
 }
 
-export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
+export const AppLayout: React.FC<AppLayoutProps> = () => {
   const { openTransactionModal } = useData();
 
   return (
-    <div className="min-h-screen bg-background dark:bg-background-dark text-text-main dark:text-text-main-dark transition-colors duration-300">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
 
-      {/* Desktop Sidebar */}
-      <Sidebar />
-
-      {/* Main Content Area */}
-      <main className="md:pl-64 pb-28 md:pb-8 min-h-screen">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 animate-in fade-in duration-300">
-          {children || <Outlet />}
+      {/* Main Content Area - Strictly Mobile */}
+      <main className="pb-24 min-h-screen">
+        <div className="w-full px-4 sm:px-6 py-6 animate-in fade-in duration-300">
+          <Outlet />
         </div>
       </main>
 
