@@ -5,6 +5,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { accountService } from '../services/accountService';
 import { categoryService } from '../services/categoryService';
 import { useProfileSettings } from '../hooks/useProfileSettings';
+import { useSettingsData } from '../hooks/useSettingsData';
 import { useToast } from '../contexts/ToastContext';
 import { DataManagement } from '../components/settings/DataManagement'; // Import DataManagement
 import { Account, Category } from '../types';
@@ -30,6 +31,7 @@ export const SettingsPage: React.FC = () => {
     const { user, signOut } = useAuth();
     const { theme, toggleTheme } = useTheme();
     const { profile, updateProfile, isLoading: loadingProfile } = useProfileSettings();
+    const { resetApp } = useSettingsData();
 
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
@@ -398,11 +400,9 @@ export const SettingsPage: React.FC = () => {
             {/* Danger Zone Footnote */}
             <div className="mt-12 flex justify-center">
                 <button
-                    onClick={() => {
+                    onClick={async () => {
                         if (confirm('Isso apagará TODOS os dados do seu navegador. Tem certeza?')) {
-                            localStorage.clear();
-                            // Optional: dexie clear
-                            window.location.reload();
+                            await resetApp();
                         }
                     }}
                     className="text-[10px] font-black uppercase text-rose-500/40 hover:text-rose-500 hover:underline tracking-[0.3em] transition-all"
