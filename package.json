@@ -28,7 +28,8 @@
     "recharts": "^2.15.0",
     "rrule": "^2.8.1",
     "tailwind-merge": "^2.5.5",
-    "uuid": "^11.0.3"
+    "uuid": "^11.0.3",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.0",
