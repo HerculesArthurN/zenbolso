@@ -1,94 +1,85 @@
-# 🧘 ZenBolso — Finance Without Friction
+# 🧘 ZenBolso — Extreme Privacy Finance Tracker
 
-[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.io/)
-[![Dexie](https://img.shields.io/badge/Dexie.js-blue?style=for-the-badge)](https://dexie.org/)
+[![React](https://img.shields.io/badge/React-19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-6.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Dexie](https://img.shields.io/badge/Dexie.js-4.0-blue?style=for-the-badge)](https://dexie.org/)
+[![Zod](https://img.shields.io/badge/Zod-Data_Validation-3068b7?style=for-the-badge)](https://zod.dev/)
 
-**ZenBolso** is a personal finance PWA (Progressive Web App) designed to bring peace of mind to financial tracking. By combining a "Local-First" approach with efficient tools, it eliminates the friction of traditional balance sheets.
-
----
-
-## ✨ Key Features
-
-### 🚀 Hybrid Architecture (Local-First)
-Experience zero latency. ZenBolso prioritizes your local data using **Dexie.js (IndexedDB)** for Guest Mode, ensuring full functionality offline. When you're ready, connect with **Supabase** for encrypted cloud sync across all your devices.
-
-### ⏳ "Time = Money" Logic (Zen Insights)
-Stop looking at just numbers. Our custom algorithm translates your monthly expenses into "Minutes of Life." Based on your financial profile, the app calculates how many work hours each purchase truly cost you.
-
-### 📄 Professional PDF Exports
-Generate detailed financial reports with one click. Export your monthly balance, category distribution, and flow charts into a clean, professional PDF document ready for filing or review.
-
-### 🛡️ Enterprise-Grade Resilience
-- **Route-based Code Splitting:** Optimized initial load using `React.lazy` and `Suspense`.
-- **Fault Tolerance:** Implemented `React Error Boundaries` to prevent global crashes and ensure user data is never lost.
-- **Navigation Safety:** Protected routes for both Guests and Registered users.
-
-### 🎨 Premium UX/UI
-- **Glassmorphism Design:** Modern, sleek interface with blur effects and vibrant gradients.
-- **Adaptive Theming:** Native support for Dark and Light modes using a semantic token system.
-- **Accessibility (A11y):** Built with ARIA standards and high-contrast semantic palettes.
+**ZenBolso** is an extremely private, "Offline-First", Progressive Web Application (PWA) built specifically for mobile screens ("Thumb-Driven UI"). It redefines personal finance tracking through zero-latency performance and unbreakable offline encryption, avoiding any reliance on remote servers.
 
 ---
 
-## 🏗️ Architecture & Data Strategy
+## ✨ Features that define the V1 Alpha
 
-ZenBolso follows a **Guest-First Progressive Auth** strategy:
-1.  **Stage 1 (Guest):** Data is stored locally in the browser's IndexedDB. No login required.
-2.  **Stage 2 (Authenticated):** Upon Login (Magic Link), the system creates a cloud profile. The app manages a hybrid state, allowing the user to switch between "Visitor Data" and "Cloud Sync" with clear separation and integrity.
+### 🛡️ Iron-Clad Privacy (Local-First Architecture)
+There is no backend. No cloud. No accounts. All of your financial data lives exclusively inside your browser's IndexedDB engine, strictly queried and managed by **Dexie.js**. What happens on your phone, stays on your phone.
+
+### 📱 "Thumb-Driven" UX / Native-Like Rendering
+Crafted under the strict bounds of a `max-w-[430px]` layout. We built Zenbolso to feel exactly like a native iOS/Android application:
+- **Fluid Touch Gestures:** Powered by `framer-motion`, manage your transactions simply by swiping left (Delete) or right (Edit) on 60 FPS hardware-accelerated elements.
+- **Bottom Navigation Tab:** Eliminates unreachable top-screen menus holding a floating action button (FAB) for seamless transaction entries.
+
+### 🔒 Physical Security (App Lock & Ghost Protocol)
+- **Web Crypto API (SHA-256):** ZenBolso locks itself natively. Set a 4-digit PIN that gets irreversibly hashed in the device's hardware.
+- **Protocolo Fantasma (Ghost Protocol):** Forgot your password? Since there is no cloud server to email you a link, ZenBolso forces an "Emergency Exit"—completely wiping and destroying all Dexie databases to un-brick the PWA, ensuring 100% data protection against intruders.
+
+### ⚡ Offline-First (PWA Cache Strategy)
+A standalone Web App capable of surviving absolute 0 network connectivity.
+- Configured with `vite-plugin-pwa` running a localized `CacheFirst` Service Worker strategy.
+- Install it to your Home Screen with a stealthy, custom `<InstallPrompt />` intercepting Chrome's engine.
+
+### 🌱 Zero-State (The Aha! Moment)
+Don't stare at an empty chart! With our **OnboardingWizard**, users can instantly inject 20 mock transactions staggered perfectly over the current month using `date-fns`, populating interactive Recharts graphs immediately.
 
 ---
 
-## 🛠️ Installation & Setup
+## 🏗️ Technical Masterclass
+
+This platform wasn't just coded; it was engineered through absolute constraints.
+
+* **Strict Mode & Error-Proofing:** TypeScript 5.0 Strictness, eliminating any implicit `any`. Component props dictate state strictly.
+* **TDD (Test-Driven Development):** High-level business logic features like *App Lock*, *Onboarding States*, and *Ghost Protocol* are enclosed in Vitest Unit tests checking execution orders and API interceptions.
+* **Separation of Concerns:** Business Logic never bleeds into UI. UI elements are pure *Dumb Components* receiving payloads through specifically crafted strict custom hooks (`useAppLock`, `useGhostProtocol`).
+* **Optimistic Updates:** Immediate UI gratification. Deletions and additions reflect in memory before IndexedDB responds. Latency perception is 0.
+
+---
+
+## 🚀 Installation & Build
+
+No databases needed. No Vercel Edge functions. Simply drop it and build it.
 
 ### Prerequisites
-- Node.js (v18+)
-- npm / yarn
-- A Supabase Project (for cloud features)
+- Node.js 18+
 
-### Local Development
+### Setup
 
-1. **Clone the repository:**
+1. **Clone & Install:**
    ```bash
    git clone https://github.com/your-username/zenbolso.git
    cd zenbolso
-   ```
-
-2. **Install dependencies:**
-   ```bash
    npm install
    ```
 
-3. **Configure Environment Variables:**
-   Create a `.env` file in the root:
-   ```env
-   VITE_SUPABASE_URL=your_supabase_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
-
-4. **Run the development server:**
+2. **Run Development (Hot Reloading):**
    ```bash
    npm run dev
    ```
 
----
+3. **Production Static Build:**
+   ```bash
+   npm run build
+   # Outputs pure localized HTML/JS/CSS mapping directly to /dist
+   ```
 
-## 📸 Screenshots
-
-| Dashboard | Zen Insights | Mobile View |
-| :---: | :---: | :---: |
-| ![Dashboard Placeholder] | ![Insights Placeholder] | ![Mobile Placeholder] |
-
----
-
-## 📄 License
-
-Distributed under the **MIT License**. See `LICENSE` for more information.
+4. **Testing Suite:**
+   ```bash
+   npm run test
+   ```
 
 ---
 
 <p align="center">
-  Built with ❤️ for a more mindful financial life.
+  Forged by <b>Hércules</b> with architectural discipline and an unyielding commitment to User Privacy.
 </p>

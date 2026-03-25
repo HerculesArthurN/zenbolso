@@ -9,6 +9,7 @@ import { useSettingsData } from '../hooks/useSettingsData';
 import { useToast } from '../contexts/ToastContext';
 import { DataManagement } from '../components/settings/DataManagement'; // Import DataManagement
 import { Account, Category } from '../types';
+import { securityService } from '../services/securityService';
 import {
     ArrowLeft,
     User,
@@ -21,9 +22,10 @@ import {
     Moon,
     Sun,
     LogOut,
-    Loader2
-
+    Loader2,
+    Lock
 } from 'lucide-react';
+import { PinSetupModal } from '../components/security/PinSetupModal';
 
 export const SettingsPage: React.FC = () => {
     const navigate = useNavigate();
@@ -43,6 +45,13 @@ export const SettingsPage: React.FC = () => {
     const [isAddingAccount, setIsAddingAccount] = useState(false);
     const [isAddingCategory, setIsAddingCategory] = useState(false);
     const [deletingId, setDeletingId] = useState<string | null>(null);
+    const [isPinModalOpen, setIsPinModalOpen] = useState(false);
+    const [hasPin, setHasPin] = useState(false);
+
+    const checkPinStatus = async () => {
+        const status = await securityService.hasPinSetup();
+        setHasPin(status);
+    };
 
     useEffect(() => {
         if (!loadingProfile) {
@@ -65,7 +74,21 @@ export const SettingsPage: React.FC = () => {
 
     useEffect(() => {
         fetchData();
+        checkPinStatus();
     }, []);
+
+    const handleTogglePin = async () => {
+        if (hasPin) {
+            const confirmacao = window.confirm("Deseja realmente remover o bloqueio por PIN?");
+            if (confirmacao) {
+                await securityService.removePin();
+                setHasPin(false);
+                addToast('Bloqueio removido.', 'success');
+            }
+        } else {
+            setIsPinModalOpen(true);
+        }
+    };
 
     const handleSaveProfile = async () => {
         setIsSavingProfile(true);
@@ -304,6 +327,38 @@ export const SettingsPage: React.FC = () => {
                             </div>
                         </div>
                     </section>
+
+                    {/* NEW SECTION: SEGURANÇA */}
+                    <section className="bg-white dark:bg-slate-900/40 p-8 rounded-[40px] border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-xl">
+                                <Lock size={20} />
+                            </div>
+                            <h2 className="text-xl font-black text-slate-900 dark:text-white">Segurança</h2>
+                        </div>
+                        <div className="space-y-4">
+                            <button
+                                onClick={handleTogglePin}
+                                className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all group ${
+                                    hasPin 
+                                    ? 'bg-rose-50 dark:bg-rose-900/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-900/30 hover:border-rose-500' 
+                                    : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-emerald-500'
+                                }`}
+                            >
+                                <div className="flex flex-col text-left">
+                                    <span className={`font-bold text-sm ${hasPin ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white'}`}>
+                                        Bloqueio por PIN
+                                    </span>
+                                    <span className={`text-[10px] font-medium ${hasPin ? 'text-rose-500/70' : 'text-slate-500'}`}>
+                                        {hasPin ? 'Ativado (Clique para remover)' : 'Exigir senha ao abrir o app'}
+                                    </span>
+                                </div>
+                                <div className={`w-12 h-6 rounded-full relative transition-colors ${hasPin ? 'bg-rose-500' : 'bg-slate-200 dark:bg-slate-800 group-hover:bg-emerald-500/20'}`}>
+                                    <div className={`absolute top-1 w-4 h-4 rounded-full transition-all ${hasPin ? 'bg-white left-7' : 'bg-slate-400 dark:bg-slate-600 left-1 group-hover:bg-emerald-500'}`} />
+                                </div>
+                            </button>
+                        </div>
+                    </section>
                 </div>
 
                 {/* COLUMN RIGHT */}
@@ -410,6 +465,15 @@ export const SettingsPage: React.FC = () => {
                     Resetar Aplicativo (Perigo)
                 </button>
             </div>
+
+            {/* Modal de Setup do PIN */}
+            <PinSetupModal 
+                isOpen={isPinModalOpen} 
+                onClose={() => {
+                    setIsPinModalOpen(false);
+                    checkPinStatus(); // Atualiza a chave ao fechar o modal
+                }} 
+            />
         </div>
     );
 };

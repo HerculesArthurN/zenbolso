@@ -10,25 +10,26 @@ export default defineConfig({
       registerType: 'prompt',
       includeAssets: ['favicon.png', 'icon-192.png', 'icon-512.png'],
       manifest: {
-        name: 'ZenBolso',
-        short_name: 'ZenBolso',
-        description: 'Finanças Inteligentes com foco em tempo',
+        name: 'Zenbolso',
+        short_name: 'Zenbolso',
+        description: 'Gestor Financeiro Local-First e Privado',
         theme_color: '#0f172a',
         background_color: '#0f172a',
         display: 'standalone',
+        orientation: 'portrait',
         icons: [
           {
-            src: 'icon-192.png',
+            src: '/pwa-192x192.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'icon-512.png',
+            src: '/pwa-512x512.png',
             sizes: '512x512',
             type: 'image/png'
           },
           {
-            src: 'icon-512.png',
+            src: '/pwa-512x512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'

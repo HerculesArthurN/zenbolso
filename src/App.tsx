@@ -52,6 +52,9 @@ const AppRoutes: React.FC = () => {
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { ReloadPrompt } from './components/pwa/ReloadPrompt';
+import { InstallPrompt } from './components/pwa/InstallPrompt';
+import { OnboardingWizard } from './components/onboarding/OnboardingWizard';
+import { AppLockScreen } from './components/security/AppLockScreen';
 
 const App: React.FC = () => {
     return (
@@ -80,6 +83,9 @@ const App: React.FC = () => {
                                 </div>
                             </div>
                             <ReloadPrompt />
+                            <InstallPrompt />
+                            <OnboardingWizard />
+                            <AppLockScreen />
                         </BrowserRouter>
                     </DataProvider>
                 </ToastProvider>
