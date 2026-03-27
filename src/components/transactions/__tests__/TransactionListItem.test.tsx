@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { TransactionListItem } from '../TransactionListItem';
@@ -6,6 +5,7 @@ import { Transaction } from '../../../types';
 
 const mockTransaction: Transaction = {
   id: 'tx-123',
+  user_id: 'user-1',
   description: 'Compra no Mercado',
   amount: 250.75,
   date: '2026-03-24',

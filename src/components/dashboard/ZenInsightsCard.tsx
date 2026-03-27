@@ -15,7 +15,7 @@ export const ZenInsightsCard: React.FC<ZenInsightsCardProps> = ({ transactions, 
     const { profile, isLoading: loadingProfile } = useProfileSettings();
 
     if (loading || loadingProfile) {
-        return <div className="h-48 bg-slate-100 dark:bg-slate-800 animate-pulse rounded-[32px]" />;
+        return <div className="h-48 bg-zinc-800 animate-pulse rounded-[32px]" />;
     }
 
     const hasProfile = profile.monthlyIncome > 0 && profile.workHoursPerMonth > 0;
@@ -70,7 +70,7 @@ export const ZenInsightsCard: React.FC<ZenInsightsCardProps> = ({ transactions, 
     const isExceeded = monthExpenses > monthlyIncome;
 
     return (
-        <div className="relative overflow-hidden p-8 rounded-[40px] bg-gradient-to-br from-slate-900 to-indigo-950 text-white shadow-2xl border border-white/5">
+        <div className="relative overflow-hidden p-8 rounded-[40px] bg-gradient-to-br from-zinc-900 to-indigo-950 text-white shadow-2xl border border-white/5">
             {/* Background Glow */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 blur-[60px] rounded-full -mr-10 -mt-10" />
 
@@ -94,7 +94,7 @@ export const ZenInsightsCard: React.FC<ZenInsightsCardProps> = ({ transactions, 
                     <div className="text-4xl font-black tracking-tight">
                         {safeNumber(timeCost, 0).toFixed(1)} <span className="text-xl font-normal text-indigo-300">horas</span>
                     </div>
-                    <p className="text-xs font-medium text-slate-400">
+                    <p className="text-xs font-medium text-zinc-400">
                         {isExceeded
                             ? "Você já gastou mais do que ganha este mês."
                             : `Isso equivale a ${safeNumber(percentageOfWorkMonth, 0).toFixed(1)}% do seu mês trabalhado.`
@@ -104,7 +104,7 @@ export const ZenInsightsCard: React.FC<ZenInsightsCardProps> = ({ transactions, 
 
                 {/* Progress Bar */}
                 <div className="space-y-3">
-                    <div className="flex items-center justify-between text-[10px] uppercase font-black tracking-tighter text-slate-500">
+                    <div className="flex items-center justify-between text-[10px] uppercase font-black tracking-tighter text-zinc-500">
                         <span>Gastos</span>
                         <span>Renda (R$ {safeNumber(monthlyIncome, 0).toLocaleString()})</span>
                     </div>

@@ -37,7 +37,7 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
         return (
             <div className="space-y-3">
                 {[1, 2, 3].map(i => (
-                    <div key={i} className="h-20 bg-slate-50 dark:bg-slate-800/50 animate-pulse rounded-[32px]" />
+                    <div key={i} className="h-20 bg-zinc-800/50 animate-pulse rounded-[32px]" />
                 ))}
             </div>
         );
@@ -45,18 +45,18 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
 
     if (transactions.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-12 bg-slate-50 dark:bg-slate-800/20 rounded-[32px] border-2 border-dashed border-slate-200 dark:border-slate-800 text-slate-400">
+            <div className="flex flex-col items-center justify-center py-12 bg-zinc-800/20 rounded-[32px] border-2 border-dashed border-zinc-700 text-zinc-500">
                 <Ghost size={40} className="mb-3 opacity-20" />
-                <p className="text-sm font-bold uppercase tracking-widest text-slate-400">Nenhuma transação</p>
+                <p className="text-sm font-bold uppercase tracking-widest text-zinc-500">Nenhuma transação</p>
                 <p className="text-[10px] opacity-60">Sua jornada financeira começa aqui.</p>
             </div>
         );
     }
 
     return (
-        <div className="bg-white/50 dark:bg-slate-900/50 rounded-[40px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden pb-2 mb-8">
+        <div className="bg-zinc-800/80 rounded-[40px] border border-zinc-700/50 shadow-md overflow-hidden pb-2 mb-8">
             <div className="p-6 pb-4">
-                <h3 className="font-bold text-slate-900 dark:text-white uppercase tracking-widest text-[10px]">Lançamentos Recentes</h3>
+                <h3 className="font-bold text-zinc-100 uppercase tracking-widest text-[10px]">Lançamentos Recentes</h3>
             </div>
             <div className="px-2">
                 {transactions.slice(0, 5).map((tx) => {

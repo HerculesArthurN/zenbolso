@@ -30,6 +30,8 @@ const AppRoutes: React.FC = () => {
                     <Route path="/" element={
                         hasSeenOnboarding ? <Navigate to="/dashboard" replace /> : <LandingPage />
                     } />
+                    {/* Isolated About/Landing Route */}
+                    <Route path="/about" element={<LandingPage />} />
 
                     {/* App Routes - Now Publicly Accessible */}
                     <Route element={<AppLayout />}>
@@ -64,7 +66,7 @@ const App: React.FC = () => {
                     <DataProvider>
                         <BrowserRouter>
                             {/* Premium Desktop Canvas / Background */}
-                            <div className="fixed inset-0 min-h-screen bg-slate-950 flex items-center justify-center overflow-hidden font-sans selection:bg-teal-500/30">
+                            <div className="fixed inset-0 min-h-screen bg-zinc-950 flex items-center justify-center overflow-hidden font-sans selection:bg-teal-500/30">
                                 {/* Ambient Background Blobs */}
                                 <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-40">
                                     <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-teal-600/20 rounded-full blur-[120px] animate-blob"></div>
@@ -73,7 +75,7 @@ const App: React.FC = () => {
                                 </div>
 
                                 {/* App Container (Mobile Constraint) */}
-                                <div className="relative w-full max-w-[430px] h-full sm:h-[92vh] sm:max-h-[900px] bg-slate-50 dark:bg-slate-950 sm:rounded-[40px] shadow-[0_32px_64px_-15px_rgba(0,0,0,0.6)] border-0 sm:border-[8px] border-slate-900 overflow-hidden flex flex-col z-10 transition-all duration-500">
+                                <div className="relative w-full max-w-[430px] h-full sm:h-[92vh] sm:max-h-[900px] bg-zinc-900 sm:rounded-[40px] shadow-[0_32px_64px_-15px_rgba(0,0,0,0.6)] border-0 sm:border-[8px] border-zinc-900 overflow-hidden flex flex-col z-10 transition-all duration-500">
 
                                     {/* App Content with Internal Scrolling */}
                                     <div className="flex-1 overflow-y-auto no-scrollbar scroll-smooth relative">

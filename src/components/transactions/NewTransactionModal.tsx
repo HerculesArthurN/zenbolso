@@ -55,13 +55,13 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
         >
             <form onSubmit={handleSubmit} className="space-y-5">
                 {/* Type Toggle */}
-                <div role="group" aria-label="Tipo de Transação" className="flex p-1 bg-slate-100 dark:bg-slate-900 rounded-xl">
+                <div role="group" aria-label="Tipo de Transação" className="flex p-1 bg-zinc-800/80 rounded-xl">
                     <button
                         type="button"
                         onClick={() => updateField('type', 'EXPENSE')}
-                        className={`flex-1 py-2 px-4 rounded-lg text-sm font-bold transition-all ${formData.type === 'EXPENSE'
-                            ? 'bg-white dark:bg-slate-800 text-rose-500 shadow-sm'
-                            : 'text-slate-500'
+                        className={`flex-1 py-3 px-4 rounded-lg text-sm font-bold transition-all ${formData.type === 'EXPENSE'
+                            ? 'bg-zinc-700 text-rose-500 shadow-sm'
+                            : 'text-zinc-500 hover:text-zinc-300'
                             }`}
                         disabled={isSubmitting}
                         aria-pressed={formData.type === 'EXPENSE'}
@@ -71,9 +71,9 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
                     <button
                         type="button"
                         onClick={() => updateField('type', 'INCOME')}
-                        className={`flex-1 py-2 px-4 rounded-lg text-sm font-bold transition-all ${formData.type === 'INCOME'
-                            ? 'bg-white dark:bg-slate-800 text-emerald-500 shadow-sm'
-                            : 'text-slate-500'
+                        className={`flex-1 py-3 px-4 rounded-lg text-sm font-bold transition-all ${formData.type === 'INCOME'
+                            ? 'bg-zinc-700 text-emerald-500 shadow-sm'
+                            : 'text-zinc-500 hover:text-zinc-300'
                             }`}
                         disabled={isSubmitting}
                         aria-pressed={formData.type === 'INCOME'}
@@ -85,9 +85,9 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
 
                 {/* Amount */}
                 <div>
-                    <label htmlFor="input-amount" className="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1 tracking-wider text-left">Valor</label>
+                    <label htmlFor="input-amount" className="block text-xs font-bold text-zinc-500 uppercase mb-2 ml-1 tracking-wider text-left">Valor</label>
                     <div className="relative text-left">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold" aria-hidden="true">R$</span>
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 font-bold" aria-hidden="true">R$</span>
                         <input
                             type="number"
                             step="0.01"
@@ -95,7 +95,7 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
                             onChange={(e) => updateField('amount', parseFloat(e.target.value) || 0)}
                             placeholder="0,00"
                             id="input-amount"
-                            className={`w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-lg text-slate-900 dark:text-white ${errors.amount ? 'ring-2 ring-rose-500' : ''}`}
+                            className={`w-full pl-12 pr-4 py-4 bg-zinc-800 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none font-bold text-xl text-zinc-100 ${errors.amount ? 'ring-2 ring-rose-500' : ''}`}
                             disabled={isSubmitting}
                         />
                     </div>
@@ -104,14 +104,14 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
 
                 {/* Description */}
                 <div className="text-left">
-                    <label htmlFor="input-description" className="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1 tracking-wider">Descrição</label>
+                    <label htmlFor="input-description" className="block text-xs font-bold text-zinc-500 uppercase mb-2 ml-1 tracking-wider">Descrição</label>
                     <input
                         type="text"
                         value={formData.description}
                         onChange={(e) => updateField('description', e.target.value)}
                         placeholder="O que você comprou?"
                         id="input-description"
-                        className={`w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-900 dark:text-white ${errors.description ? 'ring-2 ring-rose-500' : ''}`}
+                        className={`w-full px-4 py-4 bg-zinc-800 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none text-zinc-100 ${errors.description ? 'ring-2 ring-rose-500' : ''}`}
                         disabled={isSubmitting}
                     />
                     {errors.description && <p className="text-rose-500 text-xs mt-1 ml-1">{errors.description}</p>}
@@ -120,13 +120,13 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
                 <div className="grid grid-cols-2 gap-4 text-left">
                     {/* Date */}
                     <div>
-                        <label htmlFor="input-date" className="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1 tracking-wider">Data</label>
+                        <label htmlFor="input-date" className="block text-xs font-bold text-zinc-500 uppercase mb-2 ml-1 tracking-wider">Data</label>
                         <input
                             type="date"
                             value={formData.date}
                             onChange={(e) => updateField('date', e.target.value)}
                             id="input-date"
-                            className={`w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm text-slate-900 dark:text-white ${errors.date ? 'ring-2 ring-rose-500' : ''}`}
+                            className={`w-full px-4 py-4 bg-zinc-800 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none text-sm text-zinc-100 ${errors.date ? 'ring-2 ring-rose-500' : ''}`}
                             disabled={isSubmitting}
                         />
                         {errors.date && <p className="text-rose-500 text-xs mt-1 ml-1">{errors.date}</p>}
@@ -134,12 +134,12 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
 
                     {/* Account */}
                     <div>
-                        <label htmlFor="input-account" className="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1 tracking-wider">Conta</label>
+                        <label htmlFor="input-account" className="block text-xs font-bold text-zinc-500 uppercase mb-2 ml-1 tracking-wider">Conta</label>
                         <select
                             value={formData.accountId}
                             onChange={(e) => updateField('accountId', e.target.value)}
                             id="input-account"
-                            className={`w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm appearance-none text-slate-900 dark:text-white ${errors.accountId ? 'ring-2 ring-rose-500' : ''}`}
+                            className={`w-full px-4 py-4 bg-zinc-800 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none text-sm appearance-none text-zinc-100 ${errors.accountId ? 'ring-2 ring-rose-500' : ''}`}
                             disabled={isSubmitting || isLoadingAccounts}
                         >
                             {isLoadingAccounts ? (
@@ -161,12 +161,12 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
 
                 {/* Category */}
                 <div className="text-left">
-                    <label htmlFor="input-category" className="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1 tracking-wider">Categoria</label>
+                    <label htmlFor="input-category" className="block text-xs font-bold text-zinc-500 uppercase mb-2 ml-1 tracking-wider">Categoria</label>
                     <select
                         value={formData.categoryId}
                         onChange={(e) => updateField('categoryId', e.target.value)}
                         id="input-category"
-                        className={`w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm appearance-none text-slate-900 dark:text-white ${errors.categoryId ? 'ring-2 ring-rose-500' : ''}`}
+                        className={`w-full px-4 py-4 bg-zinc-800 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none text-sm appearance-none text-zinc-100 ${errors.categoryId ? 'ring-2 ring-rose-500' : ''}`}
                         disabled={isSubmitting}
                     >
                         <option value="">Sem categoria</option>
@@ -183,7 +183,7 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
                     type="submit"
                     id="btn-save-transaction"
                     disabled={isSubmitting || (accounts.length === 0 && !initialData)}
-                    className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 disabled:text-slate-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-2xl font-bold text-lg shadow-lg shadow-indigo-500/20 transition-all active:scale-[0.98] flex items-center justify-center"
+                    className="w-full py-5 bg-emerald-500 hover:bg-emerald-600 disabled:bg-zinc-800 disabled:text-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-2xl font-bold text-lg shadow-xl shadow-emerald-500/20 transition-all active:scale-[0.98] flex items-center justify-center mt-4"
                 >
                     {isSubmitting ? (
                         <>

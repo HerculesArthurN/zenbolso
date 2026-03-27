@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { ShieldCheck, Zap, Database } from 'lucide-react';
 import { useOnboarding } from '../../hooks/useOnboarding';
 
@@ -8,13 +8,13 @@ export function OnboardingWizard() {
   if (isLoading || !showOnboarding) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] bg-slate-900 flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-500">
+    <div className="fixed inset-0 z-[100] bg-zinc-900 flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-500">
       <div className="w-16 h-16 bg-emerald-500/10 rounded-[20px] flex items-center justify-center text-emerald-500 mb-6 shadow-xl shadow-emerald-500/20">
         <ShieldCheck size={32} />
       </div>
       
-      <h1 className="text-2xl font-bold text-slate-100 mb-3 uppercase tracking-widest">Bem-vindo ao Zenbolso</h1>
-      <p className="text-slate-400 mb-8 max-w-[280px] font-medium leading-relaxed">
+      <h1 className="text-2xl font-bold text-zinc-100 mb-3 uppercase tracking-widest">Bem-vindo ao Zenbolso</h1>
+      <p className="text-zinc-400 mb-8 max-w-[280px] font-medium leading-relaxed">
         O seu gestor financeiro de bolso. <strong className="text-indigo-400">Zero Nuvem</strong>. <strong className="text-emerald-400">100% Privado</strong>. Seus dados nunca saem deste aparelho.
       </p>
 
@@ -37,7 +37,7 @@ export function OnboardingWizard() {
         <button 
           onClick={completeOnboarding}
           disabled={isInjecting}
-          className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 py-4 px-4 rounded-[20px] font-bold tracking-widest uppercase text-xs transition-all disabled:opacity-50 border border-slate-700"
+          className="w-full flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 active:scale-95 text-zinc-200 py-4 px-4 rounded-[20px] font-bold tracking-widest uppercase text-xs transition-all disabled:opacity-50 border border-zinc-700"
         >
           <Database size={18} />
           Começar do Zero

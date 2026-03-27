@@ -41,24 +41,24 @@ export default {
         },
         // Surfaces & Layout
         background: {
-          DEFAULT: colors.slate[50],  // Light
-          dark: colors.slate[950],   // Dark
+          DEFAULT: colors.zinc[900],  // Light equivalent to dark mode
+          dark: colors.zinc[900],     // Dark
         },
         surface: {
-          DEFAULT: '#ffffff',        // Light
-          dark: colors.slate[900],   // Dark
+          DEFAULT: colors.zinc[800],  // Light equivalent to dark mode
+          dark: colors.zinc[800],     // Dark
         },
         "text-main": {
-          DEFAULT: colors.slate[900], // Light
-          dark: colors.slate[100],    // Dark
+          DEFAULT: colors.zinc[100],  // Light
+          dark: colors.zinc[100],     // Dark
         },
         "text-muted": {
-          DEFAULT: colors.slate[600], // Light
-          dark: colors.slate[400],    // Dark
+          DEFAULT: colors.zinc[400],  // Light
+          dark: colors.zinc[400],     // Dark
         },
         "border-color": {
-          DEFAULT: colors.slate[200], // Light
-          dark: colors.slate[800],    // Dark
+          DEFAULT: colors.zinc[800],  // Light
+          dark: colors.zinc[800],     // Dark
         }
       },
       fontFamily: {

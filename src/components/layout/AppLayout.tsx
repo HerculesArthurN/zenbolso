@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom';
 
 export const AppLayout: React.FC = () => {
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
+    <div className="min-h-screen bg-zinc-900 text-zinc-100 transition-colors duration-300">
 
       {/* Main Content Area - Strictly Mobile */}
       {/* pb-24 padding protects the content from being hidden by the fixed bottom nav */}
