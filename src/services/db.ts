@@ -1,5 +1,5 @@
 import Dexie, { Table } from 'dexie';
-import { Account, Category, RecurringConfig, AppSettings, Goal, SyncJob, RecurringTransaction, DexieTransaction } from '../types';
+import { Category, RecurringConfig, AppSettings, Goal, SyncJob, RecurringTransaction, DexieTransaction, DexieAccount } from '../types';
 import { STORAGE_KEY } from '../constants';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -11,7 +11,7 @@ const CATEGORIES_STORAGE_KEY = 'pocket_manager_categories_v1';
 
 class PocketManagerDB extends Dexie {
     transactions!: Table<DexieTransaction, string>;
-    accounts!: Table<Account, string>;
+    accounts!: Table<DexieAccount, string>;
     categories!: Table<Category, string>;
     recurringConfigs!: Table<RecurringConfig, string>;
     recurring_transactions!: Table<RecurringTransaction, string>;
@@ -56,17 +56,12 @@ class PocketManagerDB extends Dexie {
             } catch (e) { console.error('Migration error accounts', e) }
         } else {
             // Default Account if nothing exists
-            const now = new Date().toISOString();
             await this.accounts.add({
                 id: 'default-wallet',
-                user_id: 'local',
                 name: 'Carteira',
+                initialBalance: 0,
                 type: 'WALLET',
-                balance: 0,
-                color: '#10b981',
-                is_archived: false,
-                created_at: now,
-                updated_at: now
+                color: '#10b981'
             });
         }
 

@@ -14,6 +14,14 @@ export interface Account {
     updated_at: string;
 }
 
+export interface DexieAccount {
+    id: string;
+    name: string;
+    initialBalance: number;
+    type: string;
+    color: string;
+}
+
 export interface Category {
     id: string;
     user_id: string;

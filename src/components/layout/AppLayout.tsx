@@ -3,7 +3,14 @@ import { BottomNav } from './BottomNav';
 import { DesktopSidebar } from './DesktopSidebar';
 import { Outlet } from 'react-router-dom';
 
+import { useData } from '../../contexts/DataContext';
+import { useAccountsQuery } from '../../hooks/useFinanceData';
+import { NewTransactionModal } from '../transactions/NewTransactionModal';
+
 export const AppLayout: React.FC = () => {
+  const { isTransactionModalOpen, closeTransactionModal, transactionToEdit, refreshData } = useData();
+  const { data: accounts = [], isLoading: isLoadingAccounts } = useAccountsQuery();
+
   return (
     <div className="min-h-screen bg-zinc-900 text-zinc-100 transition-colors duration-300">
 
@@ -27,6 +34,14 @@ export const AppLayout: React.FC = () => {
         <BottomNav />
       </div>
 
+      <NewTransactionModal
+        isOpen={isTransactionModalOpen}
+        onClose={closeTransactionModal}
+        accounts={accounts}
+        isLoadingAccounts={isLoadingAccounts}
+        initialData={transactionToEdit}
+        onSuccess={refreshData}
+      />
     </div>
   );
 };

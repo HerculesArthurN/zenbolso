@@ -1,5 +1,5 @@
 import { db } from './db';
-import { Account } from '../types';
+import { Account, DexieAccount, AccountType } from '../types';
 import { decrypt } from '../utils/crypto';
 
 export const accountService = {
@@ -9,10 +9,10 @@ export const accountService = {
             db.transactions.toArray()
         ]);
 
-        return localAccounts.map((acc: any) => {
-            const accountTransactions = localTransactions.filter((t: any) => t.accountId === acc.id || (!t.accountId && acc.id === 'default-wallet'));
+        return localAccounts.map((acc: DexieAccount) => {
+            const accountTransactions = localTransactions.filter((t) => t.accountId === acc.id || (!t.accountId && acc.id === 'default-wallet'));
 
-            const flow = accountTransactions.reduce((sum: number, t: any) => {
+            const flow = accountTransactions.reduce((sum: number, t) => {
                 const rawValue = typeof t.value === 'string' ? decrypt(t.value) : t.value;
                 const val = Number(rawValue) || 0;
                 const type = String(t.type || '').toUpperCase();
@@ -33,9 +33,9 @@ export const accountService = {
         });
     },
 
-    mapLegacyType(type: string): any {
+    mapLegacyType(type: string): AccountType {
         const t = type.toUpperCase();
-        if (['WALLET', 'BANK', 'INVESTMENT'].includes(t)) return t;
+        if (t === 'WALLET' || t === 'BANK' || t === 'INVESTMENT') return t as AccountType;
 
         const map: Record<string, string> = {
             'CHECKING': 'BANK',
@@ -44,42 +44,52 @@ export const accountService = {
             'CASH': 'WALLET',
             'CREDIT': 'BANK'
         };
-        return map[t] || 'BANK';
+        return (map[t] || 'BANK') as AccountType;
     },
 
     async createAccount(account: Partial<Account>): Promise<Account> {
-        const localAccount = {
+        const localAccount: DexieAccount = {
             id: account.id || crypto.randomUUID(),
             name: account.name || 'Nova Conta',
-            type: 'checking' as any,
+            type: 'checking',
             initialBalance: account.balance || 0,
             color: account.color || '#6366f1'
         };
-        await db.accounts.add(localAccount as any);
+        await db.accounts.add(localAccount);
         return {
-            ...account,
             id: localAccount.id,
             user_id: '',
+            name: localAccount.name,
             balance: localAccount.initialBalance,
             type: this.mapLegacyType(localAccount.type),
             color: localAccount.color,
             is_archived: false,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
-        } as Account;
+        };
     },
 
     async updateAccount(id: string, updates: Partial<Account>): Promise<Account> {
         const existing = await db.accounts.get(id);
         if (!existing) throw new Error('Account not found');
-        const localUpdate = {
+        const localUpdate: DexieAccount = {
             ...existing,
             ...(updates.name && { name: updates.name }),
             ...(updates.balance !== undefined && { initialBalance: updates.balance }),
             ...(updates.color && { color: updates.color })
         };
         await db.accounts.put(localUpdate);
-        return { ...updates, id } as Account;
+        return {
+            id: existing.id,
+            user_id: '',
+            name: localUpdate.name,
+            balance: localUpdate.initialBalance,
+            type: this.mapLegacyType(localUpdate.type),
+            color: localUpdate.color,
+            is_archived: false,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
     },
 
     async deleteAccount(id: string): Promise<void> {

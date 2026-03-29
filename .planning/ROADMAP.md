@@ -48,7 +48,7 @@ Eliminar tudo que não é usado: Supabase auth/login, multi-moeda, multi-idioma,
 ---
 
 ## Phase 3 — Core Feature Completion & Quality
-**Status:** `[ ] Not Started`
+**Status:** `[x] Done`
 **Covers:** R-301, R-302, R-303, R-304, R-305, R-306
 
 ### Goal
@@ -60,12 +60,12 @@ Finalizar o que está incompleto: implementar Planning/Metas, decompor SettingsP
 - **3-03** `types-and-tests` — Eliminar `any` em `db.ts` e `transactionService.ts`; escrever testes unitários para `transactionService` (CRUD + criptografia) e `accountService` (CRUD + saldo)
 
 ### UAT / Verification
-- [ ] Rota `/planning` renderiza lista de metas + formulário de criação
-- [ ] Meta criada persiste após reload (IndexedDB)
-- [ ] `SettingsPage.tsx` tem menos de 200 linhas
-- [ ] Cada aba de settings é um componente isolado em `components/settings/tabs/`
-- [ ] `npm run test` passa com cobertura de `transactionService` e `accountService`
-- [ ] `tsc` sem erros de `any` implícito
+- [x] Rota `/planning` renderiza lista de metas + formulário de criação
+- [x] Meta criada persiste após reload (IndexedDB)
+- [x] `SettingsPage.tsx` tem menos de 200 linhas
+- [x] Cada aba de settings é um componente isolado em `components/settings/tabs/`
+- [x] `npm run test` passa com cobertura de `transactionService` e `accountService`
+- [x] `tsc` sem erros de `any` implícito
 
 ---
 
@@ -83,4 +83,5 @@ Finalizar o que está incompleto: implementar Planning/Metas, decompor SettingsP
 
 ## Completed Phases
 
-*(nenhuma ainda)*
+- **Phase 2:** Cleanup & Dead Code Removal
+- **Phase 3:** Core Feature Completion & Quality

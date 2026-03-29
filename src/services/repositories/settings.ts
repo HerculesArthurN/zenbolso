@@ -1,6 +1,6 @@
 
 import { db } from '../db';
-import { AppSettings, Transaction, DexieTransaction } from '../../types';
+import { AppSettings, Transaction, DexieTransaction, DexieAccount } from '../../types';
 import { ValidationError } from '../errors';
 import { handleDBError } from '../repositoryUtils';
 import { encrypt } from '../../utils/crypto';
@@ -34,17 +34,12 @@ export const clearAllData = async (): Promise<void> => {
             db.goals.clear()
         ]);
 
-        const now = new Date().toISOString();
-        const defaultAccount: any = {
+        const defaultAccount: DexieAccount = {
             id: 'default-wallet',
-            user_id: 'local',
             name: 'Carteira',
+            initialBalance: 0,
             type: 'WALLET',
-            balance: 0,
-            color: '#10b981',
-            is_archived: false,
-            created_at: now,
-            updated_at: now
+            color: '#10b981'
         };
         await db.accounts.add(defaultAccount);
     } catch (e) {
