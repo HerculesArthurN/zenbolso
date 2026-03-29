@@ -65,25 +65,27 @@ const App: React.FC = () => {
                 <ToastProvider>
                     <DataProvider>
                         <BrowserRouter>
-                            {/* Premium Desktop Canvas / Background */}
-                            <div className="fixed inset-0 min-h-screen bg-zinc-950 flex items-center justify-center overflow-hidden font-sans selection:bg-teal-500/30">
+                            {/* ── Mobile: centered phone shell (< md) ── */}
+                            <div className="md:hidden fixed inset-0 min-h-screen bg-zinc-950 flex items-center justify-center overflow-hidden font-sans selection:bg-teal-500/30">
                                 {/* Ambient Background Blobs */}
                                 <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-40">
                                     <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-teal-600/20 rounded-full blur-[120px] animate-blob"></div>
                                     <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-600/20 rounded-full blur-[120px] animate-blob animation-delay-2000"></div>
                                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40%] h-[40%] bg-purple-600/10 rounded-full blur-[120px] animate-blob animation-delay-4000"></div>
                                 </div>
-
-                                {/* App Container (Mobile Constraint) */}
-                                <div className="relative w-full max-w-[430px] h-full sm:h-[92vh] sm:max-h-[900px] bg-zinc-900 sm:rounded-[40px] shadow-[0_32px_64px_-15px_rgba(0,0,0,0.6)] border-0 sm:border-[8px] border-zinc-900 overflow-hidden flex flex-col z-10 transition-all duration-500">
-
-                                    {/* App Content with Internal Scrolling */}
+                                <div className="relative w-full max-w-[430px] h-full bg-zinc-900 overflow-hidden flex flex-col z-10">
                                     <div className="flex-1 overflow-y-auto no-scrollbar scroll-smooth relative">
                                         <AppRoutes />
                                     </div>
-
                                 </div>
                             </div>
+
+                            {/* ── Desktop: full viewport layout (≥ md) ── */}
+                            <div className="hidden md:block min-h-screen bg-zinc-950 font-sans selection:bg-teal-500/30">
+                                <AppRoutes />
+                            </div>
+
+                            {/* Global overlays — render in both modes */}
                             <ReloadPrompt />
                             <InstallPrompt />
                             <OnboardingWizard />
