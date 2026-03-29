@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/SessionContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { accountService } from '../services/accountService';
 import { categoryService } from '../services/categoryService';
@@ -21,7 +20,6 @@ import {
     Target,
     Moon,
     Sun,
-    LogOut,
     Loader2,
     Lock
 } from 'lucide-react';
@@ -30,7 +28,6 @@ import { PinSetupModal } from '../components/security/PinSetupModal';
 export const SettingsPage: React.FC = () => {
     const navigate = useNavigate();
     const { addToast } = useToast();
-    const { user, signOut } = useAuth();
     const { theme, toggleTheme } = useTheme();
     const { profile, updateProfile, isLoading: loadingProfile } = useProfileSettings();
     const { resetApp } = useSettingsData();
@@ -193,12 +190,6 @@ export const SettingsPage: React.FC = () => {
                     <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Configurações</h1>
                     <p className="text-slate-500 dark:text-slate-400">Hub central do seu ZenBolso.</p>
                 </div>
-                <button
-                    onClick={signOut}
-                    className="ml-auto p-3 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-2xl transition-colors"
-                >
-                    <LogOut size={20} />
-                </button>
             </header>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -214,7 +205,7 @@ export const SettingsPage: React.FC = () => {
                             </div>
                             <div className="flex-1">
                                 <h2 className="text-xl font-black text-slate-900 dark:text-white">Seu Perfil</h2>
-                                {user?.email && <p className="text-xs text-slate-500 font-medium">{user.email}</p>}
+                                <p className="text-xs text-slate-500 font-medium">Conta Local</p>
                             </div>
                         </div>
 
@@ -267,26 +258,6 @@ export const SettingsPage: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="flex flex-col gap-2">
-                                <label htmlFor="currency" className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Moeda Principal</label>
-                                <div className="relative">
-                                    <svg className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <circle cx="12" cy="12" r="10" />
-                                        <path d="M12 6v12M9 9h6M9 15h6" />
-                                    </svg>
-                                    <select
-                                        id="currency"
-                                        value={localProfile.mainCurrency || 'BRL'}
-                                        onChange={e => setLocalProfile({ ...localProfile, mainCurrency: e.target.value })}
-                                        className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-indigo-500 rounded-2xl outline-none font-bold text-slate-900 dark:text-white appearance-none transition-all"
-                                        aria-label="Moeda principal"
-                                    >
-                                        <option value="BRL">🇧🇷 Real Brasileiro (R$)</option>
-                                        <option value="USD">🇺🇸 US Dollar ($)</option>
-                                        <option value="EUR">🇪🇺 Euro (€)</option>
-                                    </select>
-                                </div>
-                            </div>
 
                             <button
                                 onClick={handleSaveProfile}

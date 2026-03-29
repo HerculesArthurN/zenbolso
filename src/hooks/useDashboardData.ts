@@ -37,7 +37,7 @@ export const useDashboardData = () => {
         }
 
         refresh();
-    }, [auth.user, auth.isLoading, refresh]);
+    }, [auth.isLoading, refresh]);
 
     return { accounts, transactions, loading, error, refresh };
 };

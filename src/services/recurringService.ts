@@ -1,24 +1,9 @@
-import { supabase } from '../lib/supabase';
 import { db } from './db';
 import { RecurringTransaction } from '../types';
 import { transactionService } from './transactionService';
-import { handleApiError } from './api';
 
 export const recurringService = {
     async getRecurring(): Promise<RecurringTransaction[]> {
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (user) {
-            const { data, error } = await supabase
-                .from('recurring_transactions')
-                .select('*')
-                .order('description', { ascending: true });
-
-            if (error) handleApiError(error);
-            return data || [];
-        }
-
-        // Guest Mode
         const localRules = await db.recurring_transactions.toArray();
         return localRules.map(r => ({
             ...r,
@@ -27,20 +12,6 @@ export const recurringService = {
     },
 
     async addRecurring(rule: Partial<RecurringTransaction>): Promise<RecurringTransaction> {
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (user) {
-            const { data, error } = await supabase
-                .from('recurring_transactions')
-                .insert([{ ...rule, user_id: user.id }])
-                .select()
-                .single();
-
-            if (error) handleApiError(error);
-            return data;
-        }
-
-        // Guest Mode
         const localRule = {
             id: crypto.randomUUID(),
             ...rule,
@@ -54,32 +25,10 @@ export const recurringService = {
     },
 
     async deleteRecurring(id: string): Promise<void> {
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (user) {
-            const { error } = await supabase
-                .from('recurring_transactions')
-                .delete()
-                .eq('id', id);
-            if (error) handleApiError(error);
-            return;
-        }
-
         await db.recurring_transactions.delete(id);
     },
 
     async toggleActive(id: string, active: boolean): Promise<void> {
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (user) {
-            const { error } = await supabase
-                .from('recurring_transactions')
-                .update({ active })
-                .eq('id', id);
-            if (error) handleApiError(error);
-            return;
-        }
-
         await db.recurring_transactions.update(id, { active });
     },
 
@@ -123,16 +72,6 @@ export const recurringService = {
     },
 
     async updateLastProcessed(id: string, monthStr: string): Promise<void> {
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (user) {
-            await supabase
-                .from('recurring_transactions')
-                .update({ last_processed_date: monthStr })
-                .eq('id', id);
-            return;
-        }
-
         await db.recurring_transactions.update(id, { last_processed_date: monthStr });
     }
 };

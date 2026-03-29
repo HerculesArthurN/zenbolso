@@ -28,7 +28,7 @@ Transformar o layout do app de mobile-only para genuinamente responsivo. No desk
 ---
 
 ## Phase 2 — Cleanup & Dead Code Removal
-**Status:** `[ ] Not Started`
+**Status:** `[x] Done`
 **Covers:** R-201, R-202, R-203, R-204, R-205, R-206
 
 ### Goal
@@ -40,10 +40,10 @@ Eliminar tudo que não é usado: Supabase auth/login, multi-moeda, multi-idioma,
 - **2-03** `dead-code` — Auditoria de imports não usados, componentes sem referência, hooks órfãos; executar `tsc` e corrigir erros resultantes
 
 ### UAT / Verification
-- [ ] Rota `/login` não existe mais (404)
-- [ ] Não há seletor de moeda na UI
-- [ ] `npm run build` passa sem warnings de imports não usados
-- [ ] `tsc` passa sem erros
+- [x] Rota `/login` não existe mais (404)
+- [x] Não há seletor de moeda na UI
+- [x] `npm run build` passa sem warnings de imports não usados
+- [x] `tsc` passa sem erros
 
 ---
 

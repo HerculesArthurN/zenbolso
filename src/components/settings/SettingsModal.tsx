@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Account, Category, TransactionType, RecurringConfig } from '../../types';
-import { DollarSign, Wallet, PieChart, Repeat, Cloud, FileSpreadsheet } from 'lucide-react';
+import { DollarSign, Wallet, PieChart, Repeat, FileSpreadsheet } from 'lucide-react';
 import { exportToCSV, parseCSV } from '../../services/csv';
 import {
   postAccount, removeAccount, updateSettings,
@@ -13,14 +13,12 @@ import { useToast } from '../../contexts/ToastContext';
 import { AppError } from '../../utils/AppError';
 import { getErrorMessage, getUserFriendlyMessage } from '../../utils/errorMapper';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
-import { useAuth } from '../../contexts/SessionContext';
 import { useSettingsData, SettingsTab } from '../../hooks/useSettingsData';
 
 import { GeneralTab } from './tabs/GeneralTab';
 import { AccountsTab } from './tabs/AccountsTab';
 import { CategoriesTab } from './tabs/CategoriesTab';
 import { RecurringTab } from './tabs/RecurringTab';
-import { CloudTab } from './tabs/CloudTab';
 import { DataTab } from './tabs/DataTab';
 
 interface SettingsModalProps {
@@ -32,13 +30,11 @@ const TAB_CONFIG = [
   { id: 'accounts',   label: 'Contas',      icon: Wallet       },
   { id: 'categories', label: 'Categorias',  icon: PieChart     },
   { id: 'recurring',  label: 'Recorrentes', icon: Repeat       },
-  { id: 'cloud',      label: 'Nuvem',       icon: Cloud        },
   { id: 'data',       label: 'Dados',       icon: FileSpreadsheet },
 ] as const;
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({ onDataUpdate }) => {
   const { addToast } = useToast();
-  const { user, signOut } = useAuth();
   const { activeTab, setActiveTab, resetApp } = useSettingsData();
 
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -224,9 +220,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ onDataUpdate }) =>
           )}
           {activeTab === 'recurring' && (
             <RecurringTab recurringConfigs={recurringConfigs} onDeleteRecurring={handleDeleteRecurring} />
-          )}
-          {activeTab === 'cloud' && (
-            <CloudTab isAuthenticated={!!user} user={user} onSignOut={signOut} />
           )}
           {activeTab === 'data' && (
             <DataTab onExport={handleExport} onImport={handleImport} onClearData={handleClearData} />

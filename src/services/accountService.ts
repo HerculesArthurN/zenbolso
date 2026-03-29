@@ -1,24 +1,9 @@
-import { supabase } from '../lib/supabase';
 import { db } from './db';
 import { Account } from '../types';
-import { handleApiError } from './api';
 import { decrypt } from '../utils/crypto';
 
 export const accountService = {
     async fetchAccounts(): Promise<Account[]> {
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (user) {
-            const { data, error } = await supabase
-                .from('accounts')
-                .select('*')
-                .order('name', { ascending: true });
-
-            if (error) handleApiError(error);
-            return data || [];
-        }
-
-        // Guest Mode: Fetch from Dexie
         const [localAccounts, localTransactions] = await Promise.all([
             db.accounts.toArray(),
             db.transactions.toArray()
@@ -63,20 +48,6 @@ export const accountService = {
     },
 
     async createAccount(account: Partial<Account>): Promise<Account> {
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (user) {
-            const { data, error } = await supabase
-                .from('accounts')
-                .insert([account])
-                .select()
-                .single();
-
-            if (error) handleApiError(error);
-            return data;
-        }
-
-        // Guest Mode
         const localAccount = {
             id: account.id || crypto.randomUUID(),
             name: account.name || 'Nova Conta',
@@ -99,21 +70,6 @@ export const accountService = {
     },
 
     async updateAccount(id: string, updates: Partial<Account>): Promise<Account> {
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (user) {
-            const { data, error } = await supabase
-                .from('accounts')
-                .update(updates)
-                .eq('id', id)
-                .select()
-                .single();
-
-            if (error) handleApiError(error);
-            return data;
-        }
-
-        // Guest Mode
         const existing = await db.accounts.get(id);
         if (!existing) throw new Error('Account not found');
         const localUpdate = {
@@ -127,29 +83,6 @@ export const accountService = {
     },
 
     async deleteAccount(id: string): Promise<void> {
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (user) {
-            // Check for transactions in Supabase
-            const { count } = await supabase
-                .from('transactions')
-                .select('*', { count: 'exact', head: true })
-                .eq('account_id', id);
-
-            if (count && count > 0) {
-                throw new Error('HAS_DATA');
-            }
-
-            const { error } = await supabase
-                .from('accounts')
-                .delete()
-                .eq('id', id);
-
-            if (error) handleApiError(error);
-            return;
-        }
-
-        // Guest Mode: Check transactions in Dexie
         const count = await db.transactions.where('accountId').equals(id).count();
         if (count > 0) {
             throw new Error('HAS_DATA');

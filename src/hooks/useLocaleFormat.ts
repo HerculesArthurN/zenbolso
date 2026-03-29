@@ -1,28 +1,15 @@
-import { useProfileSettings } from './useProfileSettings';
-
 /**
  * Custom hook for locale-aware number and date formatting
  * HARDCODED: Portuguese (Brazil) - BRL
  */
 export const useLocaleFormat = () => {
-    const { profile } = useProfileSettings();
-
-    // Force pt-BR
-
-    /**
-     * Get user's preferred currency from profile or default to BRL
-     */
-    const getCurrency = (): string => {
-        return profile.mainCurrency || 'BRL';
-    };
-
     /**
      * Format currency (always BRL/pt-BR style)
      */
     const formatCurrency = (value: number, options?: Intl.NumberFormatOptions): string => {
         return new Intl.NumberFormat('pt-BR', {
             style: 'currency',
-            currency: getCurrency(),
+            currency: 'BRL',
             ...options,
         }).format(value);
     };
@@ -33,7 +20,7 @@ export const useLocaleFormat = () => {
     const formatCurrencyCompact = (value: number): string => {
         return new Intl.NumberFormat('pt-BR', {
             style: 'currency',
-            currency: getCurrency(),
+            currency: 'BRL',
             notation: 'compact',
             maximumFractionDigits: 1,
         }).format(value);
@@ -122,7 +109,7 @@ export const useLocaleFormat = () => {
         formatDateLong,
         formatRelativeTime,
         locale: 'pt-BR',
-        currency: getCurrency(),
+        currency: 'BRL',
     };
 };
 

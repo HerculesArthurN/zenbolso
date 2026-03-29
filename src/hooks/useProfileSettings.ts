@@ -4,14 +4,12 @@ export interface FinancialProfile {
     monthlyIncome: number;
     workHoursPerMonth: number;
     monthlyBudgetLimit: number;
-    mainCurrency: string; // ISO 4217 currency code (BRL, USD, EUR, etc.)
 }
 
 const DEFAULT_PROFILE: FinancialProfile = {
     monthlyIncome: 0,
     workHoursPerMonth: 160,
     monthlyBudgetLimit: 0,
-    mainCurrency: 'BRL',
 };
 
 export const useProfileSettings = () => {
