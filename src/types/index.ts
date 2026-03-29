@@ -39,6 +39,16 @@ export interface Transaction {
     updated_at: string;
 }
 
+export interface DexieTransaction {
+    id: string;
+    type: TransactionType;
+    value: string | number;
+    date: string;
+    category: string | null;
+    description: string | null;
+    accountId: string;
+}
+
 export interface RecurringTransaction {
     id: string;
     user_id: string;

@@ -1,0 +1,2 @@
+src/pages/Planning.tsx(3,61): error TS6133: 'AlertCircle' is declared but its value is never read.
+src/pages/Planning.tsx(7,32): error TS2307: Cannot find module '../utils/formatters' or its corresponding type declarations.

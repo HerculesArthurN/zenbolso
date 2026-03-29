@@ -1,5 +1,5 @@
 import { db } from './db';
-import { Transaction } from '../types';
+import { Transaction, DexieTransaction } from '../types';
 import { encrypt, decrypt } from '../utils/crypto';
 
 export const transactionService = {
@@ -11,7 +11,7 @@ export const transactionService = {
             .limit(limit)
             .toArray();
 
-        return localTxs.map((tx: any) => ({
+        return localTxs.map((tx: DexieTransaction) => ({
             id: tx.id,
             user_id: '', // Deprecated
             account_id: tx.accountId || '',
@@ -25,7 +25,7 @@ export const transactionService = {
             })(),
             description: decrypt(tx.description || ''),
             date: tx.date,
-            type: tx.type.toUpperCase() as any,
+            type: tx.type,
             is_paid: true,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
@@ -37,18 +37,18 @@ export const transactionService = {
         const now = new Date().toISOString();
 
         // Standardized internal payload for Dexie
-        const localTx = {
+        const localTx: DexieTransaction = {
             id,
-            type: (transaction.type?.toUpperCase() || 'EXPENSE') as any,
+            type: transaction.type || 'EXPENSE',
             value: encrypt(transaction.amount ? Number(transaction.amount) : 0),
             date: transaction.date || now.split('T')[0],
             category: transaction.category_id || 'Outros',
             description: encrypt(transaction.description || ''),
-            accountId: transaction.account_id
+            accountId: transaction.account_id || ''
         };
 
         // Save locally
-        await db.transactions.put(localTx as any);
+        await db.transactions.put(localTx);
 
         return {
             id,
@@ -62,7 +62,7 @@ export const transactionService = {
             is_paid: true,
             created_at: now,
             updated_at: now
-        } as Transaction;
+        };
     },
 
     async updateTransaction(id: string, updates: Partial<Transaction>): Promise<Transaction> {
@@ -70,14 +70,14 @@ export const transactionService = {
         const existing = await db.transactions.get(id);
 
         if (existing) {
-            const localUpdate: any = {
+            const localUpdate: DexieTransaction = {
                 ...existing,
                 ...(updates.amount !== undefined && { value: encrypt(updates.amount) }),
                 ...(updates.date && { date: updates.date }),
                 ...(updates.description !== undefined && { description: encrypt(updates.description) }),
                 ...(updates.category_id !== undefined && { category: updates.category_id }),
                 ...(updates.account_id !== undefined && { accountId: updates.account_id }),
-                ...(updates.type && { type: updates.type.toLowerCase() as any })
+                ...(updates.type && { type: updates.type })
             };
             await db.transactions.put(localUpdate);
         }
@@ -85,22 +85,27 @@ export const transactionService = {
         // Reconstruct for UI
         return {
             id,
-            ...updates,
-            description: updates.description ?? (existing ? decrypt((existing as any).description) : ''),
+            user_id: '',
+            account_id: updates.account_id ?? (existing ? existing.accountId : ''),
+            category_id: updates.category_id ?? (existing ? existing.category : ''),
+            description: updates.description ?? (existing ? decrypt(existing.description || '') : ''),
             amount: updates.amount ?? (existing ? (() => {
-                const val = (existing as any).value;
+                const val = existing.value;
                 if (typeof val === 'string') {
                     const decrypted = decrypt(val);
                     return decrypted ? Number(decrypted) : 0;
                 }
                 return Number(val) || 0;
-            })() : 0)
-        } as any;
+            })() : 0),
+            date: updates.date ?? (existing ? existing.date : new Date().toISOString().split('T')[0]),
+            type: updates.type ?? (existing ? existing.type : 'EXPENSE'),
+            is_paid: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
     },
 
     async deleteTransaction(id: string): Promise<void> {
-        // Delete locally
         await db.transactions.delete(id);
     }
 };
-

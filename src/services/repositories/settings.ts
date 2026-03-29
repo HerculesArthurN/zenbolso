@@ -1,8 +1,9 @@
 
 import { db } from '../db';
-import { AppSettings, Transaction } from '../../types';
+import { AppSettings, Transaction, DexieTransaction } from '../../types';
 import { ValidationError } from '../errors';
 import { handleDBError } from '../repositoryUtils';
+import { encrypt } from '../../utils/crypto';
 
 export const getSettings = async (): Promise<AppSettings> => {
     try {
@@ -56,7 +57,18 @@ export const importData = async (transactions: Transaction[]): Promise<void> => 
         if (!transactions || transactions.length === 0) {
             throw new ValidationError('No transactions to import', 'IMPORT_NO_VALID_DATA');
         }
-        await db.transactions.bulkPut(transactions);
+        
+        const dexieTxs: DexieTransaction[] = transactions.map(t => ({
+            id: t.id,
+            type: t.type || 'EXPENSE',
+            value: encrypt(t.amount ? Number(t.amount) : 0),
+            date: t.date,
+            category: t.category_id || 'Outros',
+            description: encrypt(t.description || ''),
+            accountId: t.account_id || ''
+        }));
+        
+        await db.transactions.bulkPut(dexieTxs);
     } catch (e) {
         throw handleDBError(e, 'DB_WRITE_ERROR');
     }

@@ -1,0 +1,7 @@
+src/services/db.ts(2,10): error TS6133: 'Transaction' is declared but its value is never read.
+src/services/recurringService.ts(23,45): error TS2345: Argument of type '{ active: boolean; last_processed_date: null; created_at: string; updated_at: string; id: string; user_id?: string | undefined; account_id?: string | undefined; category_id?: string | null | undefined; description?: string | undefined; amount?: number | undefined; type?: "INCOME" | ... 1 more ... | undefined; day_of...' is not assignable to parameter of type 'RecurringTransaction'.
+  Types of property 'user_id' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/services/repositories/settings.ts(59,39): error TS2345: Argument of type 'Transaction[]' is not assignable to parameter of type 'readonly DexieTransaction[]'.
+  Type 'Transaction' is missing the following properties from type 'DexieTransaction': value, category, accountId

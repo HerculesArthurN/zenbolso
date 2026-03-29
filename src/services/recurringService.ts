@@ -12,16 +12,22 @@ export const recurringService = {
     },
 
     async addRecurring(rule: Partial<RecurringTransaction>): Promise<RecurringTransaction> {
-        const localRule = {
+        const localRule: RecurringTransaction = {
             id: crypto.randomUUID(),
-            ...rule,
+            user_id: rule.user_id || 'local',
+            account_id: rule.account_id || '',
+            category_id: rule.category_id || null,
+            description: rule.description || '',
+            amount: rule.amount || 0,
+            type: rule.type || 'EXPENSE',
+            day_of_month: rule.day_of_month || 1,
             active: rule.active ?? true,
             last_processed_date: null,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
         };
         await db.recurring_transactions.add(localRule);
-        return localRule as RecurringTransaction;
+        return localRule;
     },
 
     async deleteRecurring(id: string): Promise<void> {

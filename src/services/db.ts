@@ -1,5 +1,5 @@
 import Dexie, { Table } from 'dexie';
-import { Transaction, Account, Category, RecurringConfig, AppSettings, Goal } from '../types';
+import { Account, Category, RecurringConfig, AppSettings, Goal, SyncJob, RecurringTransaction, DexieTransaction } from '../types';
 import { STORAGE_KEY } from '../constants';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -10,20 +10,20 @@ const SETTINGS_STORAGE_KEY = 'pocket_manager_settings_v1';
 const CATEGORIES_STORAGE_KEY = 'pocket_manager_categories_v1';
 
 class PocketManagerDB extends Dexie {
-    transactions!: Table<Transaction, string>;
+    transactions!: Table<DexieTransaction, string>;
     accounts!: Table<Account, string>;
     categories!: Table<Category, string>;
     recurringConfigs!: Table<RecurringConfig, string>;
-    recurring_transactions!: Table<any, string>;
+    recurring_transactions!: Table<RecurringTransaction, string>;
     settings!: Table<AppSettings & { id: string }, string>;
     goals!: Table<Goal, string>;
-    sync_queue!: Table<any, number>;
+    sync_queue!: Table<SyncJob, number>;
 
     constructor() {
         super('PocketManagerDB');
 
         // Define Schema
-        (this as any).version(4).stores({
+        this.version(4).stores({
             transactions: 'id, date, type, category, accountId',
             accounts: 'id',
             categories: 'id, type, name',
@@ -35,7 +35,7 @@ class PocketManagerDB extends Dexie {
         });
 
         // Populate / Migrate Hook
-        (this as any).on('populate', async () => {
+        this.on('populate', async () => {
             await this.performMigrationOrSeed();
         });
     }
