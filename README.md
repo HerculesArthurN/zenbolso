@@ -1,85 +1,89 @@
-# 🧘 ZenBolso — Extreme Privacy Finance Tracker
+# 🧘 Zenbolso — Gestor Financeiro Pessoal Local-First
 
-[![React](https://img.shields.io/badge/React-19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-6.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Dexie](https://img.shields.io/badge/Dexie.js-4.0-blue?style=for-the-badge)](https://dexie.org/)
-[![Zod](https://img.shields.io/badge/Zod-Data_Validation-3068b7?style=for-the-badge)](https://zod.dev/)
+O **Zenbolso** é um organizador de orçamento pessoal e familiar projetado sob o paradigma **Local-First**, garantindo privacidade absoluta dos dados financeiros e performance offline instantânea.
 
-**ZenBolso** is an extremely private, "Offline-First", Progressive Web Application (PWA) built specifically for mobile screens ("Thumb-Driven UI"). It redefines personal finance tracking through zero-latency performance and unbreakable offline encryption, avoiding any reliance on remote servers.
+A aplicação adota uma interface otimizada para o uso móvel ("max-w-[430px]") e introduz o indicador comportamental de **"Custo de Tempo de Vida"**, convertendo despesas em horas de trabalho reais do usuário para promover a conscientização financeira.
 
 ---
 
-## ✨ Features that define the V1 Alpha
+## 🛠️ Stack Tecnológica
 
-### 🛡️ Iron-Clad Privacy (Local-First Architecture)
-There is no backend. No cloud. No accounts. All of your financial data lives exclusively inside your browser's IndexedDB engine, strictly queried and managed by **Dexie.js**. What happens on your phone, stays on your phone.
+O projeto é desenvolvido de ponta a ponta em **TypeScript**, garantindo tipagem estática rigorosa em todas as camadas:
 
-### 📱 "Thumb-Driven" UX / Native-Like Rendering
-Crafted under the strict bounds of a `max-w-[430px]` layout. We built Zenbolso to feel exactly like a native iOS/Android application:
-- **Fluid Touch Gestures:** Powered by `framer-motion`, manage your transactions simply by swiping left (Delete) or right (Edit) on 60 FPS hardware-accelerated elements.
-- **Bottom Navigation Tab:** Eliminates unreachable top-screen menus holding a floating action button (FAB) for seamless transaction entries.
-
-### 🔒 Physical Security (App Lock & Ghost Protocol)
-- **Web Crypto API (SHA-256):** ZenBolso locks itself natively. Set a 4-digit PIN that gets irreversibly hashed in the device's hardware.
-- **Protocolo Fantasma (Ghost Protocol):** Forgot your password? Since there is no cloud server to email you a link, ZenBolso forces an "Emergency Exit"—completely wiping and destroying all Dexie databases to un-brick the PWA, ensuring 100% data protection against intruders.
-
-### ⚡ Offline-First (PWA Cache Strategy)
-A standalone Web App capable of surviving absolute 0 network connectivity.
-- Configured with `vite-plugin-pwa` running a localized `CacheFirst` Service Worker strategy.
-- Install it to your Home Screen with a stealthy, custom `<InstallPrompt />` intercepting Chrome's engine.
-
-### 🌱 Zero-State (The Aha! Moment)
-Don't stare at an empty chart! With our **OnboardingWizard**, users can instantly inject 20 mock transactions staggered perfectly over the current month using `date-fns`, populating interactive Recharts graphs immediately.
+- **Frontend (Client-Side):** React 19, Vite 6 e React Router v7.
+- **Ambiente de Desenvolvimento:** Node.js 18+.
+- **Estilização & Componentes:** Tailwind CSS v3 e Lucide React (mobile-first responsivo).
+- **Banco de Dados Local:** IndexedDB gerenciado via **Dexie.js** (única fonte de verdade).
+- **Sincronização em Nuvem (Opcional):** Integração com Supabase (PostgreSQL) usando criptografia ponta a ponta no cliente via `crypto-js`.
+- **Validação de Fronteiras:** Zod (schemas de formulário e dados externos).
+- **Suíte de Testes:** Vitest e Testing Library para testes unitários; Playwright para testes de fumaça (E2E).
 
 ---
 
-## 🏗️ Technical Masterclass
+## 🚀 Guia de Setup Rápido
 
-This platform wasn't just coded; it was engineered through absolute constraints.
+### Pré-requisitos
+- Node.js v18 ou superior instalado.
 
-* **Strict Mode & Error-Proofing:** TypeScript 5.0 Strictness, eliminating any implicit `any`. Component props dictate state strictly.
-* **TDD (Test-Driven Development):** High-level business logic features like *App Lock*, *Onboarding States*, and *Ghost Protocol* are enclosed in Vitest Unit tests checking execution orders and API interceptions.
-* **Separation of Concerns:** Business Logic never bleeds into UI. UI elements are pure *Dumb Components* receiving payloads through specifically crafted strict custom hooks (`useAppLock`, `useGhostProtocol`).
-* **Optimistic Updates:** Immediate UI gratification. Deletions and additions reflect in memory before IndexedDB responds. Latency perception is 0.
+### Passo 1: Instalação das Dependências
+```bash
+npm install
+```
 
----
+### Passo 2: Inicializar o Servidor de Desenvolvimento
+```bash
+npm run dev
+```
+O servidor estará disponível localmente na porta configurada (geralmente `http://localhost:3000`).
 
-## 🚀 Installation & Build
+### Passo 3: Executar a Suíte de Testes Unitários
+```bash
+npm run test
+```
 
-No databases needed. No Vercel Edge functions. Simply drop it and build it.
-
-### Prerequisites
-- Node.js 18+
-
-### Setup
-
-1. **Clone & Install:**
-   ```bash
-   git clone https://github.com/your-username/zenbolso.git
-   cd zenbolso
-   npm install
-   ```
-
-2. **Run Development (Hot Reloading):**
-   ```bash
-   npm run dev
-   ```
-
-3. **Production Static Build:**
-   ```bash
-   npm run build
-   # Outputs pure localized HTML/JS/CSS mapping directly to /dist
-   ```
-
-4. **Testing Suite:**
-   ```bash
-   npm run test
-   ```
+### Passo 4: Compilar para Produção (Static Build)
+```bash
+npm run build
+```
+O build estático e minificado será exportado para o diretório `/dist`.
 
 ---
 
+## 🏗️ Arquitetura Macro da Solução
+
+O fluxo de dados da aplicação funciona de forma estritamente unidirecional e cliente-centrada:
+
+```
+┌──────────────────────────────────────────────┐
+│            CAMADA DE INTERFACE (UI)          │
+│ Componentes Declarativos React 19 (Dumb)     │
+└──────────────────────┬───────────────────────┘
+                       │ (Leitura / useLiveQuery)
+                       ▼
+┌──────────────────────────────────────────────┐
+│           ESTADO REATIVO LOCAL (Dexie)       │
+│ Consulta IndexedDB em Tempo Real (Offline)   │
+└──────────────────────┬───────────────────────┘
+                       │ (Mutações Otimistas)
+                       ▼
+┌──────────────────────────────────────────────┐
+│       SERVIÇOS DE DOMÍNIO / PERSISTÊNCIA     │
+│ Camada Pura de Persistência (services/)      │
+└──────────────────────┬───────────────────────┘
+                       │ (Sync Opcional + Cripto)
+                       ▼
+┌──────────────────────────────────────────────┐
+│          NUVEM (Supabase / Drive)            │
+│ Criptografado no Cliente antes do Envio      │
+└──────────────────────────────────────────────┘
+```
+
+A documentação detalhada das regras de engenharia está dividida em:
+- [Diretrizes de Arquitetura (docs/arquitetura.md)](docs/arquitetura.md)
+- [Segurança e Privacidade (docs/seguranca.md)](docs/seguranca.md)
+- [Diretrizes Visuais e UX (docs/visual.md)](docs/visual.md)
+
+---
 <p align="center">
-  Forged by <b>Hércules</b> with architectural discipline and an unyielding commitment to User Privacy.
+  Desenvolvido por <b>Hércules</b> com disciplina arquitetural e compromisso inabalável com a privacidade do usuário.
 </p>

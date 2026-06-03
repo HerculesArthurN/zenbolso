@@ -126,8 +126,13 @@ export function safeAverage(values: any[], fallback: number = 0): number {
         return fallback;
     }
 
-    const sum = safeSum(values);
-    return safeDivide(sum, values.length, fallback);
+    const validValues = values.filter(val => val !== null && val !== undefined);
+    if (validValues.length === 0) {
+        return fallback;
+    }
+
+    const sum = safeSum(validValues);
+    return safeDivide(sum, validValues.length, fallback);
 }
 
 /**
@@ -141,4 +146,18 @@ export function safeAverage(values: any[], fallback: number = 0): number {
 export function safeClamp(value: any, min: number, max: number): number {
     const safe = safeNumber(value, min);
     return Math.max(min, Math.min(max, safe));
+}
+
+/**
+ * Converte um valor em Reais (float) para Centavos (inteiro).
+ */
+export function toCentavos(value: any): number {
+    return Math.round(safeNumber(value, 0) * 100);
+}
+
+/**
+ * Converte um valor em Centavos (inteiro) para Reais (float).
+ */
+export function fromCentavos(value: any): number {
+    return safeDivide(safeNumber(value, 0), 100);
 }

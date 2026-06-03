@@ -19,7 +19,7 @@ export const PurchaseSimulator: React.FC<PurchaseSimulatorProps> = ({ isOpen, on
 
     const handleSimulate = () => {
         if (!summary) return;
-        const val = parseFloat(amount);
+        const val = Math.round(parseFloat(amount) * 100);
         if (isNaN(val) || val <= 0) return;
 
         const currentAvailable = summary.netBalance;
@@ -28,7 +28,7 @@ export const PurchaseSimulator: React.FC<PurchaseSimulatorProps> = ({ isOpen, on
         // 1. Check Immediate Balance
         if (remainingAfterPurchase < 0) {
             setResult('danger');
-            setMessage(`Isso deixaria seu saldo negativo em R$ ${Math.abs(remainingAfterPurchase).toFixed(2)} imediatamente.`);
+            setMessage(`Isso deixaria seu saldo negativo em R$ ${Math.abs(remainingAfterPurchase / 100).toFixed(2)} imediatamente.`);
             return;
         }
 

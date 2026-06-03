@@ -42,7 +42,7 @@ export const useTransactionForm = (options?: UseTransactionFormOptions) => {
   const [formData, setFormData] = useState<TransactionFormData>(() => {
     if (initialData) {
       return {
-        amount: initialData.amount,
+        amount: initialData.amount / 100,
         description: initialData.description || '',
         type: initialData.type === 'TRANSFER' ? 'EXPENSE' : initialData.type,
         categoryId: initialData.category_id || '',
@@ -99,7 +99,7 @@ export const useTransactionForm = (options?: UseTransactionFormOptions) => {
     setIsSubmitting(true);
     try {
       const payload = {
-        amount: formData.amount,
+        amount: Math.round(formData.amount * 100),
         description: formData.description,
         type: formData.type,
         category_id: formData.categoryId,

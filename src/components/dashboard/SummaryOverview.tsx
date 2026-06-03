@@ -2,7 +2,7 @@ import React from 'react';
 import { Wallet, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 import { Account, Transaction } from '../../types';
 import { useLocaleFormat } from '../../hooks/useLocaleFormat';
-import { safeNumber } from '../../utils/numberUtils';
+import { useSummaryData } from '../../hooks/useSummaryData';
 
 interface SummaryOverviewProps {
     accounts: Account[];
@@ -12,24 +12,7 @@ interface SummaryOverviewProps {
 
 export const SummaryOverview: React.FC<SummaryOverviewProps> = ({ accounts, transactions, loading }) => {
     const { formatCurrency } = useLocaleFormat();
-
-    const currentMonth = new Date().getMonth();
-    const currentYear = new Date().getFullYear();
-
-    const totalBalance = accounts.reduce((acc, account) => acc + safeNumber(account.balance, 0), 0);
-
-    const monthTransactions = transactions.filter(t => {
-        const d = new Date(t.date);
-        return d.getUTCMonth() === currentMonth && d.getUTCFullYear() === currentYear;
-    });
-
-    const monthIncome = monthTransactions
-        .filter(t => t.type === 'INCOME')
-        .reduce((acc, t) => acc + safeNumber(t.amount, 0), 0);
-
-    const monthExpense = monthTransactions
-        .filter(t => t.type === 'EXPENSE')
-        .reduce((acc, t) => acc + safeNumber(t.amount, 0), 0);
+    const { totalBalance, monthIncome, monthExpense } = useSummaryData({ accounts, transactions });
 
     const Skeleton = () => (
         <div className="h-32 bg-slate-100 dark:bg-slate-800 animate-pulse rounded-2xl border border-slate-200 dark:border-slate-700" />

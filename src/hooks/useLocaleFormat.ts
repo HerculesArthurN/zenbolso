@@ -11,7 +11,7 @@ export const useLocaleFormat = () => {
             style: 'currency',
             currency: 'BRL',
             ...options,
-        }).format(value);
+        }).format(value / 100);
     };
 
     /**
@@ -23,7 +23,7 @@ export const useLocaleFormat = () => {
             currency: 'BRL',
             notation: 'compact',
             maximumFractionDigits: 1,
-        }).format(value);
+        }).format(value / 100);
     };
 
     /**

@@ -1,8 +1,0 @@
-src/pages/SettingsPage.tsx(258,15): error TS2322: Type '{ accounts: Account[]; newAccountName: string; newAccountBalance: string; onNameChange: Dispatch<SetStateAction<string>>; onBalanceChange: Dispatch<SetStateAction<string>>; onAdd: () => Promise<...>; onDelete: (id: string) => Promise<...>; }' is not assignable to type 'IntrinsicAttributes & AccountsTabProps'.
-  Property 'onAdd' does not exist on type 'IntrinsicAttributes & AccountsTabProps'.
-src/pages/SettingsPage.tsx(269,15): error TS2322: Type '{ categories: Category[]; newCategoryName: string; newCategoryType: TransactionType; onNameChange: Dispatch<SetStateAction<string>>; onTypeChange: (val: TransactionType) => void; onAdd: () => Promise<...>; onDelete: (id: string) => Promise<...>; }' is not assignable to type 'IntrinsicAttributes & CategoriesTabProps'.
-  Property 'onAdd' does not exist on type 'IntrinsicAttributes & CategoriesTabProps'.
-src/pages/SettingsPage.tsx(275,15): error TS2322: Type '{ configs: RecurringConfig[]; onDelete: (id: string) => Promise<void>; }' is not assignable to type 'IntrinsicAttributes & RecurringTabProps'.
-  Property 'configs' does not exist on type 'IntrinsicAttributes & RecurringTabProps'.
-src/pages/SettingsPage.tsx(283,15): error TS2322: Type '{ onExport: () => Promise<void>; onImport: (e: ChangeEvent<HTMLInputElement>) => Promise<void>; onClear: () => void; }' is not assignable to type 'IntrinsicAttributes & DataTabProps'.
-  Property 'onClear' does not exist on type 'IntrinsicAttributes & DataTabProps'.

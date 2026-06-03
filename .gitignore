@@ -1,4 +1,4 @@
-# Logs
+# Logs e Compilação
 logs
 *.log
 npm-debug.log*
@@ -6,32 +6,37 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+tsc_errors_*.log
+build_errors.log
+build_log.txt
+compile_errors.txt
+test_output*.txt
+vitest_output.txt
 
-# Dependencies
+# Dependências
 node_modules
 .pnpm-store
 
-# Build Output
+# Saídas de Build e Empacotadores
 dist
 dist-ssr
 *.local
+.next
+out
 
-# Environment Variables (CRÍTICO DE SEGURANÇA)
-# Ignora todos os arquivos de configuração reais
+# Variáveis de Ambiente (Segurança Crítica)
 .env
 .env.*
-# Mas permite subir o arquivo de exemplo (template)
 !.env.example
 
-# Testing
+# Testes e Cobertura
 coverage
+test-results
+playwright-report
 
-# Editor directories and files
+# Pastas locais de IDE e Sistema
 .vscode/*
 !.vscode/extensions.json
-# Descomente a linha abaixo se quiser compartilhar configurações de auto-format com a equipe
-# !.vscode/settings.json 
-
 .idea
 .DS_Store
 Thumbs.db
@@ -41,7 +46,7 @@ Thumbs.db
 *.sln
 *.sw?
 
-# GSD (Get Shit Done) — Planning Artifacts
-# Track .planning/ state files in git (PROJECT.md, ROADMAP.md, etc.)
-# Only exclude screenshots from ui-reviews workflow
+# Ferramentas locais de IA e Workspace
+.gemini/
+.openclaude-profile.json
 .planning/ui-reviews/

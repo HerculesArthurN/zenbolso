@@ -66,7 +66,7 @@ describe('useTransactionForm Hook', () => {
     // Garante que o service foi chamado corretamente
     expect(transactionService.createTransaction).toHaveBeenCalledWith(
       expect.objectContaining({
-        amount: 150,
+        amount: 15000,
         description: 'Compra no mercado',
         type: 'EXPENSE'
       })

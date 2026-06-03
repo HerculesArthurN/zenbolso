@@ -1,4 +1,0 @@
-index.tsx(8,26): error TS2307: Cannot find module './src/lib/supabase' or its corresponding type declarations.
-src/components/admin/SqlEditor.tsx(3,30): error TS2307: Cannot find module '../../hooks/useSqlRunner' or its corresponding type declarations.
-src/components/admin/SqlEditor.tsx(88,47): error TS7006: Parameter 'row' implicitly has an 'any' type.
-src/components/admin/SqlEditor.tsx(88,52): error TS7006: Parameter 'i' implicitly has an 'any' type.
